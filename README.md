@@ -1,5 +1,13 @@
 # QERLIO Runtime
 
+[![CI](https://github.com/ZAQERIS/QERLIO/actions/workflows/ci.yml/badge.svg)](https://github.com/ZAQERIS/QERLIO/actions)
+[![Release](https://img.shields.io/github/v/release/ZAQERIS/QERLIO?color=blue)](https://github.com/ZAQERIS/QERLIO/releases)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](CMakeLists.txt)
+[![Python](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](sdk/python/)
+[![Tests](https://img.shields.io/badge/tests-29%2F29%20passing-success.svg)](tests/)
+[![Universal Gateway](https://img.shields.io/badge/gateway-OpenAI%20%7C%20Anthropic%20%7C%20Ollama-purple.svg)](server/local_api/)
+
 > **Your AI. Your Device. Your Rules.**  
 > *Developed by ZAQERIS AI — Research Group*
 
