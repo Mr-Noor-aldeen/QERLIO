@@ -1,13 +1,8 @@
-"""
-ZAQERIS Compression (M3-GPTQ) Research Adapter for QERLIO
-Isolated under formats/zaqeris_compression/ per Specification Section 10.6 & 25.2
-"""
-
 import time
-import torch
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any
 
 try:
+    import torch
     import zaqeris_m3_gptq
     from zaqeris_m3_gptq import (
         M3Config,
@@ -36,20 +31,15 @@ class ZaqerisM3Adapter:
         out_features: int = 2048,
         device: str = "cpu"
     ) -> Dict[str, Any]:
-        """
-        Benchmarks decompression speed, latency, and memory bandwidth
-        for a representative linear layer projection.
-        """
         if not self.available:
-            return {"status": "UNAVAILABLE", "reason": "zaqeris_m3_gptq package not imported"}
+            return {"status": "UNAVAILABLE", "reason": "zaqeris_m3_gptq package not installed"}
 
-        # Real M3Config from zaqeris_m3_gptq
         config = M3Config(stages=3, vec_dim=8)
         
         start_time = time.perf_counter()
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
         
-        uncompressed_bytes = in_features * out_features * 2 # F16
+        uncompressed_bytes = in_features * out_features * 2
         return {
             "status": "OPERATIONAL",
             "in_features": in_features,

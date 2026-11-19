@@ -5,45 +5,38 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Export compile commands for language servers
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Compiler warnings
 if(MSVC)
     add_compile_options(/W4 /permissive- /utf-8)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Wconversion)
+    add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Core include directories
 include_directories(
-    include
-    core
-    backends
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends
 )
 
-# QERLIO Core Library
-add_library(qerlio_core STATIC
+set(QERLIO_SOURCES
     src/qerlio_abi.cpp
-    src/engine.cpp
-    src/model.cpp
-    src/session.cpp
     core/model_registry/gguf_parser.cpp
+    core/memory/memory_planner.cpp
+    core/scheduler/adaptive_scheduler.cpp
+    core/compression/universal_quant.cpp
 )
+
+add_library(qerlio_core STATIC ${QERLIO_SOURCES})
 
 target_include_directories(qerlio_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
-# Optional shared library wrapper for foreign language bindings (JNI / CFFI)
-add_library(qerlio SHARED
-    src/qerlio_abi.cpp
-    src/engine.cpp
-    src/model.cpp
-    src/session.cpp
-    core/model_registry/gguf_parser.cpp
-)
+add_library(qerlio SHARED ${QERLIO_SOURCES})
 
 target_compile_definitions(qerlio PRIVATE QERLIO_BUILD_SHARED)
 target_include_directories(qerlio PUBLIC
@@ -51,7 +44,6 @@ target_include_directories(qerlio PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# Install targets
 include(GNUInstallDirs)
 install(TARGETS qerlio qerlio_core
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
