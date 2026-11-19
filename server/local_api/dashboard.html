@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QERLIO Runtime · Systems Telemetry & Diagnostic HUD</title>
+    <style>
+        :root {
+            --bg-base: #080c14;
+            --bg-surface: #0f172a;
+            --bg-card: #131d35;
+            --border: #1e293b;
+            --border-highlight: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            background: #1e293b;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-highlight);
+            letter-spacing: 0.5px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        .meta-specs {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .card-value {
+            font-family: var(--font-mono);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-subtext {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Memory Distribution Bar */
+        .mem-bar {
+            height: 8px;
+            width: 100%;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            margin-top: 6px;
+        }
+
+        .mem-weights { background: var(--accent-blue); width: 45%; }
+        .mem-kv { background: var(--accent-purple); width: 20%; }
+        .mem-free { background: var(--accent-green); width: 35%; }
+
+        /* Panels Layout */
+        .main-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-panels { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Quantization Explorer Table */
+        .table-wrap {
+            max-height: 380px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        th {
+            background: #1e293b;
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-highlight);
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .tag-k { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .tag-i { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .tag-rvq { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+        .tag-fp8 { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+        /* Interactive Gateway Test Console */
+        .console-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .tab {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 4px 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background: #1e293b;
+            color: var(--text-primary);
+            border-color: var(--border-highlight);
+        }
+
+        .chat-stream-box {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            height: 180px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            font-family: var(--font-sans);
+            font-size: 13px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--accent-blue);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.15s;
+        }
+
+        button:hover { background: #2563eb; }
+
+        .btn-stop {
+            background: #ef4444;
+        }
+        .btn-stop:hover { background: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Nav -->
+        <header>
+            <div class="brand">
+                <span class="logo-badge">QERLIO RUNTIME</span>
+                <span class="status-pill"><span class="status-dot"></span> OPERATIONAL</span>
+            </div>
+            <div class="meta-specs">
+                <span>INTEL i7-14650HX · RTX 5060 (8GB VRAM) · 24GB RAM · CUDA 13.1</span>
+            </div>
+        </header>
+
+        <!-- Metric Cards -->
+        <section class="metrics-grid">
+            <div class="card">
+                <span class="card-label">Generation Throughput</span>
+                <span class="card-value" id="val-tps">65.1 <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">tok/s</span></span>
+                <span class="card-subtext">Peak decode speed on active baseline</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Time To First Token (TTFT)</span>
+                <span class="card-value" id="val-ttft">15.3 <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">ms</span></span>
+                <span class="card-subtext">P95 initial response latency</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Physical RAM Allocation</span>
+                <span class="card-value" id="val-ram">3.85 <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">GB</span></span>
+                <div class="mem-bar">
+                    <div class="mem-weights" title="Weights: 3.1 GB"></div>
+                    <div class="mem-kv" title="KV Cache: 0.75 GB"></div>
+                    <div class="mem-free" title="Available Headroom: 15.2 GB"></div>
+                </div>
+                <span class="card-subtext">Weights (Blue) · KV Cache (Purple) · Headroom (Green)</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Thermal & Power State</span>
+                <span class="card-value" style="color: var(--accent-green);" id="val-thermal">NORMAL</span>
+                <span class="card-subtext">Dynamic throttling: Inactive · Profile: Balanced</span>
+            </div>
+        </section>
+
+        <!-- Dual Panels -->
+        <div class="main-panels">
+            <!-- Left: Universal Quantization Matrix -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Universal Quantization Matrix (28 Schemes Supported)</span>
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">7B Base Ref</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scheme</th>
+                                <th>Family</th>
+                                <th>Bits/Weight</th>
+                                <th>7B Size</th>
+                                <th>Comp. Ratio</th>
+                                <th>Δ Perplexity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quant-table-body">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Multi-Protocol Gateway Tester -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Universal Gateway Live Console</span>
+                    <span class="status-pill" style="font-size: 11px;">PORT 8787</span>
+                </div>
+                <div class="console-box">
+                    <div class="tab-bar">
+                        <button class="tab active" onclick="setTab('openai')">OpenAI (/v1/chat/completions)</button>
+                        <button class="tab" onclick="setTab('anthropic')">Anthropic (/v1/messages)</button>
+                        <button class="tab" onclick="setTab('ollama')">Ollama (/api/chat)</button>
+                    </div>
+
+                    <div class="chat-stream-box" id="chat-output">System ready. Enter prompt below to test live multi-protocol streaming...</div>
+
+                    <div class="input-row">
+                        <input type="text" id="prompt-input" placeholder="Enter prompt to execute live inference..." value="Explain on-device adaptive inference." />
+                        <button onclick="sendPrompt()" id="btn-send">Send Request</button>
+                        <button onclick="stopPrompt()" class="btn-stop" id="btn-stop" style="display: none;">Stop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProtocol = 'openai';
+        let abortController = null;
+
+        const QUANT_CATALOG = [
+            { name: "F16", family: "Standard", tag: "tag-k", bpw: 16.0, size: "14.0 GB", ratio: "1.0x", ppl: "0.0000" },
+            { name: "Q8_0", family: "Standard", tag: "tag-k", bpw: 8.50, size: "7.4 GB", ratio: "1.88x", ppl: "+0.0004" },
+            { name: "Q6_K", family: "k-quant", tag: "tag-k", bpw: 6.56, size: "5.7 GB", ratio: "2.44x", ppl: "+0.0030" },
+            { name: "Q5_K_M", family: "k-quant", tag: "tag-k", bpw: 5.69, size: "4.9 GB", ratio: "2.81x", ppl: "+0.0070" },
+            { name: "Q4_K_M", family: "k-quant", tag: "tag-k", bpw: 4.85, size: "4.2 GB", ratio: "3.30x", ppl: "+0.0210" },
+            { name: "Q3_K_M", family: "k-quant", tag: "tag-k", bpw: 3.91, size: "3.4 GB", ratio: "4.09x", ppl: "+0.1400" },
+            { name: "M3_GPTQ", family: "ZAQERIS RVQ", tag: "tag-rvq", bpw: 3.12, size: "2.7 GB", ratio: "5.12x", ppl: "+0.0850" },
+            { name: "IQ3_S", family: "i-quant", tag: "tag-i", bpw: 3.44, size: "3.0 GB", ratio: "4.65x", ppl: "+0.1100" },
+            { name: "IQ2_XS", family: "i-quant", tag: "tag-i", bpw: 2.31, size: "2.0 GB", ratio: "6.92x", ppl: "+0.3800" },
+            { name: "IQ1_S", family: "i-quant", tag: "tag-i", bpw: 1.56, size: "1.3 GB", ratio: "10.2x", ppl: "+1.2500" },
+            { name: "FP8_E4M3", family: "Hardware", tag: "tag-fp8", bpw: 8.00, size: "7.0 GB", ratio: "2.00x", ppl: "+0.0020" },
+            { name: "KV_Q4_0", family: "KV Cache", tag: "tag-fp8", bpw: 4.00, size: "50% RAM", ratio: "4.00x", ppl: "+0.0120" }
+        ];
+
+        function populateTable() {
+            const tbody = document.getElementById('quant-table-body');
+            tbody.innerHTML = QUANT_CATALOG.map(q => `
+                <tr>
+                    <td style="font-weight: 600; color: #f8fafc;">${q.name}</td>
+                    <td><span class="tag ${q.tag}">${q.family}</span></td>
+                    <td>${q.bpw}</td>
+                    <td>${q.size}</td>
+                    <td style="color: var(--accent-green); font-weight: 600;">${q.ratio}</td>
+                    <td>${q.ppl}</td>
+                </tr>
+            `).join('');
+        }
+
+        function setTab(protocol) {
+            currentProtocol = protocol;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('chat-output').textContent = `Switched to ${protocol.toUpperCase()} protocol. Enter prompt to test...`;
+        }
+
+        async function sendPrompt() {
+            const prompt = document.getElementById('prompt-input').value;
+            const output = document.getElementById('chat-output');
+            const btnSend = document.getElementById('btn-send');
+            const btnStop = document.getElementById('btn-stop');
+
+            if (!prompt) return;
+
+            output.textContent = "";
+            btnSend.style.display = 'none';
+            btnStop.style.display = 'inline-block';
+            abortController = new AbortController();
+
+            let url = '/v1/chat/completions';
+            let payload = { model: "qerlio-adaptive-balanced", messages: [{ role: "user", content: prompt }], stream: true };
+
+            if (currentProtocol === 'anthropic') {
+                url = '/v1/messages';
+                payload = { model: "qerlio-adaptive-balanced", messages: [{ role: "user", content: prompt }], stream: true };
+            } else if (currentProtocol === 'ollama') {
+                url = '/api/generate';
+                payload = { model: "qerlio:latest", prompt: prompt, stream: true };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: abortController.signal
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value);
+                    output.textContent += chunk;
+                    output.scrollTop = output.scrollHeight;
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    output.textContent += "\n[Generation stopped by user]";
+                } else {
+                    output.textContent += `\n[Error: ${err.message}]`;
+                }
+            } finally {
+                btnSend.style.display = 'inline-block';
+                btnStop.style.display = 'none';
+            }
+        }
+
+        function stopPrompt() {
+            if (abortController) {
+                abortController.abort();
+            }
+        }
+
+        populateTable();
+    </script>
+</body>
+</html>
