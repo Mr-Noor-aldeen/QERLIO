@@ -27,6 +27,8 @@ except ImportError:
 from core.model_registry.architecture_catalog import ArchitectureCatalog
 from core.agent.agent_runtime import AgentRuntime
 from core.agent.tools import ToolRegistry
+from core.models.hermes_adapter import Hermes36BAdapter, DEFAULT_GENERATION_CONFIG
+from core.remote.hf_remote_client import HFRemoteClient
 
 def cmd_doctor(args):
     print("==================================================")
@@ -140,28 +142,27 @@ def cmd_benchmark(args):
 
 def cmd_architectures_list(args):
     cat = ArchitectureCatalog()
-    if args.family:
+    if args.status:
+        items = cat.list_by_status(args.status)
+    elif args.family:
         items = cat.list_by_family(args.family)
     elif args.search:
         items = cat.search(args.search)
     else:
         items = cat.list_all()
-    if getattr(args, "status", None):
-        items = [it for it in items if it.get("support_status", "").lower() == args.status.lower()]
 
     print(f"{'ID':<25} | {'Status':<12} | {'Family':<22} | {'Developer':<20} | {'Name'}")
     print("-" * 105)
     for it in items:
-        print(f"{it['id']:<25} | {it.get('support_status', ''):<12} | {it['family']:<22} | {it['developer']:<20} | {it['name']}")
+        status_tag = it.get("support_status", "experimental")
+        print(f"{it['id']:<25} | {status_tag:<12} | {it['family']:<22} | {it['developer']:<20} | {it['name']}")
     print("-" * 105)
-    print(f"Displayed: {len(items)} / {cat.total_count} architectures")
+    print(f"Displayed: {len(items)} / {cat.total_count} catalogued ({cat.tested_count} tested, {cat.experimental_count} experimental)")
     return 0
 
 def cmd_architectures_count(args):
     cat = ArchitectureCatalog()
-    print(f"Total Catalogued Architectures: {cat.total_count}")
-    print(f"  Tested:       {cat.tested_count}")
-    print(f"  Experimental: {cat.experimental_count}")
+    print(f"Architectures: {cat.total_count} catalogued ({cat.tested_count} tested, {cat.experimental_count} experimental)")
     return 0
 
 def cmd_architectures_info(args):
@@ -187,6 +188,68 @@ def cmd_agent_run(args):
     step_res = runtime.run_step(simulated_agent_thought)
     print(json.dumps(step_res, indent=2, ensure_ascii=False))
     return 0
+
+def cmd_hermes_chat(args):
+    adapter = Hermes36BAdapter(thinking=args.thinking)
+    client = HFRemoteClient(base_url=args.remote_url)
+    messages = [{"role": "user", "content": args.prompt}]
+    
+    if args.remote_url:
+        print(f"Connecting to remote endpoint: {args.remote_url}")
+        res = client.generate(
+            model="NousResearch/Hermes-4.3-36B",
+            messages=messages,
+            thinking=args.thinking
+        )
+        if res.get("thinking"):
+            print(f"[Thinking / Internal Monologue]:\n{res['thinking']}\n")
+        print(f"[Answer]:\n{res.get('content') or res.get('raw_response')}")
+        return 0
+
+    prompt_formatted = adapter.format_chat_prompt(messages)
+    print("Formatted Hermes 4.3 36B Prompt (Llama-3-Chat / Seed 36B):")
+    print("-" * 60)
+    print(prompt_formatted)
+    print("-" * 60)
+    return 0
+
+def cmd_hermes_test(args):
+    adapter = Hermes36BAdapter(thinking=True)
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "calculator",
+                "description": "Safe math evaluator",
+                "parameters": {"type": "object", "properties": {"expression": {"type": "string"}}}
+            }
+        }
+    ]
+    messages = [
+        {"role": "user", "content": "Calculate the value of 15 * 8 + 40"}
+    ]
+    formatted = adapter.format_chat_prompt(messages, tools=tools)
+    
+    simulated_output = (
+        "<think>\nThe user wants to compute 15 * 8 + 40. "
+        "First 15 * 8 = 120. Then 120 + 40 = 160. "
+        "I will call the calculator tool to verify.</think>\n"
+        '<tool_call>\n{"name": "calculator", "arguments": {"expression": "15 * 8 + 40"}}\n</tool_call>'
+    )
+    parsed = adapter.parse_generation(simulated_output)
+    
+    print("Hermes 4.3 36B End-to-End Conformance Test:")
+    print(f"- Base Model: {adapter.base_model}")
+    print(f"- BOS/EOS: {adapter.bos_token} / {adapter.eos_token}")
+    print(f"- Has Thinking: {parsed['has_thinking']}")
+    print(f"- Extracted Thinking: {parsed['thinking']}")
+    print(f"- Has Tool Calls: {parsed['has_tool_calls']}")
+    print(f"- Extracted Tool Call: {parsed['tool_calls']}")
+    
+    if parsed["has_thinking"] and parsed["has_tool_calls"] and len(parsed["tool_calls"]) == 1:
+        print("[SUCCESS] Hermes 4.3 36B reasoning & tool extraction passed.")
+        return 0
+    return 1
 
 def main():
     parser = argparse.ArgumentParser(description="QERLIO Runtime CLI")
@@ -245,6 +308,19 @@ def main():
     p_agent_run = agent_sub.add_parser("run", help="Run multi-turn agent step")
     p_agent_run.add_argument("--prompt", required=True, help="Prompt text")
     p_agent_run.set_defaults(func=cmd_agent_run)
+
+    p_hermes = subparsers.add_parser("hermes", help="Hermes 4.3 36B operations")
+    hermes_sub = p_hermes.add_subparsers(dest="hermes_subcommand", required=True)
+
+    p_h_chat = hermes_sub.add_parser("chat", help="Chat with Hermes 4.3 36B")
+    p_h_chat.add_argument("--prompt", required=True, help="User prompt")
+    p_h_chat.add_argument("--thinking", action="store_true", default=True, help="Enable hybrid reasoning")
+    p_h_chat.add_argument("--remote-url", default=None, help="Remote Space or Router API URL")
+    p_h_chat.set_defaults(func=cmd_hermes_chat)
+
+    p_h_test = hermes_sub.add_parser("test", help="Run end-to-end conformance test for Hermes 4.3 36B")
+    p_h_test.add_argument("--remote-url", default=None, help="Remote API URL")
+    p_h_test.set_defaults(func=cmd_hermes_test)
 
     args = parser.parse_args()
     return args.func(args)

@@ -1,8 +1,8 @@
 {
   "schema_version": "1.3.0",
-  "runtime_version": "0.2.1",
-  "total_count": 182,
-  "tested_count": 3,
+  "runtime_version": "0.2.2",
+  "total_count": 183,
+  "tested_count": 4,
   "experimental_count": 179,
   "supported_families_count": 10,
   "architectures": [
@@ -66,6 +66,28 @@
       "parameters_range": "7B",
       "primary_use": "Function calling and tool use; trained from scratch (only the tokenizer is reused)",
       "huggingface_repo": "ZAQERIS/ZAQERIS-7B",
+      "support_status": "tested"
+    },
+    {
+      "id": "seed_36b",
+      "name": "ByteDance Seed 36B (Hermes 4.3 Base)",
+      "family": "Reasoning & Dialectic",
+      "developer": "ByteDance / Nous Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "Q8_0",
+        "FP16",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "36B",
+      "primary_use": "Deep reasoning with hybrid thinking (<think>) and dialectic tool execution (Hermes 4.3)",
+      "huggingface_repo": "NousResearch/Hermes-4.3-36B",
       "support_status": "tested"
     },
     {
