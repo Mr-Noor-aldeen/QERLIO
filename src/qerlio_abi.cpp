@@ -8,7 +8,7 @@
 #include <chrono>
 #include <thread>
 
-static const char* QERLIO_VERSION_STRING = "0.1.0";
+static const char* QERLIO_VERSION_STRING = "0.2.1";
 
 const char* qerlio_get_version(void) {
     return QERLIO_VERSION_STRING;
