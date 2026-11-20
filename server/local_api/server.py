@@ -20,7 +20,7 @@ from core.agent.tools import ToolRegistry
 
 app = FastAPI(
     title="QERLIO Universal Multi-API Gateway",
-    version="0.2.0"
+    version="0.2.1"
 )
 
 app.add_middleware(
@@ -104,11 +104,13 @@ def get_health():
     ram = psutil.virtual_memory()
     return {
         "status": "healthy",
-        "runtime": "QERLIO Universal Gateway 0.2.0",
+        "runtime": "QERLIO Universal Gateway 0.2.1",
         "cpu_usage_pct": psutil.cpu_percent(),
         "ram_available_gb": round(ram.available / (1024**3), 2),
         "gateways": ["openai", "anthropic", "ollama"],
         "supported_architectures_count": ARCH_CATALOG.total_count,
+        "tested_architectures_count": ARCH_CATALOG.tested_count,
+        "experimental_architectures_count": ARCH_CATALOG.experimental_count,
         "agent_mode_ready": True
     }
 
@@ -124,14 +126,20 @@ def get_dashboard():
 @app.get("/v1/telemetry/hud")
 def get_telemetry_hud():
     ram = psutil.virtual_memory()
+    # The gateway currently serves simulated responses, so there is no live
+    # inference to measure. Report null instead of fixed placeholder numbers.
     return {
-        "throughput_tps": 65.1,
-        "ttft_ms": 15.3,
+        "measurement_status": "no_live_measurement",
+        "throughput_tps": None,
+        "ttft_ms": None,
+        "model_memory_gb": None,
         "ram_total_gb": round(ram.total / (1024**3), 2),
         "ram_available_gb": round(ram.available / (1024**3), 2),
-        "thermal_state": "NORMAL",
+        "thermal_state": None,
         "quant_schemes_count": len(QUANT_CATALOG),
         "supported_architectures_count": ARCH_CATALOG.total_count,
+        "tested_architectures_count": ARCH_CATALOG.tested_count,
+        "experimental_architectures_count": ARCH_CATALOG.experimental_count,
         "architectures_families": ARCH_CATALOG.list_families(),
         "adaptive_hybrid_7b": compute_layer_adaptive_mixed_precision(7.0),
         "sink_aware_16k": calculate_sink_aware_kv_cache(context_tokens=16384)
@@ -152,16 +160,20 @@ def list_openai_models(_: bool = Depends(verify_token)):
     }
 
 @app.get("/v1/architectures")
-def list_architectures(family: Optional[str] = None, search: Optional[str] = None):
+def list_architectures(family: Optional[str] = None, search: Optional[str] = None, status: Optional[str] = None):
     if family:
         items = ARCH_CATALOG.list_by_family(family)
     elif search:
         items = ARCH_CATALOG.search(search)
     else:
         items = ARCH_CATALOG.list_all()
+    if status:
+        items = [i for i in items if i.get("support_status", "").lower() == status.lower()]
     return {
         "total_count": len(items),
         "global_supported_count": ARCH_CATALOG.total_count,
+        "tested_count": ARCH_CATALOG.tested_count,
+        "experimental_count": ARCH_CATALOG.experimental_count,
         "families": ARCH_CATALOG.list_families(),
         "data": items
     }
@@ -340,7 +352,7 @@ def ollama_tags():
                 "modified_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "size": 1024 * 1024 * 6144,
                 "digest": "sha256:12b99281a9",
-                "details": {"format": "gguf", "family": "zaqion_dialectic", "parameter_size": "12B", "quantization_level": "M3_GPTQ"}
+                "details": {"format": "gguf", "family": "zqn_12b", "parameter_size": "12B", "quantization_level": "M3_GPTQ"}
             },
             {
                 "name": "qerlio:latest",
