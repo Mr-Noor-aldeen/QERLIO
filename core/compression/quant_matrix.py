@@ -16,51 +16,52 @@ class QuantProfile:
     family: QuantFamily
     bits_per_weight: float
     block_size: int
-    perplexity_delta: float
+    # Perplexity impact is not measured by QERLIO yet; None means "no measurement".
+    perplexity_delta: Optional[float]
     hardware_accelerated: bool
 
 QUANT_CATALOG: Dict[str, QuantProfile] = {
     # Standard GGUF
-    "F16": QuantProfile("F16", QuantFamily.STANDARD_GGUF, 16.0, 1, 0.0000, True),
-    "BF16": QuantProfile("BF16", QuantFamily.STANDARD_GGUF, 16.0, 1, 0.0000, True),
-    "Q8_0": QuantProfile("Q8_0", QuantFamily.STANDARD_GGUF, 8.50, 32, 0.0004, True),
-    "Q5_1": QuantProfile("Q5_1", QuantFamily.STANDARD_GGUF, 6.00, 32, 0.0150, True),
-    "Q5_0": QuantProfile("Q5_0", QuantFamily.STANDARD_GGUF, 5.50, 32, 0.0200, True),
-    "Q4_1": QuantProfile("Q4_1", QuantFamily.STANDARD_GGUF, 5.00, 32, 0.0400, True),
-    "Q4_0": QuantProfile("Q4_0", QuantFamily.STANDARD_GGUF, 4.50, 32, 0.0500, True),
+    "F16": QuantProfile("F16", QuantFamily.STANDARD_GGUF, 16.0, 1, None, True),
+    "BF16": QuantProfile("BF16", QuantFamily.STANDARD_GGUF, 16.0, 1, None, True),
+    "Q8_0": QuantProfile("Q8_0", QuantFamily.STANDARD_GGUF, 8.50, 32, None, True),
+    "Q5_1": QuantProfile("Q5_1", QuantFamily.STANDARD_GGUF, 6.00, 32, None, True),
+    "Q5_0": QuantProfile("Q5_0", QuantFamily.STANDARD_GGUF, 5.50, 32, None, True),
+    "Q4_1": QuantProfile("Q4_1", QuantFamily.STANDARD_GGUF, 5.00, 32, None, True),
+    "Q4_0": QuantProfile("Q4_0", QuantFamily.STANDARD_GGUF, 4.50, 32, None, True),
 
     # k-quants
-    "Q6_K": QuantProfile("Q6_K", QuantFamily.K_QUANTS, 6.56, 256, 0.0030, False),
-    "Q5_K_M": QuantProfile("Q5_K_M", QuantFamily.K_QUANTS, 5.69, 256, 0.0070, False),
-    "Q5_K_S": QuantProfile("Q5_K_S", QuantFamily.K_QUANTS, 5.50, 256, 0.0100, False),
-    "Q4_K_M": QuantProfile("Q4_K_M", QuantFamily.K_QUANTS, 4.85, 256, 0.0210, False),
-    "Q4_K_S": QuantProfile("Q4_K_S", QuantFamily.K_QUANTS, 4.50, 256, 0.0350, False),
-    "Q3_K_L": QuantProfile("Q3_K_L", QuantFamily.K_QUANTS, 4.27, 256, 0.0800, False),
-    "Q3_K_M": QuantProfile("Q3_K_M", QuantFamily.K_QUANTS, 3.91, 256, 0.1400, False),
-    "Q3_K_S": QuantProfile("Q3_K_S", QuantFamily.K_QUANTS, 3.44, 256, 0.2200, False),
-    "Q2_K": QuantProfile("Q2_K", QuantFamily.K_QUANTS, 2.56, 256, 0.6710, False),
+    "Q6_K": QuantProfile("Q6_K", QuantFamily.K_QUANTS, 6.56, 256, None, False),
+    "Q5_K_M": QuantProfile("Q5_K_M", QuantFamily.K_QUANTS, 5.69, 256, None, False),
+    "Q5_K_S": QuantProfile("Q5_K_S", QuantFamily.K_QUANTS, 5.50, 256, None, False),
+    "Q4_K_M": QuantProfile("Q4_K_M", QuantFamily.K_QUANTS, 4.85, 256, None, False),
+    "Q4_K_S": QuantProfile("Q4_K_S", QuantFamily.K_QUANTS, 4.50, 256, None, False),
+    "Q3_K_L": QuantProfile("Q3_K_L", QuantFamily.K_QUANTS, 4.27, 256, None, False),
+    "Q3_K_M": QuantProfile("Q3_K_M", QuantFamily.K_QUANTS, 3.91, 256, None, False),
+    "Q3_K_S": QuantProfile("Q3_K_S", QuantFamily.K_QUANTS, 3.44, 256, None, False),
+    "Q2_K": QuantProfile("Q2_K", QuantFamily.K_QUANTS, 2.56, 256, None, False),
 
     # Extreme i-quants (Sub-3bit)
-    "IQ4_NL": QuantProfile("IQ4_NL", QuantFamily.EXTREME_I_QUANTS, 4.50, 32, 0.0300, False),
-    "IQ4_XS": QuantProfile("IQ4_XS", QuantFamily.EXTREME_I_QUANTS, 4.25, 256, 0.0380, False),
-    "IQ3_S": QuantProfile("IQ3_S", QuantFamily.EXTREME_I_QUANTS, 3.44, 256, 0.1100, False),
-    "IQ3_XXS": QuantProfile("IQ3_XXS", QuantFamily.EXTREME_I_QUANTS, 3.06, 256, 0.1600, False),
-    "IQ2_S": QuantProfile("IQ2_S", QuantFamily.EXTREME_I_QUANTS, 2.50, 256, 0.2900, False),
-    "IQ2_XS": QuantProfile("IQ2_XS", QuantFamily.EXTREME_I_QUANTS, 2.31, 256, 0.3800, False),
-    "IQ2_XXS": QuantProfile("IQ2_XXS", QuantFamily.EXTREME_I_QUANTS, 2.06, 256, 0.5200, False),
-    "IQ1_M": QuantProfile("IQ1_M", QuantFamily.EXTREME_I_QUANTS, 1.75, 256, 0.9800, False),
-    "IQ1_S": QuantProfile("IQ1_S", QuantFamily.EXTREME_I_QUANTS, 1.56, 256, 1.2500, False),
+    "IQ4_NL": QuantProfile("IQ4_NL", QuantFamily.EXTREME_I_QUANTS, 4.50, 32, None, False),
+    "IQ4_XS": QuantProfile("IQ4_XS", QuantFamily.EXTREME_I_QUANTS, 4.25, 256, None, False),
+    "IQ3_S": QuantProfile("IQ3_S", QuantFamily.EXTREME_I_QUANTS, 3.44, 256, None, False),
+    "IQ3_XXS": QuantProfile("IQ3_XXS", QuantFamily.EXTREME_I_QUANTS, 3.06, 256, None, False),
+    "IQ2_S": QuantProfile("IQ2_S", QuantFamily.EXTREME_I_QUANTS, 2.50, 256, None, False),
+    "IQ2_XS": QuantProfile("IQ2_XS", QuantFamily.EXTREME_I_QUANTS, 2.31, 256, None, False),
+    "IQ2_XXS": QuantProfile("IQ2_XXS", QuantFamily.EXTREME_I_QUANTS, 2.06, 256, None, False),
+    "IQ1_M": QuantProfile("IQ1_M", QuantFamily.EXTREME_I_QUANTS, 1.75, 256, None, False),
+    "IQ1_S": QuantProfile("IQ1_S", QuantFamily.EXTREME_I_QUANTS, 1.56, 256, None, False),
 
     # ZAQERIS RVQ
-    "M3_GPTQ": QuantProfile("M3_GPTQ", QuantFamily.ZAQERIS_RVQ, 3.12, 8, 0.0850, True),
+    "M3_GPTQ": QuantProfile("M3_GPTQ", QuantFamily.ZAQERIS_RVQ, 3.16, 8, None, True),
 
     # Hardware FP8
-    "FP8_E4M3": QuantProfile("FP8_E4M3", QuantFamily.HARDWARE_FP8, 8.00, 1, 0.0020, True),
-    "FP8_E5M2": QuantProfile("FP8_E5M2", QuantFamily.HARDWARE_FP8, 8.00, 1, 0.0050, True),
+    "FP8_E4M3": QuantProfile("FP8_E4M3", QuantFamily.HARDWARE_FP8, 8.00, 1, None, True),
+    "FP8_E5M2": QuantProfile("FP8_E5M2", QuantFamily.HARDWARE_FP8, 8.00, 1, None, True),
 
     # KV Cache
-    "KV_Q8_0": QuantProfile("KV_Q8_0", QuantFamily.KV_CACHE, 8.00, 32, 0.0010, True),
-    "KV_Q4_0": QuantProfile("KV_Q4_0", QuantFamily.KV_CACHE, 4.00, 32, 0.0120, True)
+    "KV_Q8_0": QuantProfile("KV_Q8_0", QuantFamily.KV_CACHE, 8.00, 32, None, True),
+    "KV_Q4_0": QuantProfile("KV_Q4_0", QuantFamily.KV_CACHE, 4.00, 32, None, True)
 }
 
 def get_quant_profile(name: str) -> Optional[QuantProfile]:
