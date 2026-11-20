@@ -42,7 +42,7 @@ python -m pytest tests/ -v
 
 ## 3. Key Components Established
 
-* **Hardware Abstraction Layer (HAL):** [backend.hpp](file:///c:/Users/rahim/Downloads/QERLIO/backends/backend_api/backend.hpp) defines standard interfaces for CPU, GPU (Vulkan/CUDA), and NPU delegate execution.
-* **Memory Planner:** [memory_planner.hpp](file:///c:/Users/rahim/Downloads/QERLIO/core/memory/memory_planner.hpp) accurately estimates KV Cache sizes based on layer, head, and context dimensions, automatically downgrading context (e.g. 4096 -> 2048 -> 1024) to prevent Out-Of-Memory termination.
-* **Adaptive Scheduler:** [adaptive_scheduler.hpp](file:///c:/Users/rahim/Downloads/QERLIO/core/scheduler/adaptive_scheduler.hpp) adjusts active thread pools and batch sizes according to real-time thermal states (`NORMAL`, `WARM`, `HOT`, `CRITICAL`).
-* **Python Runtime SDK:** [runtime.py](file:///c:/Users/rahim/Downloads/QERLIO/sdk/python/qerlio/runtime.py) provides an idiomatic interface for developers to build applications on QERLIO.
+* **Hardware Abstraction Layer (HAL):** [backend.hpp](../../backends/backend_api/backend.hpp) defines standard interfaces for CPU, GPU (Vulkan/CUDA), and NPU delegate execution.
+* **Memory Planner:** [memory_planner.hpp](../../core/memory/memory_planner.hpp) accurately estimates KV Cache sizes based on layer, head, and context dimensions, automatically downgrading context (e.g. 4096 -> 2048 -> 1024) to prevent Out-Of-Memory termination.
+* **Adaptive Scheduler:** [adaptive_scheduler.hpp](../../core/scheduler/adaptive_scheduler.hpp) adjusts active thread pools and batch sizes according to real-time thermal states (`NORMAL`, `WARM`, `HOT`, `CRITICAL`).
+* **Python Runtime SDK:** [runtime.py](../../sdk/python/qerlio/runtime.py) provides an idiomatic interface for developers to build applications on QERLIO.
