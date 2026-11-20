@@ -50,7 +50,7 @@ SUPPORTED_MODELS = [
 app = FastAPI(
     title="QERLIO ZeroGPU Gateway",
     description="Open-Source Multi-Model Gateway for Hermes 4.3 36B and ZAQERIS-7B",
-    version="0.2.1"
+    version="0.2.2"
 )
 
 app.add_middleware(

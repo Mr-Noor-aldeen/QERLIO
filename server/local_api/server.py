@@ -22,7 +22,7 @@ from core.models.hermes_adapter import Hermes36BAdapter, DEFAULT_GENERATION_CONF
 
 app = FastAPI(
     title="QERLIO Universal Multi-API Gateway",
-    version="0.2.1"
+    version="0.2.2"
 )
 
 app.add_middleware(
@@ -106,7 +106,7 @@ def get_health():
     ram = psutil.virtual_memory()
     return {
         "status": "healthy",
-        "runtime": "QERLIO Universal Gateway 0.2.1",
+        "runtime": "QERLIO Universal Gateway 0.2.2",
         "cpu_usage_pct": psutil.cpu_percent(),
         "ram_available_gb": round(ram.available / (1024**3), 2),
         "gateways": ["openai", "anthropic", "ollama"],

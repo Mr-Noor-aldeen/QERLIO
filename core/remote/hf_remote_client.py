@@ -14,7 +14,7 @@ class HFRemoteClient:
     def _headers(self) -> Dict[str, str]:
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "QERLIO-Runtime/0.2.1"
+            "User-Agent": "QERLIO-Runtime/0.2.2"
         }
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
