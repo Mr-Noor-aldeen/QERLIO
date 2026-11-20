@@ -57,12 +57,19 @@ def test_dashboard_endpoints():
 
     res_dash = client.get("/dashboard")
     assert res_dash.status_code == 200
+    for fake in ("65.1", "15.3", "3.85"):
+        assert fake not in res_dash.text
+    assert "no live measurement" in res_dash.text
 
 def test_telemetry_hud_endpoint():
     res_hud = client.get("/v1/telemetry/hud")
     assert res_hud.status_code == 200
     d = res_hud.json()
-    assert d["throughput_tps"] > 0
+    # No live inference is measured yet: metrics must be null, never placeholder numbers.
+    assert d["measurement_status"] == "no_live_measurement"
+    assert d["throughput_tps"] is None
+    assert d["ttft_ms"] is None
+    assert d["model_memory_gb"] is None
     assert d["quant_schemes_count"] >= 28
     assert "adaptive_hybrid_7b" in d
     assert "sink_aware_16k" in d

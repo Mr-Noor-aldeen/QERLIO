@@ -33,7 +33,7 @@ def test_agent_parsing_zqn_dialectical_format():
     assert calls[0]["name"] == "calculator"
     assert calls[0]["arguments"] == {"expression": "50 * 2"}
 
-def test_agent_parsing_qwen_tool_format():
+def test_agent_parsing_zaqeris_7b_tool_format():
     runtime = AgentRuntime()
     text = '<tool_call>\n{"name": "file_search", "arguments": {"pattern": "*.py"}}\n</tool_call>'
     calls = runtime.parse_tool_calls(text)
