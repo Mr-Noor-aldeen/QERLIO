@@ -56,3 +56,7 @@ venv/
 *.onnx
 weights/
 models_cache/
+
+# Local dashboard screenshots (may expose host details; never commit)
+صورة hud/
+assets/*hud*.png
