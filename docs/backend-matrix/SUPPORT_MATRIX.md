@@ -9,8 +9,8 @@
 
 | Platform / OS | Target ABI / Architecture | Backend Pathway | Current Status | Notes / Limitations |
 | :--- | :--- | :--- | :--- | :--- |
-| **Windows 11** | `x86_64` (AVX2, FMA) | CPU (Reference) | `PLANNED` | Development host environment verified (Intel Core i7-14650HX). |
-| **Windows 11** | `x86_64` (CUDA 13.1) | NVIDIA CUDA (RTX 5060) | `PLANNED` | Hardware present; native build toolchain required. |
+| **Windows 11** | `x86_64` (AVX2, FMA) | CPU (Reference) | `PLANNED` | Reference CPU path; native build toolchain required. |
+| **Windows 11** | `x86_64` (CUDA) | NVIDIA CUDA | `PLANNED` | Native build toolchain required. |
 | **Android 10+ (API 29+)** | `arm64-v8a` / `arm64-v9a` | CPU (NEON / DotProd) | `PLANNED` | Primary mobile target baseline. |
 | **Android 10+ (API 29+)** | `arm64-v8a` (Vulkan 1.1+) | GPU (Vulkan) | `EXPERIMENTAL` | Requires physical device testing across Adreno/Mali GPUs. |
 | **Android (Qualcomm QNN)**| `arm64-v8a` (Hexagon NPU) | QNN Backend | `UNKNOWN` | Requires Snapdragon Hardware + Qualcomm AI Engine Direct SDK. |

@@ -6,8 +6,18 @@ def capture_dashboard_screenshot():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     html_file = os.path.join(base_dir, "server", "local_api", "dashboard.html")
     
-    # Target folder specified by the user: "صورة hud"
-    output_dir = os.path.join(base_dir, "صورة hud")
+    # Screenshots can expose host details, so they are written outside the
+    # repository tree (override with QERLIO_HUD_CAPTURE_DIR). Never commit them.
+    output_dir = os.environ.get(
+        "QERLIO_HUD_CAPTURE_DIR",
+        os.path.join(os.path.expanduser("~"), ".qerlio", "hud_captures"),
+    )
+    try:
+        inside_repo = os.path.commonpath([os.path.abspath(output_dir), base_dir]) == base_dir
+    except ValueError:  # different drives on Windows
+        inside_repo = False
+    if inside_repo:
+        raise SystemExit("Refusing to write HUD screenshots inside the repository tree.")
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "qerlio_hud_dashboard.png")
 
@@ -47,15 +57,6 @@ def capture_dashboard_screenshot():
         browser.close()
 
     print(f"Screenshot successfully saved to: {output_path}")
-
-    # Also copy to Downloads folder for immediate user convenience
-    downloads_hud_dir = os.path.join(os.path.expanduser("~"), "Downloads", "صورة hud")
-    os.makedirs(downloads_hud_dir, exist_ok=True)
-    downloads_hud_path = os.path.join(downloads_hud_dir, "qerlio_hud_dashboard.png")
-    
-    with open(output_path, "rb") as src, open(downloads_hud_path, "wb") as dst:
-        dst.write(src.read())
-    print(f"Also copied to user Downloads: {downloads_hud_path}")
 
 if __name__ == "__main__":
     capture_dashboard_screenshot()

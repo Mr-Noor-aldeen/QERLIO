@@ -18,7 +18,7 @@
 
 | Dependency Name | Source Location | Version | License | Usage in QERLIO | Compliance Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **zaqeris-m3-gptq** | `C:\Users\rahim\Downloads\ZAQERIS Ai\release\zaqeris-m3-gptq` | 0.1.0 | Proprietary / ZAQERIS AI Internal | Research compression adapter (`formats/zaqeris_compression`) | Gated behind experimental feature flag; strictly isolated from open-core runtime |
+| **zaqeris-m3-gptq** | Separate ZAQERIS research package (not vendored in this repository) | 0.1.0 | Proprietary / ZAQERIS AI Internal | Research compression adapter (`formats/zaqeris_compression`) | Gated behind experimental feature flag; strictly isolated from open-core runtime |
 
 ---
 

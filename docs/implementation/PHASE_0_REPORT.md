@@ -80,10 +80,8 @@ python tools/qerlio_cli.py doctor
 ```
 **Output Summary:**
 - OS: Windows 11 AMD64
-- CPU: Intel Core i7-14650HX (16 physical cores, 24 logical cores)
-- RAM: 23.71 GB total (14.97 GB available)
-- GPU: NVIDIA GeForce RTX 5060 Laptop GPU (7.96 GB VRAM)
-- PyTorch: 2.11.0+cu128 (CUDA operational)
+- Host hardware details: omitted from the public report
+- PyTorch: 2.11.0
 - GGUF: Installed
 
 ### Command 2: Integrity & Conformance Test Suite

@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-19  
 **Auditor:** Principal Systems Architect / QERLIO Core Team  
-**Workspace:** `C:\Users\rahim\Downloads\QERLIO`  
+**Workspace:** QERLIO repository root  
 **Phase:** Phase 0 (Discovery, Baseline & Environment Assessment)  
 **Status:** COMPLETE WITH DOCUMENTED BLOCKERS  
 
@@ -10,25 +10,23 @@
 
 ## 1. Repository Status
 
-- **Repository Initial State:** Empty workspace (`C:\Users\rahim\Downloads\QERLIO` contained 0 files at startup).
+- **Repository Initial State:** Empty workspace (the repository root contained 0 files at startup).
 - **Git Version Control:** Not initialized (`git` is currently not present in system PATH).
 - **Existing Code/Scaffolding:** None existed prior to Phase 0 initialization.
 - **Related Assets in Host Environment:**
-  - Sister research directory detected at `C:\Users\rahim\Downloads\ZAQERIS Ai` containing research packages (`zaqeris-m3-gptq`, AXIOM reports, evaluation checkpoints, datasets).
+  - A separate ZAQERIS research workspace provides the `zaqeris-m3-gptq` compression package.
   - Python wheel `zaqeris-m3-gptq 0.1.0` installed in active Python environment.
 
 ---
 
-## 2. Host Environment & Hardware Assessment
+## 2. Host Software Environment
 
 | Subsystem | Specification / Detected Value | Status / Evidence |
 | :--- | :--- | :--- |
-| **Operating System** | Windows 11 (build detected via Win32 CIM) | `VERIFIED` |
-| **CPU Architecture** | Intel(R) Core(TM) i7-14650HX (16 Cores, 24 Logical Processors) | `VERIFIED` |
-| **Total System RAM** | 23.71 GB (~24 GB) Physical RAM | `VERIFIED` |
-| **Dedicated GPU** | NVIDIA GeForce RTX 5060 Laptop GPU (8151 MiB VRAM) | `VERIFIED` (`nvidia-smi` 592.82, CUDA Driver 13.1) |
+| **Operating System** | Windows 11 | `VERIFIED` |
+| **Host Hardware** | Intentionally not published in this repository | `N/A` |
 | **Python Runtime** | Python 3.12.10 (64-bit) | `VERIFIED` (`python --version`) |
-| **PyTorch & ML Libs** | PyTorch 2.11.0+cu128, `gguf 0.19.0`, `safetensors 0.8.0`, `transformers 5.20.1`, `tokenizers 0.23.3` | `VERIFIED` (active in site-packages) |
+| **PyTorch & ML Libs** | PyTorch 2.11.0, `gguf 0.19.0`, `safetensors 0.8.0`, `transformers 5.20.1`, `tokenizers 0.23.3` | `VERIFIED` (active in site-packages) |
 | **Node.js Runtime** | Node.js v22.14.0 / npm 10.9.2 | `VERIFIED` |
 | **Package Manager** | Windows Package Manager (`winget`) v1.29.380 | `VERIFIED` |
 | **Attached Android Devices** | None detected / No ADB daemon in PATH | `NOT AVAILABLE` |
@@ -69,4 +67,4 @@
 
 ## 5. Phase 0 Audit Conclusion & Next Steps
 
-Phase 0 discovery confirms the host has strong CPU (Core i7 14th Gen) and GPU (NVIDIA RTX 5060 Laptop GPU) capabilities, an active Python environment with `gguf` and `torch`, and zero pre-existing codebase conflicts. The specification architecture is scaffolded with complete directory structure, ADRs, risk register, threat model, and reference C ABI header.
+Phase 0 discovery confirms an active Python environment with `gguf` and `torch`, and zero pre-existing codebase conflicts. The specification architecture is scaffolded with complete directory structure, ADRs, risk register, threat model, and reference C ABI header.

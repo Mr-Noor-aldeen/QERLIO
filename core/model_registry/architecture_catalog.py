@@ -26,6 +26,17 @@ class ArchitectureCatalog:
     def total_count(self) -> int:
         return len(self._by_id)
 
+    @property
+    def tested_count(self) -> int:
+        return len(self.list_by_status("tested"))
+
+    @property
+    def experimental_count(self) -> int:
+        return len(self.list_by_status("experimental"))
+
+    def list_by_status(self, status: str) -> List[Dict[str, Any]]:
+        return [item for item in self._by_id.values() if item.get("support_status", "").lower() == status.lower()]
+
     def get(self, arch_id: str) -> Optional[Dict[str, Any]]:
         return self._by_id.get(arch_id)
 
