@@ -1,11 +1,14 @@
 {
-  "schema_version": "1.2.0",
-  "total_count": 200,
+  "schema_version": "1.3.0",
+  "runtime_version": "0.2.1",
+  "total_count": 182,
+  "tested_count": 3,
+  "experimental_count": 179,
   "supported_families_count": 10,
   "architectures": [
     {
       "id": "zaqeris_axiom",
-      "name": "ZAQERIS AXIOM (16-Expert MoE)",
+      "name": "ZAQERIS AXIOM",
       "family": "ZAQERIS Native",
       "developer": "ZAQERIS AI",
       "attention_type": "GQA",
@@ -13,19 +16,17 @@
       "activation": "SwiGLU",
       "norm_type": "RMSNorm",
       "supported_quantizations": [
-        "M3",
-        "M3_GPTQ",
-        "Q4_K_M",
-        "Q8_0",
-        "FP8"
+        "M3"
       ],
       "native_tools_supported": true,
-      "parameters_range": "32B (MoE 16x2B)",
-      "primary_use": "High-throughput Dialectical Reasoning & Multi-turn Execution"
+      "parameters_range": "79.43B total (12.39B active per token)",
+      "primary_use": "Sparse MoE (16 experts per layer, top-2 routing) trained from scratch; ships as ZAQERIS-M3 at ~3.16 bits per parameter",
+      "huggingface_repo": "ZAQERIS/ZAQERIS_AXIOM",
+      "support_status": "tested"
     },
     {
-      "id": "zaqion_dialectic",
-      "name": "ZAQERIS ZQN-12B Dialectical",
+      "id": "zqn_12b",
+      "name": "ZQN-12B",
       "family": "ZAQERIS Native",
       "developer": "ZAQERIS AI",
       "attention_type": "GQA",
@@ -41,11 +42,13 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "12B",
-      "primary_use": "Tri-Agent Deliberation, Self-Healing Code & Deep Reasoning"
+      "primary_use": "Reasoning and agentic tool use",
+      "huggingface_repo": "ZAQERIS/ZQN-12B",
+      "support_status": "tested"
     },
     {
       "id": "zaqeris_7b",
-      "name": "ZAQERIS-7B Tool Specialist",
+      "name": "ZAQERIS-7B",
       "family": "ZAQERIS Native",
       "developer": "ZAQERIS AI",
       "attention_type": "GQA",
@@ -61,11 +64,13 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Autonomous Function Calling, Auto-Search & Local VRAM Edge"
+      "primary_use": "Function calling and tool use; trained from scratch (only the tokenizer is reused)",
+      "huggingface_repo": "ZAQERIS/ZAQERIS-7B",
+      "support_status": "tested"
     },
     {
       "id": "llama",
-      "name": "LLaMA-1 Foundation",
+      "name": "LLaMA",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "MHA",
@@ -79,11 +84,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 65B",
-      "primary_use": "Foundation Pre-training"
+      "primary_use": "Foundation Pre-training",
+      "support_status": "experimental"
     },
     {
       "id": "llama2",
-      "name": "LLaMA-2 Chat/Base",
+      "name": "Llama 2",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -98,11 +104,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 70B",
-      "primary_use": "Conversational Dialogue"
+      "primary_use": "Conversational Dialogue",
+      "support_status": "experimental"
     },
     {
       "id": "llama3",
-      "name": "LLaMA-3 Instruct",
+      "name": "Llama 3",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -117,11 +124,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "8B - 70B",
-      "primary_use": "General Reasoning & Instruction Following"
+      "primary_use": "General Reasoning & Instruction Following",
+      "support_status": "experimental"
     },
     {
       "id": "llama3.1",
-      "name": "LLaMA-3.1 128K",
+      "name": "Llama 3.1",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -136,11 +144,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "8B - 405B",
-      "primary_use": "Long Context & Multilingual"
+      "primary_use": "Long Context & Multilingual",
+      "support_status": "experimental"
     },
     {
       "id": "llama3.2",
-      "name": "LLaMA-3.2 Compact",
+      "name": "Llama 3.2",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -155,11 +164,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1B - 3B",
-      "primary_use": "On-Device Mobile Inference"
+      "primary_use": "On-Device Mobile Inference",
+      "support_status": "experimental"
     },
     {
       "id": "llama3.3",
-      "name": "LLaMA-3.3 70B Enterprise",
+      "name": "Llama 3.3 70B",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -174,11 +184,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "70B",
-      "primary_use": "Frontier Enterprise Reasoning"
+      "primary_use": "Frontier Enterprise Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "qwen",
-      "name": "Qwen-7B Original",
+      "name": "Qwen",
       "family": "Dense Transformer",
       "developer": "Alibaba Cloud",
       "attention_type": "MHA",
@@ -190,12 +201,13 @@
         "Q8_0"
       ],
       "native_tools_supported": true,
-      "parameters_range": "7B - 14B",
-      "primary_use": "Bilingual Chinese/English"
+      "parameters_range": "1.8B - 72B",
+      "primary_use": "Bilingual Chinese/English",
+      "support_status": "experimental"
     },
     {
       "id": "qwen1.5",
-      "name": "Qwen-1.5 Multi-Scale",
+      "name": "Qwen1.5",
       "family": "Dense Transformer",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -209,11 +221,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "0.5B - 72B",
-      "primary_use": "Multi-tier Scale Deployment"
+      "primary_use": "Multi-tier Scale Deployment",
+      "support_status": "experimental"
     },
     {
       "id": "qwen2",
-      "name": "Qwen2 High-Fidelity",
+      "name": "Qwen2",
       "family": "Dense Transformer",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -228,11 +241,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "0.5B - 72B",
-      "primary_use": "Multilingual & Tool Agent Execution"
+      "primary_use": "Multilingual & Tool Agent Execution",
+      "support_status": "experimental"
     },
     {
       "id": "qwen2.5",
-      "name": "Qwen2.5 Flagship",
+      "name": "Qwen2.5",
       "family": "Dense Transformer",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -247,11 +261,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "0.5B - 72B",
-      "primary_use": "Coding, Math & Structural Agent Calling"
+      "primary_use": "Coding, Math & Structural Agent Calling",
+      "support_status": "experimental"
     },
     {
       "id": "qwen2.5_math",
-      "name": "Qwen2.5-Math Specialized",
+      "name": "Qwen2.5-Math",
       "family": "Dense Transformer",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -265,11 +280,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.5B - 72B",
-      "primary_use": "Mathematical Reasoning & Step Proofs"
+      "primary_use": "Mathematical Reasoning & Step Proofs",
+      "support_status": "experimental"
     },
     {
       "id": "mistral_7b_v0.1",
-      "name": "Mistral-7B Base",
+      "name": "Mistral 7B v0.1",
       "family": "Dense Transformer",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -282,11 +298,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B",
-      "primary_use": "Sliding Window Inference"
+      "primary_use": "Sliding Window Inference",
+      "support_status": "experimental"
     },
     {
       "id": "mistral_7b_v0.2",
-      "name": "Mistral-7B Instruct 32K",
+      "name": "Mistral 7B v0.2",
       "family": "Dense Transformer",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -299,11 +316,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Conversational & Context Processing"
+      "primary_use": "Conversational & Context Processing",
+      "support_status": "experimental"
     },
     {
       "id": "mistral_7b_v0.3",
-      "name": "Mistral-7B v0.3 Function Call",
+      "name": "Mistral 7B v0.3",
       "family": "Dense Transformer",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -317,7 +335,8 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Native Tool Calling & Tekken Tokenizer"
+      "primary_use": "Native Tool Calling & Tekken Tokenizer",
+      "support_status": "experimental"
     },
     {
       "id": "mistral_nemo",
@@ -335,11 +354,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "12B",
-      "primary_use": "128K Multilingual Large Context"
+      "primary_use": "128K Multilingual Large Context",
+      "support_status": "experimental"
     },
     {
       "id": "gemma",
-      "name": "Google Gemma 1",
+      "name": "Gemma",
       "family": "Dense Transformer",
       "developer": "Google DeepMind",
       "attention_type": "MHA",
@@ -352,11 +372,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "2B - 7B",
-      "primary_use": "Lightweight Research Edge"
+      "primary_use": "Lightweight Research Edge",
+      "support_status": "experimental"
     },
     {
       "id": "gemma2",
-      "name": "Google Gemma 2 Sliding/Global",
+      "name": "Gemma 2",
       "family": "Dense Transformer",
       "developer": "Google DeepMind",
       "attention_type": "GQA",
@@ -370,11 +391,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "2B - 27B",
-      "primary_use": "Soft-Capping Logits & High Efficiency"
+      "primary_use": "Soft-Capping Logits & High Efficiency",
+      "support_status": "experimental"
     },
     {
       "id": "phi1",
-      "name": "Microsoft Phi-1 Code",
+      "name": "Phi-1",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "MHA",
@@ -387,11 +409,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.3B",
-      "primary_use": "Textbooks are all you need"
+      "primary_use": "Textbooks are all you need",
+      "support_status": "experimental"
     },
     {
       "id": "phi1.5",
-      "name": "Microsoft Phi-1.5",
+      "name": "Phi-1.5",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "MHA",
@@ -404,11 +427,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.3B",
-      "primary_use": "Synthetic Reasoning"
+      "primary_use": "Synthetic Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "phi2",
-      "name": "Microsoft Phi-2 Small",
+      "name": "Phi-2",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "MHA",
@@ -421,11 +445,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "2.7B",
-      "primary_use": "Compact Multi-Step Reasoning"
+      "primary_use": "Compact Multi-Step Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "phi3_mini",
-      "name": "Microsoft Phi-3 Mini 4K/128K",
+      "name": "Phi-3-mini",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -439,11 +464,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "3.8B",
-      "primary_use": "Mobile & Edge Function Calling"
+      "primary_use": "Mobile & Edge Function Calling",
+      "support_status": "experimental"
     },
     {
       "id": "phi3_small",
-      "name": "Microsoft Phi-3 Small (BlockSparse)",
+      "name": "Phi-3-small",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "BlockSparse",
@@ -456,11 +482,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Hardware-efficient Attention"
+      "primary_use": "Hardware-efficient Attention",
+      "support_status": "experimental"
     },
     {
       "id": "phi3_medium",
-      "name": "Microsoft Phi-3 Medium 14B",
+      "name": "Phi-3-medium",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -474,11 +501,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "14B",
-      "primary_use": "Mid-tier High Quality Reasoning"
+      "primary_use": "Mid-tier High Quality Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "phi4",
-      "name": "Microsoft Phi-4 14B Synthetic",
+      "name": "Phi-4",
       "family": "Dense Transformer",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -492,11 +520,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "14B",
-      "primary_use": "Math & Complex Synthesis"
+      "primary_use": "Math & Complex Synthesis",
+      "support_status": "experimental"
     },
     {
       "id": "yi",
-      "name": "01.AI Yi-34B/6B",
+      "name": "Yi",
       "family": "Dense Transformer",
       "developer": "01.AI",
       "attention_type": "GQA",
@@ -509,11 +538,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "6B - 34B",
-      "primary_use": "200K Long Context Processing"
+      "primary_use": "200K Long Context Processing",
+      "support_status": "experimental"
     },
     {
       "id": "yi_1.5",
-      "name": "01.AI Yi-1.5 Post-Trained",
+      "name": "Yi-1.5",
       "family": "Dense Transformer",
       "developer": "01.AI",
       "attention_type": "GQA",
@@ -527,29 +557,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "6B - 34B",
-      "primary_use": "Coding & Math Instruction Following"
-    },
-    {
-      "id": "yi_lightning",
-      "name": "01.AI Yi-Lightning",
-      "family": "Dense Transformer",
-      "developer": "01.AI",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0",
-        "FP8"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "34B",
-      "primary_use": "Ultra-fast Low Latency Serving"
+      "primary_use": "Coding & Math Instruction Following",
+      "support_status": "experimental"
     },
     {
       "id": "internlm",
-      "name": "Shanghai AI Lab InternLM",
+      "name": "InternLM",
       "family": "Dense Transformer",
       "developer": "Shanghai AI Lab",
       "attention_type": "MHA",
@@ -562,11 +575,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 20B",
-      "primary_use": "Bilingual Multimodal Backbone"
+      "primary_use": "Bilingual Multimodal Backbone",
+      "support_status": "experimental"
     },
     {
       "id": "internlm2",
-      "name": "InternLM2 200K",
+      "name": "InternLM2",
       "family": "Dense Transformer",
       "developer": "Shanghai AI Lab",
       "attention_type": "GQA",
@@ -579,11 +593,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 20B",
-      "primary_use": "Long Context & Agent Reasoning"
+      "primary_use": "Long Context & Agent Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "internlm2.5",
-      "name": "InternLM2.5 1M Context",
+      "name": "InternLM2.5",
       "family": "Dense Transformer",
       "developer": "Shanghai AI Lab",
       "attention_type": "GQA",
@@ -597,11 +612,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.8B - 20B",
-      "primary_use": "Ultra-Long Document Synthesis"
+      "primary_use": "Ultra-Long Document Synthesis",
+      "support_status": "experimental"
     },
     {
       "id": "baichuan",
-      "name": "Baichuan-1 Foundation",
+      "name": "Baichuan",
       "family": "Dense Transformer",
       "developer": "Baichuan Inc",
       "attention_type": "MHA",
@@ -614,11 +630,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 13B",
-      "primary_use": "Chinese Foundation"
+      "primary_use": "Chinese Foundation",
+      "support_status": "experimental"
     },
     {
       "id": "baichuan2",
-      "name": "Baichuan2 2.6T Tokens",
+      "name": "Baichuan 2",
       "family": "Dense Transformer",
       "developer": "Baichuan Inc",
       "attention_type": "ALiBi",
@@ -631,11 +648,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 13B",
-      "primary_use": "Cross-lingual Medical & Knowledge"
+      "primary_use": "Cross-lingual Medical & Knowledge",
+      "support_status": "experimental"
     },
     {
       "id": "falcon",
-      "name": "TII Falcon 7B/40B/180B",
+      "name": "Falcon",
       "family": "Dense Transformer",
       "developer": "Technology Innovation Institute",
       "attention_type": "MQA",
@@ -648,11 +666,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 180B",
-      "primary_use": "RefinedWeb Parallel Attention"
+      "primary_use": "RefinedWeb Parallel Attention",
+      "support_status": "experimental"
     },
     {
       "id": "falcon2",
-      "name": "TII Falcon2 11B VLM-Ready",
+      "name": "Falcon 2 11B",
       "family": "Dense Transformer",
       "developer": "Technology Innovation Institute",
       "attention_type": "GQA",
@@ -665,27 +684,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "11B",
-      "primary_use": "Vision-to-Language Ready"
-    },
-    {
-      "id": "chinchilla",
-      "name": "DeepMind Chinchilla Compute-Optimal",
-      "family": "Dense Transformer",
-      "developer": "Google DeepMind",
-      "attention_type": "MHA",
-      "positional_embedding": "RoPE",
-      "activation": "GeLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "FP16"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "70B",
-      "primary_use": "Scaling Law Benchmark"
+      "primary_use": "Vision-to-Language Ready",
+      "support_status": "experimental"
     },
     {
       "id": "opt",
-      "name": "Meta OPT Open Pre-trained",
+      "name": "OPT",
       "family": "Dense Transformer",
       "developer": "Meta AI",
       "attention_type": "MHA",
@@ -698,11 +702,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "125M - 66B",
-      "primary_use": "Academic Reproducibility"
+      "primary_use": "Academic Reproducibility",
+      "support_status": "experimental"
     },
     {
       "id": "bloom",
-      "name": "BigScience BLOOM 176B",
+      "name": "BLOOM",
       "family": "Dense Transformer",
       "developer": "BigScience / Hugging Face",
       "attention_type": "ALiBi",
@@ -715,11 +720,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "560M - 176B",
-      "primary_use": "Open Multi-Lingual Collaborative"
+      "primary_use": "Open Multi-Lingual Collaborative",
+      "support_status": "experimental"
     },
     {
       "id": "bloomz",
-      "name": "BigScience BLOOMZ Zero-shot",
+      "name": "BLOOMZ",
       "family": "Dense Transformer",
       "developer": "BigScience / Hugging Face",
       "attention_type": "ALiBi",
@@ -732,11 +738,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1B - 176B",
-      "primary_use": "Cross-lingual Zero-Shot Prompting"
+      "primary_use": "Cross-lingual Zero-Shot Prompting",
+      "support_status": "experimental"
     },
     {
       "id": "gpt2",
-      "name": "OpenAI GPT-2",
+      "name": "GPT-2",
       "family": "Dense Transformer",
       "developer": "OpenAI",
       "attention_type": "MHA",
@@ -749,11 +756,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "124M - 1.5B",
-      "primary_use": "Foundational Autoregressive Baseline"
+      "primary_use": "Foundational Autoregressive Baseline",
+      "support_status": "experimental"
     },
     {
       "id": "gpt_j",
-      "name": "EleutherAI GPT-J 6B",
+      "name": "GPT-J 6B",
       "family": "Dense Transformer",
       "developer": "EleutherAI",
       "attention_type": "MHA",
@@ -766,11 +774,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "6B",
-      "primary_use": "Parallel Attention/FFN Architecture"
+      "primary_use": "Parallel Attention/FFN Architecture",
+      "support_status": "experimental"
     },
     {
       "id": "gpt_neox",
-      "name": "EleutherAI GPT-NeoX 20B",
+      "name": "GPT-NeoX-20B",
       "family": "Dense Transformer",
       "developer": "EleutherAI",
       "attention_type": "MHA",
@@ -783,11 +792,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "20B",
-      "primary_use": "Large Scale Open Weight Baseline"
+      "primary_use": "Large Scale Open Weight Baseline",
+      "support_status": "experimental"
     },
     {
       "id": "pythia",
-      "name": "EleutherAI Pythia Suite",
+      "name": "Pythia",
       "family": "Dense Transformer",
       "developer": "EleutherAI",
       "attention_type": "MHA",
@@ -800,11 +810,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "70M - 12B",
-      "primary_use": "Interpretability & Training Dynamics"
+      "primary_use": "Interpretability & Training Dynamics",
+      "support_status": "experimental"
     },
     {
       "id": "stablelm",
-      "name": "Stability AI StableLM",
+      "name": "StableLM",
       "family": "Dense Transformer",
       "developer": "Stability AI",
       "attention_type": "MHA",
@@ -817,11 +828,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "3B - 7B",
-      "primary_use": "Accessible Open Source Edge"
+      "primary_use": "Accessible Open Source Edge",
+      "support_status": "experimental"
     },
     {
       "id": "stablelm2",
-      "name": "Stability AI StableLM-2 1.6B/12B",
+      "name": "Stable LM 2",
       "family": "Dense Transformer",
       "developer": "Stability AI",
       "attention_type": "GQA",
@@ -834,11 +846,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.6B - 12B",
-      "primary_use": "High Density Multilingual Edge"
+      "primary_use": "High Density Multilingual Edge",
+      "support_status": "experimental"
     },
     {
       "id": "mpt",
-      "name": "MosaicML MPT 7B/30B",
+      "name": "MPT",
       "family": "Dense Transformer",
       "developer": "MosaicML / Databricks",
       "attention_type": "ALiBi",
@@ -851,11 +864,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 30B",
-      "primary_use": "Commercial Extensible Context"
+      "primary_use": "Commercial Extensible Context",
+      "support_status": "experimental"
     },
     {
       "id": "solar",
-      "name": "Upstage Solar 10.7B",
+      "name": "SOLAR 10.7B",
       "family": "Dense Transformer",
       "developer": "Upstage AI",
       "attention_type": "GQA",
@@ -868,11 +882,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "10.7B",
-      "primary_use": "Depth Up-Scaling (DUS)"
+      "primary_use": "Depth Up-Scaling (DUS)",
+      "support_status": "experimental"
     },
     {
       "id": "solar_pro",
-      "name": "Upstage Solar Pro 22B",
+      "name": "Solar Pro Preview 22B",
       "family": "Dense Transformer",
       "developer": "Upstage AI",
       "attention_type": "GQA",
@@ -886,11 +901,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "22B",
-      "primary_use": "Single-GPU Enterprise Serving"
+      "primary_use": "Single-GPU Enterprise Serving",
+      "support_status": "experimental"
     },
     {
       "id": "granite_dense",
-      "name": "IBM Granite Dense",
+      "name": "Granite 7B",
       "family": "Dense Transformer",
       "developer": "IBM Research",
       "attention_type": "GQA",
@@ -902,12 +918,13 @@
         "Q8_0"
       ],
       "native_tools_supported": true,
-      "parameters_range": "3B - 13B",
-      "primary_use": "Enterprise Knowledge & Governance"
+      "parameters_range": "7B",
+      "primary_use": "Enterprise base model",
+      "support_status": "experimental"
     },
     {
       "id": "granite3_dense",
-      "name": "IBM Granite 3.0 Dense",
+      "name": "Granite 3.0 (dense)",
       "family": "Dense Transformer",
       "developer": "IBM Research",
       "attention_type": "GQA",
@@ -921,28 +938,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "2B - 8B",
-      "primary_use": "Enterprise Agent RAG Optimization"
-    },
-    {
-      "id": "exaone",
-      "name": "LG AI EXAONE 1.0",
-      "family": "Dense Transformer",
-      "developer": "LG AI Research",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "7.8B",
-      "primary_use": "Industrial Scientific Research"
+      "primary_use": "Enterprise Agent RAG Optimization",
+      "support_status": "experimental"
     },
     {
       "id": "exaone3",
-      "name": "LG AI EXAONE 3.0",
+      "name": "EXAONE 3.0 7.8B",
       "family": "Dense Transformer",
       "developer": "LG AI Research",
       "attention_type": "GQA",
@@ -955,12 +956,13 @@
         "FP8"
       ],
       "native_tools_supported": true,
-      "parameters_range": "2.4B - 7.8B",
-      "primary_use": "High Precision Bilingual Korean/English"
+      "parameters_range": "7.8B",
+      "primary_use": "High Precision Bilingual Korean/English",
+      "support_status": "experimental"
     },
     {
       "id": "olmo",
-      "name": "AllenAI OLMo Open Language Model",
+      "name": "OLMo",
       "family": "Dense Transformer",
       "developer": "Ai2 (Allen Institute for AI)",
       "attention_type": "MHA",
@@ -973,11 +975,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1B - 7B",
-      "primary_use": "Transparent Open Science"
+      "primary_use": "Transparent Open Science",
+      "support_status": "experimental"
     },
     {
       "id": "olmo2",
-      "name": "AllenAI OLMo 2 13B",
+      "name": "OLMo 2",
       "family": "Dense Transformer",
       "developer": "Ai2 (Allen Institute for AI)",
       "attention_type": "GQA",
@@ -991,11 +994,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 13B",
-      "primary_use": "Fully Audited Frontier Open Science"
+      "primary_use": "Fully Audited Frontier Open Science",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_llm",
-      "name": "DeepSeek LLM 67B Dense",
+      "name": "DeepSeek LLM",
       "family": "Dense Transformer",
       "developer": "DeepSeek AI",
       "attention_type": "MHA",
@@ -1008,28 +1012,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 67B",
-      "primary_use": "High Capability Chinese/English General"
-    },
-    {
-      "id": "deepseek_v1",
-      "name": "DeepSeek V1 7B/67B",
-      "family": "Dense Transformer",
-      "developer": "DeepSeek AI",
-      "attention_type": "MHA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "7B - 67B",
-      "primary_use": "Mathematical & Reasoning Base"
+      "primary_use": "High Capability Chinese/English General",
+      "support_status": "experimental"
     },
     {
       "id": "mixtral_8x7b",
-      "name": "Mistral Mixtral 8x7B MoE",
+      "name": "Mixtral 8x7B",
       "family": "Mixture of Experts",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -1043,11 +1031,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "46.7B (12.9B active)",
-      "primary_use": "Sparse High Throughput Serving"
+      "primary_use": "Sparse High Throughput Serving",
+      "support_status": "experimental"
     },
     {
       "id": "mixtral_8x22b",
-      "name": "Mistral Mixtral 8x22B MoE",
+      "name": "Mixtral 8x22B",
       "family": "Mixture of Experts",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -1061,11 +1050,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "141B (39B active)",
-      "primary_use": "Frontier Sparse Reasoning"
+      "primary_use": "Frontier Sparse Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_moe_16b",
-      "name": "DeepSeek MoE 16B",
+      "name": "DeepSeekMoE 16B",
       "family": "Mixture of Experts",
       "developer": "DeepSeek AI",
       "attention_type": "MHA",
@@ -1078,11 +1068,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "16B (2.8B active)",
-      "primary_use": "Fine-Grained Expert Routing"
+      "primary_use": "Fine-Grained Expert Routing",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_v2_moe",
-      "name": "DeepSeek V2 MLA MoE",
+      "name": "DeepSeek-V2",
       "family": "Mixture of Experts",
       "developer": "DeepSeek AI",
       "attention_type": "MLA",
@@ -1096,11 +1087,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "236B (21B active)",
-      "primary_use": "Multi-head Latent Attention"
+      "primary_use": "Multi-head Latent Attention",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_v2.5_moe",
-      "name": "DeepSeek V2.5 Unified MoE",
+      "name": "DeepSeek-V2.5",
       "family": "Mixture of Experts",
       "developer": "DeepSeek AI",
       "attention_type": "MLA",
@@ -1114,11 +1106,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "236B (21B active)",
-      "primary_use": "Unified Chat & Coding MoE"
+      "primary_use": "Unified Chat & Coding MoE",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_v3_moe",
-      "name": "DeepSeek V3 671B MoE",
+      "name": "DeepSeek-V3",
       "family": "Mixture of Experts",
       "developer": "DeepSeek AI",
       "attention_type": "MLA",
@@ -1131,11 +1124,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "671B (37B active)",
-      "primary_use": "Ultra-Scale Low Cost Frontier"
+      "primary_use": "Ultra-Scale Low Cost Frontier",
+      "support_status": "experimental"
     },
     {
       "id": "qwen1.5_moe",
-      "name": "Qwen 1.5 MoE A2.7B",
+      "name": "Qwen1.5-MoE-A2.7B",
       "family": "Mixture of Experts",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -1148,11 +1142,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "14.3B (2.7B active)",
-      "primary_use": "Lightweight High Density MoE"
+      "primary_use": "Lightweight High Density MoE",
+      "support_status": "experimental"
     },
     {
       "id": "qwen2_moe",
-      "name": "Qwen2 MoE 57B",
+      "name": "Qwen2-57B-A14B",
       "family": "Mixture of Experts",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -1166,11 +1161,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "57B (14B active)",
-      "primary_use": "High Precision Sparse Routing"
+      "primary_use": "High Precision Sparse Routing",
+      "support_status": "experimental"
     },
     {
       "id": "dbrx",
-      "name": "Databricks DBRX MoE",
+      "name": "DBRX",
       "family": "Mixture of Experts",
       "developer": "Databricks Mosaic AI",
       "attention_type": "GQA",
@@ -1183,11 +1179,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "132B (36B active)",
-      "primary_use": "Fine-Grained 16-Expert Enterprise"
+      "primary_use": "Fine-Grained 16-Expert Enterprise",
+      "support_status": "experimental"
     },
     {
       "id": "grok1",
-      "name": "xAI Grok-1 314B",
+      "name": "Grok-1",
       "family": "Mixture of Experts",
       "developer": "xAI",
       "attention_type": "MHA",
@@ -1200,11 +1197,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "314B (86B active)",
-      "primary_use": "Massive Mixture-of-Experts Open Weights"
+      "primary_use": "Large open-weight MoE base model",
+      "support_status": "experimental"
     },
     {
       "id": "arctic_moe",
-      "name": "Snowflake Arctic MoE",
+      "name": "Snowflake Arctic",
       "family": "Mixture of Experts",
       "developer": "Snowflake",
       "attention_type": "GQA",
@@ -1218,11 +1216,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "480B (17B active)",
-      "primary_use": "Enterprise SQL & Coding MoE"
+      "primary_use": "Enterprise SQL & Coding MoE",
+      "support_status": "experimental"
     },
     {
       "id": "phi3.5_moe",
-      "name": "Microsoft Phi-3.5 MoE 16x3.8B",
+      "name": "Phi-3.5-MoE",
       "family": "Mixture of Experts",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -1236,11 +1235,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "42B (6.6B active)",
-      "primary_use": "Edge MoE Reasoning & Code"
+      "primary_use": "Edge MoE Reasoning & Code",
+      "support_status": "experimental"
     },
     {
       "id": "granite3_moe",
-      "name": "IBM Granite 3.0 MoE",
+      "name": "Granite 3.0 (MoE)",
       "family": "Mixture of Experts",
       "developer": "IBM Research",
       "attention_type": "GQA",
@@ -1253,12 +1253,13 @@
         "FP8"
       ],
       "native_tools_supported": true,
-      "parameters_range": "3B - 12B",
-      "primary_use": "Low Cost Enterprise Automation"
+      "parameters_range": "1B - 3B (400M - 800M active)",
+      "primary_use": "Low Cost Enterprise Automation",
+      "support_status": "experimental"
     },
     {
       "id": "olmoe",
-      "name": "AllenAI OLMoE 1B-7B Sparse",
+      "name": "OLMoE-1B-7B",
       "family": "Mixture of Experts",
       "developer": "Ai2",
       "attention_type": "GQA",
@@ -1271,11 +1272,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B (1.3B active)",
-      "primary_use": "Open Science Sparse MoE"
+      "primary_use": "Open Science Sparse MoE",
+      "support_status": "experimental"
     },
     {
       "id": "jetmoe",
-      "name": "JetMoE 8B Compute-Friendly",
+      "name": "JetMoE-8B",
       "family": "Mixture of Experts",
       "developer": "JetMoE Authors",
       "attention_type": "GQA",
@@ -1288,28 +1290,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "8B (2.2B active)",
-      "primary_use": "Sub-100K Training Budget MoE"
-    },
-    {
-      "id": "starcoder2_moe",
-      "name": "StarCoder2 MoE Sparse Code",
-      "family": "Mixture of Experts",
-      "developer": "BigCode",
-      "attention_type": "MQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "LayerNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "15B (3.5B active)",
-      "primary_use": "Multi-language Code Synthesis"
+      "primary_use": "Sub-100K Training Budget MoE",
+      "support_status": "experimental"
     },
     {
       "id": "minicpm_moe",
-      "name": "MiniCPM-MoE 8x2B",
+      "name": "MiniCPM-MoE-8x2B",
       "family": "Mixture of Experts",
       "developer": "OpenBMB",
       "attention_type": "GQA",
@@ -1322,30 +1308,14 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "13.6B (4B active)",
-      "primary_use": "Edge Mobile MoE Deployment"
-    },
-    {
-      "id": "ernie_moe",
-      "name": "Baidu ERNIE MoE",
-      "family": "Mixture of Experts",
-      "developer": "Baidu",
-      "attention_type": "MHA",
-      "positional_embedding": "RoPE",
-      "activation": "GeLU",
-      "norm_type": "LayerNorm",
-      "supported_quantizations": [
-        "FP8",
-        "INT4"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "100B+",
-      "primary_use": "Knowledge-Enhanced Sparse Dialogue"
+      "primary_use": "Edge Mobile MoE Deployment",
+      "support_status": "experimental"
     },
     {
       "id": "yuan2_moe",
-      "name": "Inspur Yuan 2.0 MoE",
+      "name": "Yuan2.0-M32",
       "family": "Mixture of Experts",
-      "developer": "Inspur",
+      "developer": "IEIT Systems",
       "attention_type": "LFA",
       "positional_embedding": "RoPE",
       "activation": "SwiGLU",
@@ -1355,31 +1325,15 @@
         "Q8_0"
       ],
       "native_tools_supported": false,
-      "parameters_range": "51B (2.1B active)",
-      "primary_use": "Local Attention Sparse Filtering"
-    },
-    {
-      "id": "btlm_moe",
-      "name": "Cerebras BTLM MoE",
-      "family": "Mixture of Experts",
-      "developer": "Cerebras Systems",
-      "attention_type": "SwiGLU",
-      "positional_embedding": "ALiBi",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "7B",
-      "primary_use": "Wafer-Scale Memory Optimized"
+      "parameters_range": "40B (3.7B active)",
+      "primary_use": "Attention-router MoE (32 experts, top-2)",
+      "support_status": "experimental"
     },
     {
       "id": "xverse_moe",
-      "name": "XVERSE MoE Sparse",
+      "name": "XVERSE-MoE-A4.2B",
       "family": "Mixture of Experts",
-      "developer": "Shenzhen Yuanxiang",
+      "developer": "XVERSE Technology",
       "attention_type": "GQA",
       "positional_embedding": "RoPE",
       "activation": "SwiGLU",
@@ -1389,12 +1343,13 @@
         "Q8_0"
       ],
       "native_tools_supported": true,
-      "parameters_range": "65B (13B active)",
-      "primary_use": "Enterprise Multilingual Dialogue"
+      "parameters_range": "25.8B (4.2B active)",
+      "primary_use": "Multilingual dialogue",
+      "support_status": "experimental"
     },
     {
       "id": "aquila_moe",
-      "name": "BAAI Aquila MoE",
+      "name": "AquilaMoE",
       "family": "Mixture of Experts",
       "developer": "Beijing Academy of AI",
       "attention_type": "GQA",
@@ -1406,29 +1361,13 @@
         "Q8_0"
       ],
       "native_tools_supported": true,
-      "parameters_range": "34B",
-      "primary_use": "Open Commercial MoE"
-    },
-    {
-      "id": "internlm_xcomposer_moe",
-      "name": "InternLM XComposer MoE",
-      "family": "Mixture of Experts",
-      "developer": "Shanghai AI Lab",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "28B (7B active)",
-      "primary_use": "Vision-Language Interleaved Sparse"
+      "parameters_range": "8x16B MoE",
+      "primary_use": "Bilingual (Chinese/English) MoE built with scale-up/scale-out training",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_r1",
-      "name": "DeepSeek R1 Full Reasoning",
+      "name": "DeepSeek-R1",
       "family": "Reasoning & Dialectic",
       "developer": "DeepSeek AI",
       "attention_type": "MLA",
@@ -1441,11 +1380,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "671B (37B active)",
-      "primary_use": "Reinforcement Learning Chain-of-Thought"
+      "primary_use": "Reinforcement Learning Chain-of-Thought",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_r1_zero",
-      "name": "DeepSeek R1 Zero Pure RL",
+      "name": "DeepSeek-R1-Zero",
       "family": "Reasoning & Dialectic",
       "developer": "DeepSeek AI",
       "attention_type": "MLA",
@@ -1457,11 +1397,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "671B",
-      "primary_use": "Zero-shot Autonomous Self-Evolution"
+      "primary_use": "Zero-shot Autonomous Self-Evolution",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_r1_distill_qwen",
-      "name": "DeepSeek R1 Distill Qwen",
+      "name": "DeepSeek-R1-Distill-Qwen",
       "family": "Reasoning & Dialectic",
       "developer": "DeepSeek AI",
       "attention_type": "GQA",
@@ -1475,11 +1416,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.5B - 32B",
-      "primary_use": "Distilled Mathematical & Code Reasoning"
+      "primary_use": "Distilled Mathematical & Code Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_r1_distill_llama",
-      "name": "DeepSeek R1 Distill LLaMA",
+      "name": "DeepSeek-R1-Distill-Llama",
       "family": "Reasoning & Dialectic",
       "developer": "DeepSeek AI",
       "attention_type": "GQA",
@@ -1493,11 +1435,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "8B - 70B",
-      "primary_use": "Distilled High Integrity Chain-of-Thought"
+      "primary_use": "Distilled High Integrity Chain-of-Thought",
+      "support_status": "experimental"
     },
     {
       "id": "marco_o1",
-      "name": "Alibaba Marco-o1 Open Reasoning",
+      "name": "Marco-o1",
       "family": "Reasoning & Dialectic",
       "developer": "Alibaba International",
       "attention_type": "GQA",
@@ -1510,11 +1453,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "MCTS & Value Guided Search Reasoning"
+      "primary_use": "MCTS & Value Guided Search Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "qwq_32b_preview",
-      "name": "Qwen QwQ 32B Preview",
+      "name": "QwQ-32B-Preview",
       "family": "Reasoning & Dialectic",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -1528,13 +1472,14 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "32B",
-      "primary_use": "Deep Analytical Thinking & Olympiad Math"
+      "primary_use": "Deep Analytical Thinking & Olympiad Math",
+      "support_status": "experimental"
     },
     {
       "id": "skythought",
-      "name": "Skywork Sky-T1 Reasoning",
+      "name": "Sky-T1-32B-Preview",
       "family": "Reasoning & Dialectic",
-      "developer": "Skywork AI",
+      "developer": "NovaSky (UC Berkeley)",
       "attention_type": "GQA",
       "positional_embedding": "RoPE",
       "activation": "SwiGLU",
@@ -1545,45 +1490,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "32B",
-      "primary_use": "Extended Test-time Compute Reasoning"
-    },
-    {
-      "id": "kormo_reasoner",
-      "name": "Kormo Dialectical Solver",
-      "family": "Reasoning & Dialectic",
-      "developer": "Open Research Group",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "8B - 14B",
-      "primary_use": "Debate & Multi-Perspective Resolution"
-    },
-    {
-      "id": "starcoder_reasoner",
-      "name": "StarCoder Algorithmic Reasoner",
-      "family": "Reasoning & Dialectic",
-      "developer": "BigCode",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "15B",
-      "primary_use": "Algorithm Invariant Verification"
+      "primary_use": "Long chain-of-thought reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "numina_math",
-      "name": "NuminaMath CoT 7B",
+      "name": "NuminaMath-7B",
       "family": "Reasoning & Dialectic",
       "developer": "Numina Project",
       "attention_type": "GQA",
@@ -1596,11 +1508,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "AI-MO Math Olympiad Gold Winner"
+      "primary_use": "AI-MO Math Olympiad Gold Winner",
+      "support_status": "experimental"
     },
     {
       "id": "wizard_math",
-      "name": "WizardMath Reinforcement",
+      "name": "WizardMath",
       "family": "Reasoning & Dialectic",
       "developer": "WizardLM Team",
       "attention_type": "MHA",
@@ -1613,11 +1526,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 70B",
-      "primary_use": "Reinforcement Learning from Evol-Instruct"
+      "primary_use": "Reinforcement Learning from Evol-Instruct",
+      "support_status": "experimental"
     },
     {
       "id": "metamath",
-      "name": "MetaMath Specialized CoT",
+      "name": "MetaMath",
       "family": "Reasoning & Dialectic",
       "developer": "MetaMath Project",
       "attention_type": "MHA",
@@ -1630,11 +1544,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 70B",
-      "primary_use": "Backward Step Decomposition"
+      "primary_use": "Backward Step Decomposition",
+      "support_status": "experimental"
     },
     {
       "id": "abel_math",
-      "name": "Abel Mathematical Reasoner",
+      "name": "Abel",
       "family": "Reasoning & Dialectic",
       "developer": "GAIR Lab",
       "attention_type": "MHA",
@@ -1647,11 +1562,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 70B",
-      "primary_use": "Rigorous Symbolic Math"
+      "primary_use": "Rigorous Symbolic Math",
+      "support_status": "experimental"
     },
     {
       "id": "mathstral",
-      "name": "Mistral Mathstral 7B",
+      "name": "Mathstral 7B",
       "family": "Reasoning & Dialectic",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -1664,13 +1580,14 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Scientific Reasoning & High Depth Math"
+      "primary_use": "Scientific Reasoning & High Depth Math",
+      "support_status": "experimental"
     },
     {
       "id": "eurus_reasoning",
-      "name": "Eurus UltraInteract LM",
+      "name": "Eurus",
       "family": "Reasoning & Dialectic",
-      "developer": "PRIS-Lab",
+      "developer": "OpenBMB",
       "attention_type": "GQA",
       "positional_embedding": "RoPE",
       "activation": "SwiGLU",
@@ -1681,11 +1598,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 70B",
-      "primary_use": "Interactive Multi-turn Problem Solving"
+      "primary_use": "Reasoning trained on UltraInteract",
+      "support_status": "experimental"
     },
     {
       "id": "tora_math",
-      "name": "ToRA Tool-Integrated Reasoner",
+      "name": "ToRA",
       "family": "Reasoning & Dialectic",
       "developer": "Microsoft Research",
       "attention_type": "MHA",
@@ -1698,13 +1616,14 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 70B",
-      "primary_use": "Symbolic Solver & Python Tool Integration"
+      "primary_use": "Symbolic Solver & Python Tool Integration",
+      "support_status": "experimental"
     },
     {
       "id": "open_reasoner_zero",
-      "name": "OpenReasoner-Zero Pure Thinking",
+      "name": "Open-Reasoner-Zero",
       "family": "Reasoning & Dialectic",
-      "developer": "Open Reasoner Community",
+      "developer": "StepFun & Tsinghua",
       "attention_type": "GQA",
       "positional_embedding": "RoPE",
       "activation": "SwiGLU",
@@ -1714,29 +1633,13 @@
         "Q8_0"
       ],
       "native_tools_supported": true,
-      "parameters_range": "8B - 32B",
-      "primary_use": "Extended Self-Reflection & Exploration"
-    },
-    {
-      "id": "thought_propagation_lm",
-      "name": "Thought Propagation Explorer",
-      "family": "Reasoning & Dialectic",
-      "developer": "Academic Collective",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": true,
-      "parameters_range": "8B - 14B",
-      "primary_use": "Graph-based Chain-of-Thought Search"
+      "parameters_range": "0.5B - 32B",
+      "primary_use": "Reasoning trained with zero-start RL",
+      "support_status": "experimental"
     },
     {
       "id": "bespoke_minicheck",
-      "name": "Bespoke MiniCheck Factuality",
+      "name": "Bespoke-MiniCheck-7B",
       "family": "Reasoning & Dialectic",
       "developer": "Bespoke Labs",
       "attention_type": "GQA",
@@ -1749,11 +1652,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B",
-      "primary_use": "Dialectical Claim & Grounding Verification"
+      "primary_use": "Fact-checking claims against grounding documents",
+      "support_status": "experimental"
     },
     {
       "id": "codellama",
-      "name": "Code LLaMA Base",
+      "name": "Code Llama",
       "family": "Code Specialist",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -1766,11 +1670,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 70B",
-      "primary_use": "Program Infilling & Code Foundation"
+      "primary_use": "Program Infilling & Code Foundation",
+      "support_status": "experimental"
     },
     {
       "id": "codellama_python",
-      "name": "Code LLaMA Python Fine-Tuned",
+      "name": "Code Llama - Python",
       "family": "Code Specialist",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -1783,11 +1688,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 34B",
-      "primary_use": "Native Python Software Development"
+      "primary_use": "Native Python Software Development",
+      "support_status": "experimental"
     },
     {
       "id": "codellama_instruct",
-      "name": "Code LLaMA Instruct",
+      "name": "Code Llama - Instruct",
       "family": "Code Specialist",
       "developer": "Meta AI",
       "attention_type": "GQA",
@@ -1800,11 +1706,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 70B",
-      "primary_use": "Interactive Software Pair Programming"
+      "primary_use": "Interactive Software Pair Programming",
+      "support_status": "experimental"
     },
     {
       "id": "starcoder",
-      "name": "StarCoder 15B Multi-Language",
+      "name": "StarCoder",
       "family": "Code Specialist",
       "developer": "BigCode",
       "attention_type": "MQA",
@@ -1817,11 +1724,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "15B",
-      "primary_use": "80+ Programming Languages Support"
+      "primary_use": "80+ Programming Languages Support",
+      "support_status": "experimental"
     },
     {
       "id": "starcoder2",
-      "name": "StarCoder2 3B/7B/15B",
+      "name": "StarCoder2",
       "family": "Code Specialist",
       "developer": "BigCode",
       "attention_type": "MQA",
@@ -1834,11 +1742,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "3B - 15B",
-      "primary_use": "600+ Languages with Fill-in-the-Middle"
+      "primary_use": "600+ Languages with Fill-in-the-Middle",
+      "support_status": "experimental"
     },
     {
       "id": "santacoder",
-      "name": "SantaCoder Small Code",
+      "name": "SantaCoder",
       "family": "Code Specialist",
       "developer": "BigCode",
       "attention_type": "MQA",
@@ -1851,11 +1760,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.1B",
-      "primary_use": "Python/Java/JS Fast Autocomplete"
+      "primary_use": "Python/Java/JS Fast Autocomplete",
+      "support_status": "experimental"
     },
     {
       "id": "qwen2.5_coder",
-      "name": "Qwen2.5-Coder Flagship",
+      "name": "Qwen2.5-Coder",
       "family": "Code Specialist",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -1870,11 +1780,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "0.5B - 32B",
-      "primary_use": "State-of-the-Art Code Agent & FIM"
+      "primary_use": "State-of-the-Art Code Agent & FIM",
+      "support_status": "experimental"
     },
     {
       "id": "qwen_coder",
-      "name": "CodeQwen1.5 7B",
+      "name": "CodeQwen1.5-7B",
       "family": "Code Specialist",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -1887,11 +1798,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "64K Long Code Repository Analysis"
+      "primary_use": "64K Long Code Repository Analysis",
+      "support_status": "experimental"
     },
     {
       "id": "codestral",
-      "name": "Mistral Codestral 22B",
+      "name": "Codestral 22B",
       "family": "Code Specialist",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -1905,11 +1817,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "22B",
-      "primary_use": "32K Context Code Generation & FIM"
+      "primary_use": "32K Context Code Generation & FIM",
+      "support_status": "experimental"
     },
     {
       "id": "codestral_mamba",
-      "name": "Mistral Codestral Mamba 7B",
+      "name": "Codestral Mamba 7B",
       "family": "Code Specialist",
       "developer": "Mistral AI",
       "attention_type": "Mamba-SSM",
@@ -1922,11 +1835,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Infinite Context Linear Code Serving"
+      "primary_use": "Infinite Context Linear Code Serving",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_coder",
-      "name": "DeepSeek Coder 1.3B/33B",
+      "name": "DeepSeek-Coder",
       "family": "Code Specialist",
       "developer": "DeepSeek AI",
       "attention_type": "MHA",
@@ -1939,11 +1853,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.3B - 33B",
-      "primary_use": "Project Level Code Completion"
+      "primary_use": "Project Level Code Completion",
+      "support_status": "experimental"
     },
     {
       "id": "deepseek_coder_v2",
-      "name": "DeepSeek Coder V2 MoE",
+      "name": "DeepSeek-Coder-V2",
       "family": "Code Specialist",
       "developer": "DeepSeek AI",
       "attention_type": "MLA",
@@ -1957,28 +1872,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "16B - 236B",
-      "primary_use": "338 Languages & Competitive Coding"
-    },
-    {
-      "id": "codegeex",
-      "name": "THUDM CodeGeeX 13B",
-      "family": "Code Specialist",
-      "developer": "Zhipu AI",
-      "attention_type": "MHA",
-      "positional_embedding": "RoPE",
-      "activation": "GeLU",
-      "norm_type": "LayerNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "13B",
-      "primary_use": "Bilingual Code Cross-Translation"
+      "primary_use": "338 Languages & Competitive Coding",
+      "support_status": "experimental"
     },
     {
       "id": "codegeex2",
-      "name": "THUDM CodeGeeX2 6B",
+      "name": "CodeGeeX2-6B",
       "family": "Code Specialist",
       "developer": "Zhipu AI",
       "attention_type": "MQA",
@@ -1991,11 +1890,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "6B",
-      "primary_use": "Low Memory Fast Coding Copilot"
+      "primary_use": "Low Memory Fast Coding Copilot",
+      "support_status": "experimental"
     },
     {
       "id": "codegeex4",
-      "name": "THUDM CodeGeeX4 9B All-Round",
+      "name": "CodeGeeX4-9B",
       "family": "Code Specialist",
       "developer": "Zhipu AI",
       "attention_type": "GQA",
@@ -2009,11 +1909,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "9B",
-      "primary_use": "128K Repo Agent & Test Generation"
+      "primary_use": "128K Repo Agent & Test Generation",
+      "support_status": "experimental"
     },
     {
       "id": "granite_code",
-      "name": "IBM Granite Code 3B-34B",
+      "name": "Granite Code",
       "family": "Code Specialist",
       "developer": "IBM Research",
       "attention_type": "GQA",
@@ -2026,11 +1927,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "3B - 34B",
-      "primary_use": "Enterprise Mainframe & Legacy Modernization"
+      "primary_use": "Enterprise Mainframe & Legacy Modernization",
+      "support_status": "experimental"
     },
     {
       "id": "magicoder",
-      "name": "MagiCoder OSS-Instruct",
+      "name": "Magicoder",
       "family": "Code Specialist",
       "developer": "UIUC",
       "attention_type": "GQA",
@@ -2043,11 +1945,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "6.7B",
-      "primary_use": "Open Source Code Extraction Distillation"
+      "primary_use": "Open Source Code Extraction Distillation",
+      "support_status": "experimental"
     },
     {
       "id": "wizardcoder",
-      "name": "WizardCoder Evol-Instruct",
+      "name": "WizardCoder",
       "family": "Code Specialist",
       "developer": "WizardLM Team",
       "attention_type": "GQA",
@@ -2060,11 +1963,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "15B - 34B",
-      "primary_use": "Complex Code Infilling"
+      "primary_use": "Complex Code Infilling",
+      "support_status": "experimental"
     },
     {
       "id": "phind_codellama",
-      "name": "Phind CodeLLaMA 34B v2",
+      "name": "Phind-CodeLlama-34B-v2",
       "family": "Code Specialist",
       "developer": "Phind",
       "attention_type": "GQA",
@@ -2077,11 +1981,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "34B",
-      "primary_use": "Technical Search & Developer Assistance"
+      "primary_use": "Technical Search & Developer Assistance",
+      "support_status": "experimental"
     },
     {
       "id": "wavecoder",
-      "name": "WaveCoder Multi-Task Code",
+      "name": "WaveCoder",
       "family": "Code Specialist",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -2094,11 +1999,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "6.7B",
-      "primary_use": "Code Repair & Generation Generator"
+      "primary_use": "Code Repair & Generation Generator",
+      "support_status": "experimental"
     },
     {
       "id": "opencoder",
-      "name": "OpenCoder Premier Open LLM",
+      "name": "OpenCoder",
       "family": "Code Specialist",
       "developer": "OpenCoder Consortium",
       "attention_type": "GQA",
@@ -2112,11 +2018,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.5B - 8B",
-      "primary_use": "Fully Transparent Code Corpus Model"
+      "primary_use": "Fully Transparent Code Corpus Model",
+      "support_status": "experimental"
     },
     {
       "id": "replit_code",
-      "name": "Replit Code 3B v1.5",
+      "name": "replit-code-v1.5-3b",
       "family": "Code Specialist",
       "developer": "Replit",
       "attention_type": "ALiBi",
@@ -2129,11 +2036,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "3B",
-      "primary_use": "In-Browser Code Suggestion"
+      "primary_use": "In-Browser Code Suggestion",
+      "support_status": "experimental"
     },
     {
       "id": "stable_code",
-      "name": "Stability Stable Code 3B",
+      "name": "Stable Code 3B",
       "family": "Code Specialist",
       "developer": "Stability AI",
       "attention_type": "MHA",
@@ -2146,11 +2054,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "3B",
-      "primary_use": "Lightweight Edge Code Suggestion"
+      "primary_use": "Lightweight Edge Code Suggestion",
+      "support_status": "experimental"
     },
     {
       "id": "mamba",
-      "name": "Mamba SSM Selective State Space",
+      "name": "Mamba",
       "family": "State Space & Hybrid",
       "developer": "Albert Gu & Tri Dao",
       "attention_type": "Selective SSM",
@@ -2163,11 +2072,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "130M - 2.8B",
-      "primary_use": "Linear-Time Sequence Modeling"
+      "primary_use": "Linear-Time Sequence Modeling",
+      "support_status": "experimental"
     },
     {
       "id": "mamba2",
-      "name": "Mamba-2 State Space Duality (SSD)",
+      "name": "Mamba-2",
       "family": "State Space & Hybrid",
       "developer": "Tri Dao & Albert Gu",
       "attention_type": "SSD SSM",
@@ -2180,11 +2090,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "130M - 8B",
-      "primary_use": "Matrix Hardware Fast Linear Attention"
+      "primary_use": "Matrix Hardware Fast Linear Attention",
+      "support_status": "experimental"
     },
     {
       "id": "jamba",
-      "name": "AI21 Jamba Hybrid Mamba-Transformer",
+      "name": "Jamba v0.1",
       "family": "State Space & Hybrid",
       "developer": "AI21 Labs",
       "attention_type": "Mamba-Transformer Hybrid",
@@ -2198,11 +2109,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "52B (12B active)",
-      "primary_use": "256K Context Hybrid MoE Throughput"
+      "primary_use": "256K Context Hybrid MoE Throughput",
+      "support_status": "experimental"
     },
     {
       "id": "jamba_1.5_mini",
-      "name": "AI21 Jamba 1.5 Mini",
+      "name": "Jamba 1.5 Mini",
       "family": "State Space & Hybrid",
       "developer": "AI21 Labs",
       "attention_type": "Mamba-Transformer Hybrid",
@@ -2216,11 +2128,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "12B (4.6B active)",
-      "primary_use": "256K Long Context High Speed"
+      "primary_use": "256K Long Context High Speed",
+      "support_status": "experimental"
     },
     {
       "id": "jamba_1.5_large",
-      "name": "AI21 Jamba 1.5 Large",
+      "name": "Jamba 1.5 Large",
       "family": "State Space & Hybrid",
       "developer": "AI21 Labs",
       "attention_type": "Mamba-Transformer Hybrid",
@@ -2233,11 +2146,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "398B (94B active)",
-      "primary_use": "Enterprise Frontier Hybrid MoE"
+      "primary_use": "Enterprise Frontier Hybrid MoE",
+      "support_status": "experimental"
     },
     {
       "id": "zamba",
-      "name": "Zyphra Zamba 7B Hybrid Mamba",
+      "name": "Zamba-7B",
       "family": "State Space & Hybrid",
       "developer": "Zyphra",
       "attention_type": "Mamba-Shared Transformer",
@@ -2250,11 +2164,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B",
-      "primary_use": "Shared MLP State Space Processing"
+      "primary_use": "Shared MLP State Space Processing",
+      "support_status": "experimental"
     },
     {
       "id": "zamba2",
-      "name": "Zyphra Zamba2 1.2B/2.7B",
+      "name": "Zamba2",
       "family": "State Space & Hybrid",
       "developer": "Zyphra",
       "attention_type": "Mamba2 Hybrid",
@@ -2267,11 +2182,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.2B - 2.7B",
-      "primary_use": "Compact On-Device Mamba2 Hybrid"
+      "primary_use": "Compact On-Device Mamba2 Hybrid",
+      "support_status": "experimental"
     },
     {
       "id": "rwkv4",
-      "name": "RWKV-4 Raven RNN",
+      "name": "RWKV-4",
       "family": "State Space & Hybrid",
       "developer": "Bo Peng / RWKV Foundation",
       "attention_type": "Linear Attention WKV",
@@ -2284,11 +2200,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "14M - 14B",
-      "primary_use": "Pure RNN Constant Memory Inference"
+      "primary_use": "Pure RNN Constant Memory Inference",
+      "support_status": "experimental"
     },
     {
       "id": "rwkv5",
-      "name": "RWKV-5 Eagle Multi-Head",
+      "name": "RWKV-5 (Eagle)",
       "family": "State Space & Hybrid",
       "developer": "Bo Peng / RWKV Foundation",
       "attention_type": "Multi-Head WKV",
@@ -2301,11 +2218,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.5B - 7B",
-      "primary_use": "Multi-Channel Linear Recurrence"
+      "primary_use": "Multi-Channel Linear Recurrence",
+      "support_status": "experimental"
     },
     {
       "id": "rwkv6",
-      "name": "RWKV-6 Finch Dynamic State",
+      "name": "RWKV-6 (Finch)",
       "family": "State Space & Hybrid",
       "developer": "Bo Peng / RWKV Foundation",
       "attention_type": "Dynamic WKV",
@@ -2319,11 +2237,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.6B - 14B",
-      "primary_use": "Data-Dependent Linear State Space"
+      "primary_use": "Data-Dependent Linear State Space",
+      "support_status": "experimental"
     },
     {
       "id": "rwkv7",
-      "name": "RWKV-7 Goose Attention Rebirth",
+      "name": "RWKV-7 (Goose)",
       "family": "State Space & Hybrid",
       "developer": "Bo Peng / RWKV Foundation",
       "attention_type": "Generalized Matrix Recurrence",
@@ -2336,43 +2255,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.5B - 7B",
-      "primary_use": "Expressive Non-Transformer Recurrence"
-    },
-    {
-      "id": "griffin",
-      "name": "Google DeepMind Griffin Hybrid",
-      "family": "State Space & Hybrid",
-      "developer": "Google DeepMind",
-      "attention_type": "RG-LRU & Local MHA",
-      "positional_embedding": "RoPE",
-      "activation": "GeGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "FP16"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "2B - 14B",
-      "primary_use": "Recurrent Gated Linear Recurrence Unit"
-    },
-    {
-      "id": "hawk",
-      "name": "Google DeepMind Hawk Linear",
-      "family": "State Space & Hybrid",
-      "developer": "Google DeepMind",
-      "attention_type": "RG-LRU Pure Recurrent",
-      "positional_embedding": "None",
-      "activation": "GeGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "FP16"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "3B",
-      "primary_use": "Non-Attention Linear Scalable Architecture"
+      "primary_use": "Expressive Non-Transformer Recurrence",
+      "support_status": "experimental"
     },
     {
       "id": "recurrentgemma",
-      "name": "Google RecurrentGemma Griffin",
+      "name": "RecurrentGemma",
       "family": "State Space & Hybrid",
       "developer": "Google DeepMind",
       "attention_type": "RG-LRU Hybrid",
@@ -2385,13 +2273,14 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "2B - 9B",
-      "primary_use": "Low Memory Fast Generation Serving"
+      "primary_use": "Low Memory Fast Generation Serving",
+      "support_status": "experimental"
     },
     {
       "id": "hgrn",
-      "name": "HGRN Hierarchically Gated RNN",
+      "name": "HGRN",
       "family": "State Space & Hybrid",
-      "developer": "Zhen Qin et al.",
+      "developer": "OpenNLPLab",
       "attention_type": "Linear Gated Recurrence",
       "positional_embedding": "None",
       "activation": "SiLU",
@@ -2400,14 +2289,15 @@
         "FP16"
       ],
       "native_tools_supported": false,
-      "parameters_range": "1B - 3B",
-      "primary_use": "High Parallel Recurrent Processing"
+      "parameters_range": "150M - 1B",
+      "primary_use": "High Parallel Recurrent Processing",
+      "support_status": "experimental"
     },
     {
       "id": "hgrn2",
-      "name": "HGRN2 Gated Linear Attention",
+      "name": "HGRN2",
       "family": "State Space & Hybrid",
-      "developer": "Zhen Qin et al.",
+      "developer": "OpenNLPLab",
       "attention_type": "Gated Linear Attention",
       "positional_embedding": "None",
       "activation": "SiLU",
@@ -2416,44 +2306,13 @@
         "FP16"
       ],
       "native_tools_supported": false,
-      "parameters_range": "1.4B - 7B",
-      "primary_use": "Strict Linear Time with State Decay"
-    },
-    {
-      "id": "retnet",
-      "name": "Microsoft RetNet Retentive Network",
-      "family": "State Space & Hybrid",
-      "developer": "Microsoft Research",
-      "attention_type": "Multi-Scale Retention",
-      "positional_embedding": "None",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "FP16"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "1.3B - 6.7B",
-      "primary_use": "Successor to Transformer Baseline"
-    },
-    {
-      "id": "stripemamba",
-      "name": "StripeMamba Multi-Scale State",
-      "family": "State Space & Hybrid",
-      "developer": "Vision & Language Lab",
-      "attention_type": "Stripe Selective SSM",
-      "positional_embedding": "None",
-      "activation": "SiLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "FP16"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "1B - 7B",
-      "primary_use": "Structured Long Context Recurrence"
+      "parameters_range": "1.3B - 2.7B",
+      "primary_use": "Strict Linear Time with State Decay",
+      "support_status": "experimental"
     },
     {
       "id": "llava_1.5",
-      "name": "LLaVA 1.5 CLIP-LLaMA",
+      "name": "LLaVA-1.5",
       "family": "Vision-Language",
       "developer": "LMSYS / UW-Madison",
       "attention_type": "GQA",
@@ -2466,11 +2325,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 13B",
-      "primary_use": "Multimodal Visual Instruction Following"
+      "primary_use": "Multimodal Visual Instruction Following",
+      "support_status": "experimental"
     },
     {
       "id": "llava_next",
-      "name": "LLaVA NeXT AnyRes",
+      "name": "LLaVA-NeXT",
       "family": "Vision-Language",
       "developer": "LMSYS",
       "attention_type": "GQA",
@@ -2484,11 +2344,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "7B - 34B",
-      "primary_use": "Dynamic High Resolution Document Parsing"
+      "primary_use": "Dynamic High Resolution Document Parsing",
+      "support_status": "experimental"
     },
     {
       "id": "llava_onevision",
-      "name": "LLaVA-OneVision Unified Image/Video",
+      "name": "LLaVA-OneVision",
       "family": "Vision-Language",
       "developer": "LMSYS",
       "attention_type": "GQA",
@@ -2502,11 +2363,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "0.5B - 72B",
-      "primary_use": "Joint Single Image & Video Reasoning"
+      "primary_use": "Joint Single Image & Video Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "qwen_vl",
-      "name": "Qwen-VL Vision-Language",
+      "name": "Qwen-VL",
       "family": "Vision-Language",
       "developer": "Alibaba Cloud",
       "attention_type": "MHA",
@@ -2519,11 +2381,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "9.6B",
-      "primary_use": "Visual Grounding & OCR"
+      "primary_use": "Visual Grounding & OCR",
+      "support_status": "experimental"
     },
     {
       "id": "qwen2_vl",
-      "name": "Qwen2-VL Dynamic Resolution",
+      "name": "Qwen2-VL",
       "family": "Vision-Language",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA",
@@ -2537,11 +2400,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "2B - 72B",
-      "primary_use": "Arbitrary Resolution OCR & Video Analysis"
+      "primary_use": "Arbitrary Resolution OCR & Video Analysis",
+      "support_status": "experimental"
     },
     {
       "id": "paligemma",
-      "name": "Google PaliGemma 3B SigLIP",
+      "name": "PaliGemma",
       "family": "Vision-Language",
       "developer": "Google DeepMind",
       "attention_type": "MHA",
@@ -2554,11 +2418,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "3B",
-      "primary_use": "Transferable Visual Tasks & Segmentation"
+      "primary_use": "Transferable Visual Tasks & Segmentation",
+      "support_status": "experimental"
     },
     {
       "id": "paligemma2",
-      "name": "Google PaliGemma 2 Multi-Scale",
+      "name": "PaliGemma 2",
       "family": "Vision-Language",
       "developer": "Google DeepMind",
       "attention_type": "GQA",
@@ -2572,11 +2437,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "3B - 28B",
-      "primary_use": "State-of-the-Art Compact VLM"
+      "primary_use": "State-of-the-Art Compact VLM",
+      "support_status": "experimental"
     },
     {
       "id": "pixtral_12b",
-      "name": "Mistral Pixtral 12B Vision",
+      "name": "Pixtral 12B",
       "family": "Vision-Language",
       "developer": "Mistral AI",
       "attention_type": "GQA",
@@ -2590,11 +2456,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "12B",
-      "primary_use": "Native Vision-Language with Variable Image Sizing"
+      "primary_use": "Native Vision-Language with Variable Image Sizing",
+      "support_status": "experimental"
     },
     {
       "id": "cogvlm",
-      "name": "THUDM CogVLM Visual Expert",
+      "name": "CogVLM",
       "family": "Vision-Language",
       "developer": "Zhipu AI",
       "attention_type": "MHA",
@@ -2607,11 +2474,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "17B",
-      "primary_use": "Targeted Visual Feature Fusion"
+      "primary_use": "Targeted Visual Feature Fusion",
+      "support_status": "experimental"
     },
     {
       "id": "cogvlm2",
-      "name": "THUDM CogVLM2 Video/Image",
+      "name": "CogVLM2",
       "family": "Vision-Language",
       "developer": "Zhipu AI",
       "attention_type": "GQA",
@@ -2625,11 +2493,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "19B",
-      "primary_use": "High Framerate Video & GUI Automation"
+      "primary_use": "High Framerate Video & GUI Automation",
+      "support_status": "experimental"
     },
     {
       "id": "internvl",
-      "name": "InternVL Open Frontier VLM",
+      "name": "InternVL",
       "family": "Vision-Language",
       "developer": "Shanghai AI Lab",
       "attention_type": "GQA",
@@ -2642,11 +2511,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "6B - 40B",
-      "primary_use": "General Visual Perception"
+      "primary_use": "General Visual Perception",
+      "support_status": "experimental"
     },
     {
       "id": "internvl2",
-      "name": "InternVL 2.0 Multi-Scale VLM",
+      "name": "InternVL2",
       "family": "Vision-Language",
       "developer": "Shanghai AI Lab",
       "attention_type": "GQA",
@@ -2660,11 +2530,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1B - 78B",
-      "primary_use": "Medical, Scientific & Document High Res VLM"
+      "primary_use": "Medical, Scientific & Document High Res VLM",
+      "support_status": "experimental"
     },
     {
       "id": "minicpm_v",
-      "name": "MiniCPM-V Multi-Modal Edge",
+      "name": "MiniCPM-V",
       "family": "Vision-Language",
       "developer": "OpenBMB",
       "attention_type": "GQA",
@@ -2677,11 +2548,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "2.8B",
-      "primary_use": "End-to-End Phone Image & Audio Processing"
+      "primary_use": "End-to-End Phone Image & Audio Processing",
+      "support_status": "experimental"
     },
     {
       "id": "minicpm_v2.6",
-      "name": "MiniCPM-V 2.6 Real-Time Video",
+      "name": "MiniCPM-V 2.6",
       "family": "Vision-Language",
       "developer": "OpenBMB",
       "attention_type": "GQA",
@@ -2695,11 +2567,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "8B",
-      "primary_use": "Dense Video Streaming on iPad/PC"
+      "primary_use": "Dense Video Streaming on iPad/PC",
+      "support_status": "experimental"
     },
     {
       "id": "idefics",
-      "name": "Hugging Face IDEFICS 80B",
+      "name": "IDEFICS",
       "family": "Vision-Language",
       "developer": "Hugging Face",
       "attention_type": "MHA",
@@ -2712,11 +2585,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "9B - 80B",
-      "primary_use": "Flamingo Reproduction Open Benchmark"
+      "primary_use": "Flamingo Reproduction Open Benchmark",
+      "support_status": "experimental"
     },
     {
       "id": "idefics2",
-      "name": "Hugging Face IDEFICS 2 8B",
+      "name": "Idefics2",
       "family": "Vision-Language",
       "developer": "Hugging Face",
       "attention_type": "GQA",
@@ -2729,11 +2603,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "8B",
-      "primary_use": "Sub-image Splitting Document QA"
+      "primary_use": "Sub-image Splitting Document QA",
+      "support_status": "experimental"
     },
     {
       "id": "idefics3",
-      "name": "Hugging Face IDEFICS 3 8B LLaMA-based",
+      "name": "Idefics3",
       "family": "Vision-Language",
       "developer": "Hugging Face",
       "attention_type": "GQA",
@@ -2747,11 +2622,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "8B",
-      "primary_use": "High Throughput Visual Document Processing"
+      "primary_use": "High Throughput Visual Document Processing",
+      "support_status": "experimental"
     },
     {
       "id": "phi3_vision",
-      "name": "Microsoft Phi-3 Vision 4.2B",
+      "name": "Phi-3-vision",
       "family": "Vision-Language",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -2764,11 +2640,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "4.2B",
-      "primary_use": "High Density Chart & Diagram Reading"
+      "primary_use": "High Density Chart & Diagram Reading",
+      "support_status": "experimental"
     },
     {
       "id": "phi3.5_vision",
-      "name": "Microsoft Phi-3.5 Vision Multi-Frame",
+      "name": "Phi-3.5-vision",
       "family": "Vision-Language",
       "developer": "Microsoft Research",
       "attention_type": "GQA",
@@ -2782,11 +2659,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "4.2B",
-      "primary_use": "Multi-Image Comparison & Video Summarization"
+      "primary_use": "Multi-Image Comparison & Video Summarization",
+      "support_status": "experimental"
     },
     {
       "id": "florence2",
-      "name": "Microsoft Florence-2 Unified Vision",
+      "name": "Florence-2",
       "family": "Vision-Language",
       "developer": "Microsoft Azure",
       "attention_type": "DaViT",
@@ -2799,11 +2677,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "230M - 770M",
-      "primary_use": "Zero-shot Object Detection & Captioning"
+      "primary_use": "Zero-shot Object Detection & Captioning",
+      "support_status": "experimental"
     },
     {
       "id": "moondream",
-      "name": "Moondream 1.6B Tiny VLM",
+      "name": "moondream1",
       "family": "Vision-Language",
       "developer": "Vikhyat Korrapati",
       "attention_type": "MHA",
@@ -2816,11 +2695,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.6B",
-      "primary_use": "Sub-2GB RAM Edge Vision"
+      "primary_use": "Sub-2GB RAM Edge Vision",
+      "support_status": "experimental"
     },
     {
       "id": "moondream2",
-      "name": "Moondream2 1.86B Fast Vision",
+      "name": "moondream2",
       "family": "Vision-Language",
       "developer": "Vikhyat Korrapati",
       "attention_type": "MHA",
@@ -2833,11 +2713,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.86B",
-      "primary_use": "Ultra-fast Real-time Vision on Edge"
+      "primary_use": "Ultra-fast Real-time Vision on Edge",
+      "support_status": "experimental"
     },
     {
       "id": "chameleon",
-      "name": "Meta Chameleon Mixed-Modal",
+      "name": "Chameleon",
       "family": "Vision-Language",
       "developer": "Meta FAIR",
       "attention_type": "GQA",
@@ -2850,11 +2731,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 30B",
-      "primary_use": "Native Early-Fusion Image Generation/Understanding"
+      "primary_use": "Native Early-Fusion Image Generation/Understanding",
+      "support_status": "experimental"
     },
     {
       "id": "blip2",
-      "name": "Salesforce BLIP-2 Q-Former",
+      "name": "BLIP-2",
       "family": "Vision-Language",
       "developer": "Salesforce Research",
       "attention_type": "MHA",
@@ -2867,11 +2749,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "3.1B - 14B",
-      "primary_use": "Querying Transformers Visual Bottleneck"
+      "primary_use": "Querying Transformers Visual Bottleneck",
+      "support_status": "experimental"
     },
     {
       "id": "instructblip",
-      "name": "Salesforce InstructBLIP",
+      "name": "InstructBLIP",
       "family": "Vision-Language",
       "developer": "Salesforce Research",
       "attention_type": "MHA",
@@ -2884,11 +2767,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "7B - 14B",
-      "primary_use": "Instruction-Tuned Visual Task Solver"
+      "primary_use": "Instruction-Tuned Visual Task Solver",
+      "support_status": "experimental"
     },
     {
       "id": "bert",
-      "name": "Google BERT Bidirectional Encoder",
+      "name": "BERT",
       "family": "Embedding & Reranker",
       "developer": "Google Research",
       "attention_type": "Bidirectional MHA",
@@ -2902,11 +2786,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "110M - 340M",
-      "primary_use": "Masked Language Modeling Baseline"
+      "primary_use": "Masked Language Modeling Baseline",
+      "support_status": "experimental"
     },
     {
       "id": "roberta",
-      "name": "Meta RoBERTa Robustly Optimized",
+      "name": "RoBERTa",
       "family": "Embedding & Reranker",
       "developer": "Meta AI",
       "attention_type": "Bidirectional MHA",
@@ -2919,11 +2804,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "125M - 355M",
-      "primary_use": "High Quality Semantic Classification"
+      "primary_use": "High Quality Semantic Classification",
+      "support_status": "experimental"
     },
     {
       "id": "modernbert",
-      "name": "Answer.AI ModernBERT 8K",
+      "name": "ModernBERT",
       "family": "Embedding & Reranker",
       "developer": "Answer.AI & LightOn",
       "attention_type": "FlashAttention Unpadding",
@@ -2937,11 +2823,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "140M - 395M",
-      "primary_use": "8192 Context Modern Encoder"
+      "primary_use": "8192 Context Modern Encoder",
+      "support_status": "experimental"
     },
     {
       "id": "bge_embedding",
-      "name": "BAAI BGE Embedding v1.5",
+      "name": "BGE v1.5",
       "family": "Embedding & Reranker",
       "developer": "BAAI",
       "attention_type": "Bidirectional MHA",
@@ -2954,11 +2841,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "110M - 335M",
-      "primary_use": "Dense Semantic Retrieval"
+      "primary_use": "Dense Semantic Retrieval",
+      "support_status": "experimental"
     },
     {
       "id": "bge_reranker",
-      "name": "BAAI BGE Reranker Large",
+      "name": "BGE Reranker Large",
       "family": "Embedding & Reranker",
       "developer": "BAAI",
       "attention_type": "Cross-Encoder MHA",
@@ -2971,11 +2859,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "560M",
-      "primary_use": "High Precision Cross-Attention Reranking"
+      "primary_use": "High Precision Cross-Attention Reranking",
+      "support_status": "experimental"
     },
     {
       "id": "bge_m3",
-      "name": "BAAI BGE-M3 Multi-lingual Multi-Granularity",
+      "name": "BGE-M3",
       "family": "Embedding & Reranker",
       "developer": "BAAI",
       "attention_type": "Bidirectional MHA",
@@ -2988,11 +2877,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "570M",
-      "primary_use": "Dense, Sparse & Multi-Vector Hybrid Search"
+      "primary_use": "Dense, Sparse & Multi-Vector Hybrid Search",
+      "support_status": "experimental"
     },
     {
       "id": "e5_embedding",
-      "name": "Microsoft E5 Embedding v2",
+      "name": "E5 v2",
       "family": "Embedding & Reranker",
       "developer": "Microsoft Research",
       "attention_type": "Bidirectional MHA",
@@ -3005,11 +2895,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "110M - 335M",
-      "primary_use": "General Purpose Text Embeddings"
+      "primary_use": "General Purpose Text Embeddings",
+      "support_status": "experimental"
     },
     {
       "id": "multilingual_e5",
-      "name": "Microsoft Multilingual E5 Large",
+      "name": "Multilingual E5 Large",
       "family": "Embedding & Reranker",
       "developer": "Microsoft Research",
       "attention_type": "Bidirectional MHA",
@@ -3022,11 +2913,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "560M",
-      "primary_use": "100+ Languages Cross-Lingual Search"
+      "primary_use": "100+ Languages Cross-Lingual Search",
+      "support_status": "experimental"
     },
     {
       "id": "nomic_bert",
-      "name": "Nomic Embed Text 8K",
+      "name": "nomic-embed-text",
       "family": "Embedding & Reranker",
       "developer": "Nomic AI",
       "attention_type": "Bidirectional MHA",
@@ -3039,11 +2931,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "137M",
-      "primary_use": "Fully Audited 8K Context Embedding"
+      "primary_use": "Fully Audited 8K Context Embedding",
+      "support_status": "experimental"
     },
     {
       "id": "colbert",
-      "name": "Stanford ColBERT Late Interaction",
+      "name": "ColBERT",
       "family": "Embedding & Reranker",
       "developer": "Stanford University",
       "attention_type": "Late Interaction Token MHA",
@@ -3056,11 +2949,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "110M",
-      "primary_use": "Token-level MaxSim Search"
+      "primary_use": "Token-level MaxSim Search",
+      "support_status": "experimental"
     },
     {
       "id": "colbert_v2",
-      "name": "Stanford ColBERT v2 Compressed",
+      "name": "ColBERTv2",
       "family": "Embedding & Reranker",
       "developer": "Stanford University",
       "attention_type": "Residual Vector Quantized Token",
@@ -3074,11 +2968,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "110M",
-      "primary_use": "Sub-byte Memory Scale Retrieval"
+      "primary_use": "Sub-byte Memory Scale Retrieval",
+      "support_status": "experimental"
     },
     {
       "id": "jina_bert_v2",
-      "name": "Jina Embeddings v2 8K",
+      "name": "Jina Embeddings v2",
       "family": "Embedding & Reranker",
       "developer": "Jina AI",
       "attention_type": "ALiBi Bidirectional",
@@ -3091,11 +2986,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "161M",
-      "primary_use": "Long Document Retrieval"
+      "primary_use": "Long Document Retrieval",
+      "support_status": "experimental"
     },
     {
       "id": "jina_embeddings_v3",
-      "name": "Jina Embeddings v3 Task-Specific",
+      "name": "Jina Embeddings v3",
       "family": "Embedding & Reranker",
       "developer": "Jina AI",
       "attention_type": "FlashAttention LoRA-Adapter",
@@ -3108,11 +3004,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "570M",
-      "primary_use": "Multi-Task Asymmetric Search"
+      "primary_use": "Multi-Task Asymmetric Search",
+      "support_status": "experimental"
     },
     {
       "id": "gte_embedding",
-      "name": "Alibaba GTE General Text Embedding",
+      "name": "GTE",
       "family": "Embedding & Reranker",
       "developer": "Alibaba Cloud",
       "attention_type": "Bidirectional MHA",
@@ -3125,11 +3022,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "110M - 305M",
-      "primary_use": "MTEB Leaderboard Top Ranking"
+      "primary_use": "MTEB Leaderboard Top Ranking",
+      "support_status": "experimental"
     },
     {
       "id": "gte_qwen2",
-      "name": "Alibaba GTE Qwen2 8K",
+      "name": "gte-Qwen2",
       "family": "Embedding & Reranker",
       "developer": "Alibaba Cloud",
       "attention_type": "GQA Bidirectional",
@@ -3142,11 +3040,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.5B - 7B",
-      "primary_use": "LLM-Scale Text & Code Embeddings"
+      "primary_use": "LLM-Scale Text & Code Embeddings",
+      "support_status": "experimental"
     },
     {
       "id": "whisper",
-      "name": "OpenAI Whisper Standard",
+      "name": "Whisper",
       "family": "Speech & Audio",
       "developer": "OpenAI",
       "attention_type": "Encoder-Decoder MHA",
@@ -3160,11 +3059,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "39M - 1.5B",
-      "primary_use": "Robust Multilingual Speech-to-Text"
+      "primary_use": "Robust Multilingual Speech-to-Text",
+      "support_status": "experimental"
     },
     {
       "id": "whisper_large_v3",
-      "name": "OpenAI Whisper Large v3",
+      "name": "Whisper large-v3",
       "family": "Speech & Audio",
       "developer": "OpenAI",
       "attention_type": "Encoder-Decoder MHA",
@@ -3178,11 +3078,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.55B",
-      "primary_use": "State of the art Automatic Speech Recognition"
+      "primary_use": "State of the art Automatic Speech Recognition",
+      "support_status": "experimental"
     },
     {
       "id": "whisper_large_v3_turbo",
-      "name": "OpenAI Whisper Large v3 Turbo",
+      "name": "Whisper large-v3-turbo",
       "family": "Speech & Audio",
       "developer": "OpenAI",
       "attention_type": "Encoder-Decoder MHA (Pruned)",
@@ -3196,11 +3097,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "809M",
-      "primary_use": "4x Faster Low-Latency Transcription"
+      "primary_use": "4x Faster Low-Latency Transcription",
+      "support_status": "experimental"
     },
     {
       "id": "moonshine",
-      "name": "Useful Sensors Moonshine Fast ASR",
+      "name": "Moonshine",
       "family": "Speech & Audio",
       "developer": "Useful Sensors",
       "attention_type": "Encoder-Decoder MHA",
@@ -3213,11 +3115,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "27M - 110M",
-      "primary_use": "Ultra-light Microcontroller ASR"
+      "primary_use": "Ultra-light Microcontroller ASR",
+      "support_status": "experimental"
     },
     {
       "id": "seamless_m4t",
-      "name": "Meta SeamlessM4T Multi-Task",
+      "name": "SeamlessM4T",
       "family": "Speech & Audio",
       "developer": "Meta AI",
       "attention_type": "Conformer-Transformer",
@@ -3230,11 +3133,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "2.3B",
-      "primary_use": "Speech-to-Speech & Speech-to-Text Translation"
+      "primary_use": "Speech-to-Speech & Speech-to-Text Translation",
+      "support_status": "experimental"
     },
     {
       "id": "seamless_m4t_v2",
-      "name": "Meta SeamlessM4T v2 Expressive",
+      "name": "SeamlessM4T v2",
       "family": "Speech & Audio",
       "developer": "Meta AI",
       "attention_type": "UnitY2 Multi-Stage",
@@ -3247,11 +3151,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "2.3B",
-      "primary_use": "Zero-shot Prosodic & Expressive Translation"
+      "primary_use": "Zero-shot Prosodic & Expressive Translation",
+      "support_status": "experimental"
     },
     {
       "id": "mms_speech",
-      "name": "Meta MMS 1400 Languages",
+      "name": "MMS",
       "family": "Speech & Audio",
       "developer": "Meta AI",
       "attention_type": "Wav2Vec2 Conformer",
@@ -3264,11 +3169,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "300M - 1B",
-      "primary_use": "Massive Multilingual Audio Coverage"
+      "primary_use": "Massive Multilingual Audio Coverage",
+      "support_status": "experimental"
     },
     {
       "id": "wav2vec2",
-      "name": "Meta Wav2Vec 2.0 Self-Supervised",
+      "name": "wav2vec 2.0",
       "family": "Speech & Audio",
       "developer": "Meta AI",
       "attention_type": "Convolutional + Transformer",
@@ -3281,11 +3187,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "95M - 317M",
-      "primary_use": "Acoustic Pre-training Representation"
+      "primary_use": "Acoustic Pre-training Representation",
+      "support_status": "experimental"
     },
     {
       "id": "hubert",
-      "name": "Meta HuBERT Hidden-Unit",
+      "name": "HuBERT",
       "family": "Speech & Audio",
       "developer": "Meta AI",
       "attention_type": "Convolutional + Transformer",
@@ -3298,11 +3205,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "95M - 1B",
-      "primary_use": "Acoustic Unit Discovery"
+      "primary_use": "Acoustic Unit Discovery",
+      "support_status": "experimental"
     },
     {
       "id": "audioldm2",
-      "name": "Surrey AudioLDM 2 Audio Generation",
+      "name": "AudioLDM 2",
       "family": "Speech & Audio",
       "developer": "University of Surrey",
       "attention_type": "Latent Diffusion + AudioMAE",
@@ -3314,11 +3222,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "350M - 750M",
-      "primary_use": "Text-to-Audio and Sound Effects Synthesis"
+      "primary_use": "Text-to-Audio and Sound Effects Synthesis",
+      "support_status": "experimental"
     },
     {
       "id": "smollm",
-      "name": "Hugging Face SmolLM 135M/360M",
+      "name": "SmolLM",
       "family": "Edge & Micro",
       "developer": "Hugging Face",
       "attention_type": "GQA",
@@ -3331,11 +3240,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "135M - 360M",
-      "primary_use": "On-Device Browser / WebAssembly"
+      "primary_use": "On-Device Browser / WebAssembly",
+      "support_status": "experimental"
     },
     {
       "id": "smollm2",
-      "name": "Hugging Face SmolLM2 1.7B",
+      "name": "SmolLM2",
       "family": "Edge & Micro",
       "developer": "Hugging Face",
       "attention_type": "GQA",
@@ -3349,11 +3259,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "135M - 1.7B",
-      "primary_use": "Instruction Following Edge Reasoning"
+      "primary_use": "Instruction Following Edge Reasoning",
+      "support_status": "experimental"
     },
     {
       "id": "openelm",
-      "name": "Apple OpenELM Non-Uniform Layer",
+      "name": "OpenELM",
       "family": "Edge & Micro",
       "developer": "Apple",
       "attention_type": "GQA Non-Uniform",
@@ -3366,11 +3277,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "270M - 3B",
-      "primary_use": "Layer-Variable Efficiency on Apple Silicon"
+      "primary_use": "Layer-Variable Efficiency on Apple Silicon",
+      "support_status": "experimental"
     },
     {
       "id": "danube",
-      "name": "H2O Danube 1.8B Mobile",
+      "name": "H2O-Danube",
       "family": "Edge & Micro",
       "developer": "H2O.ai",
       "attention_type": "GQA",
@@ -3383,11 +3295,12 @@
       ],
       "native_tools_supported": false,
       "parameters_range": "1.8B",
-      "primary_use": "Mobile Edge Enterprise Baseline"
+      "primary_use": "Mobile Edge Enterprise Baseline",
+      "support_status": "experimental"
     },
     {
       "id": "danube2",
-      "name": "H2O Danube2 1.8B High Performance",
+      "name": "H2O-Danube2",
       "family": "Edge & Micro",
       "developer": "H2O.ai",
       "attention_type": "GQA",
@@ -3400,11 +3313,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "1.8B",
-      "primary_use": "Edge Task Execution"
+      "primary_use": "Edge Task Execution",
+      "support_status": "experimental"
     },
     {
       "id": "danube3",
-      "name": "H2O Danube3 500M/4B",
+      "name": "H2O-Danube3",
       "family": "Edge & Micro",
       "developer": "H2O.ai",
       "attention_type": "GQA",
@@ -3418,11 +3332,12 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "500M - 4B",
-      "primary_use": "Sub-1GB VRAM On-Device Processing"
+      "primary_use": "Sub-1GB VRAM On-Device Processing",
+      "support_status": "experimental"
     },
     {
       "id": "mobilellm",
-      "name": "Meta MobileLLM Sub-Billion",
+      "name": "MobileLLM",
       "family": "Edge & Micro",
       "developer": "Meta AI",
       "attention_type": "GQA Deep-Thin",
@@ -3435,41 +3350,8 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "125M - 1B",
-      "primary_use": "Embedding Sharing On-Device Smartphones"
-    },
-    {
-      "id": "femto_llama",
-      "name": "Femto LLaMA Micro Edge",
-      "family": "Edge & Micro",
-      "developer": "Edge Research Consortium",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "68M",
-      "primary_use": "Embedded IoT & Wearable Inference"
-    },
-    {
-      "id": "pico_qwen",
-      "name": "Pico Qwen Ultra-Light",
-      "family": "Edge & Micro",
-      "developer": "Edge Research Consortium",
-      "attention_type": "GQA",
-      "positional_embedding": "RoPE",
-      "activation": "SwiGLU",
-      "norm_type": "RMSNorm",
-      "supported_quantizations": [
-        "Q4_K_M",
-        "Q8_0"
-      ],
-      "native_tools_supported": false,
-      "parameters_range": "100M",
-      "primary_use": "Embedded Wearable NLP & Telemetry"
+      "primary_use": "Embedding Sharing On-Device Smartphones",
+      "support_status": "experimental"
     }
   ]
 }
