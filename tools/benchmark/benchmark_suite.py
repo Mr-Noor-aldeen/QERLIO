@@ -83,7 +83,7 @@ def run_benchmark(
     report = {
         "schema_version": "1.0",
         "timestamp_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "qerlio_version": "0.1.0-alpha",
+        "qerlio_version": "0.2.1",
         "backend": "qerlio-reference-cpu",
         "profile": profile_name,
         "device": {
