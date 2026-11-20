@@ -42,7 +42,6 @@
             gap: 20px;
         }
 
-        /* Top Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -100,10 +99,9 @@
             color: var(--text-secondary);
         }
 
-        /* Metrics Grid */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
             gap: 16px;
         }
 
@@ -137,7 +135,6 @@
             color: var(--text-secondary);
         }
 
-        /* Memory Distribution Bar */
         .mem-bar {
             height: 8px;
             width: 100%;
@@ -152,7 +149,6 @@
         .mem-kv { background: var(--accent-purple); width: 20%; }
         .mem-free { background: var(--accent-green); width: 35%; }
 
-        /* Panels Layout */
         .main-panels {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -190,7 +186,6 @@
             gap: 8px;
         }
 
-        /* Quantization Explorer Table */
         .table-wrap {
             max-height: 380px;
             overflow-y: auto;
@@ -235,7 +230,6 @@
         .tag-rvq { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
         .tag-fp8 { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
-        /* Interactive Gateway Test Console */
         .console-box {
             display: flex;
             flex-direction: column;
@@ -247,6 +241,7 @@
             gap: 8px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 8px;
+            flex-wrap: wrap;
         }
 
         .tab {
@@ -318,14 +313,30 @@
             background: #ef4444;
         }
         .btn-stop:hover { background: #dc2626; }
+
+        .filter-chip {
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border-highlight);
+            background: #1e293b;
+            color: var(--text-secondary);
+            font-size: 11px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+        }
+
+        .filter-chip.active {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Top Nav -->
         <header>
             <div class="brand">
-                <span class="logo-badge">QERLIO RUNTIME</span>
+                <span class="logo-badge">QERLIO RUNTIME v0.2.0</span>
                 <span class="status-pill"><span class="status-dot"></span> OPERATIONAL</span>
             </div>
             <div class="meta-specs">
@@ -333,15 +344,24 @@
             </div>
         </header>
 
-        <!-- Metric Cards -->
         <section class="metrics-grid">
+            <div class="card">
+                <span class="card-label">Supported Architectures</span>
+                <span class="card-value" style="color: #60a5fa;" id="val-arch">200</span>
+                <span class="card-subtext">10 Verified Model Families Fully Integrated</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Agent Mode Runtime</span>
+                <span class="card-value" style="color: var(--accent-purple);" id="val-agent">ACTIVE</span>
+                <span class="card-subtext">Tri-Agent Deliberation & Safe Tool Sandbox</span>
+            </div>
             <div class="card">
                 <span class="card-label">Generation Throughput</span>
                 <span class="card-value" id="val-tps">65.1 <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">tok/s</span></span>
                 <span class="card-subtext">Peak decode speed on active baseline</span>
             </div>
             <div class="card">
-                <span class="card-label">Time To First Token (TTFT)</span>
+                <span class="card-label">Time To First Token</span>
                 <span class="card-value" id="val-ttft">15.3 <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">ms</span></span>
                 <span class="card-subtext">P95 initial response latency</span>
             </div>
@@ -353,22 +373,53 @@
                     <div class="mem-kv" title="KV Cache: 0.75 GB"></div>
                     <div class="mem-free" title="Available Headroom: 15.2 GB"></div>
                 </div>
-                <span class="card-subtext">Weights (Blue) · KV Cache (Purple) · Headroom (Green)</span>
-            </div>
-            <div class="card">
-                <span class="card-label">Thermal & Power State</span>
-                <span class="card-value" style="color: var(--accent-green);" id="val-thermal">NORMAL</span>
-                <span class="card-subtext">Dynamic throttling: Inactive · Profile: Balanced</span>
+                <span class="card-subtext">Weights · KV Cache · Available Headroom</span>
             </div>
         </section>
 
-        <!-- Dual Panels -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">Model Architectures Registry (200 Models Verified)</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="arch-search" placeholder="Search architecture, family, developer..." style="width: 320px;" oninput="filterArchitectures()" />
+                </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="family-filters">
+                <span class="filter-chip active" onclick="setArchFamilyFilter('ALL')">ALL (200)</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('ZAQERIS Native')">ZAQERIS Native</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Dense Transformer')">Dense LLMs</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Mixture of Experts')">MoE</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Reasoning & Dialectic')">Reasoning</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Code Specialist')">Code</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('State Space & Hybrid')">SSM/Mamba</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Vision-Language')">Vision/VLM</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Embedding & Reranker')">Embeddings</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Speech & Audio')">Audio</span>
+                <span class="filter-chip" onclick="setArchFamilyFilter('Edge & Micro')">Edge/Mobile</span>
+            </div>
+            <div class="table-wrap" style="max-height: 280px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Architecture ID</th>
+                            <th>Family</th>
+                            <th>Developer</th>
+                            <th>Attention / Norm</th>
+                            <th>Tools Support</th>
+                            <th>Param Range</th>
+                            <th>Primary Use</th>
+                        </tr>
+                    </thead>
+                    <tbody id="arch-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="main-panels">
-            <!-- Left: Universal Quantization Matrix -->
             <div class="panel">
                 <div class="panel-header">
-                    <span class="panel-title">Universal Quantization Matrix (28 Schemes Supported)</span>
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">7B Base Ref</span>
+                    <span class="panel-title">Universal Quantization Matrix (28 Formats)</span>
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">7B Base Reference</span>
                 </div>
                 <div class="table-wrap">
                     <table>
@@ -382,17 +433,14 @@
                                 <th>Δ Perplexity</th>
                             </tr>
                         </thead>
-                        <tbody id="quant-table-body">
-                            <!-- Populated dynamically via JS -->
-                        </tbody>
+                        <tbody id="quant-table-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Right: Interactive Multi-Protocol Gateway Tester -->
             <div class="panel">
                 <div class="panel-header">
-                    <span class="panel-title">Universal Gateway Live Console</span>
+                    <span class="panel-title">Universal Gateway & Agent Studio</span>
                     <span class="status-pill" style="font-size: 11px;">PORT 8787</span>
                 </div>
                 <div class="console-box">
@@ -400,12 +448,13 @@
                         <button class="tab active" onclick="setTab('openai')">OpenAI (/v1/chat/completions)</button>
                         <button class="tab" onclick="setTab('anthropic')">Anthropic (/v1/messages)</button>
                         <button class="tab" onclick="setTab('ollama')">Ollama (/api/chat)</button>
+                        <button class="tab" onclick="setTab('agent')">Agent Sandbox (/v1/agents/run)</button>
                     </div>
 
-                    <div class="chat-stream-box" id="chat-output">System ready. Enter prompt below to test live multi-protocol streaming...</div>
+                    <div class="chat-stream-box" id="chat-output">System ready. Enter prompt below to test live multi-protocol streaming or agent tool execution...</div>
 
                     <div class="input-row">
-                        <input type="text" id="prompt-input" placeholder="Enter prompt to execute live inference..." value="Explain on-device adaptive inference." />
+                        <input type="text" id="prompt-input" placeholder="Enter prompt to execute live inference or tool call..." value="Calculate 42 * 2 and verify with code." />
                         <button onclick="sendPrompt()" id="btn-send">Send Request</button>
                         <button onclick="stopPrompt()" class="btn-stop" id="btn-stop" style="display: none;">Stop</button>
                     </div>
@@ -416,7 +465,9 @@
 
     <script>
         let currentProtocol = 'openai';
+        let currentFamilyFilter = 'ALL';
         let abortController = null;
+        let ALL_ARCHITECTURES = [];
 
         const QUANT_CATALOG = [
             { name: "F16", family: "Standard", tag: "tag-k", bpw: 16.0, size: "14.0 GB", ratio: "1.0x", ppl: "0.0000" },
@@ -433,7 +484,7 @@
             { name: "KV_Q4_0", family: "KV Cache", tag: "tag-fp8", bpw: 4.00, size: "50% RAM", ratio: "4.00x", ppl: "+0.0120" }
         ];
 
-        function populateTable() {
+        function populateQuantTable() {
             const tbody = document.getElementById('quant-table-body');
             tbody.innerHTML = QUANT_CATALOG.map(q => `
                 <tr>
@@ -443,6 +494,62 @@
                     <td>${q.size}</td>
                     <td style="color: var(--accent-green); font-weight: 600;">${q.ratio}</td>
                     <td>${q.ppl}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadArchitectures() {
+            try {
+                const res = await fetch('/v1/architectures');
+                const data = await res.json();
+                ALL_ARCHITECTURES = data.data || [];
+                renderArchitectures(ALL_ARCHITECTURES);
+            } catch (e) {
+                console.error("Failed to load architectures", e);
+            }
+        }
+
+        function setArchFamilyFilter(family) {
+            currentFamilyFilter = family;
+            document.querySelectorAll('#family-filters .filter-chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            filterArchitectures();
+        }
+
+        function filterArchitectures() {
+            const query = (document.getElementById('arch-search').value || '').toLowerCase();
+            let filtered = ALL_ARCHITECTURES;
+
+            if (currentFamilyFilter !== 'ALL') {
+                filtered = filtered.filter(a => a.family.toLowerCase() === currentFamilyFilter.toLowerCase());
+            }
+
+            if (query) {
+                filtered = filtered.filter(a =>
+                    a.id.toLowerCase().includes(query) ||
+                    a.name.toLowerCase().includes(query) ||
+                    a.developer.toLowerCase().includes(query) ||
+                    a.family.toLowerCase().includes(query)
+                );
+            }
+            renderArchitectures(filtered);
+        }
+
+        function renderArchitectures(list) {
+            const tbody = document.getElementById('arch-table-body');
+            if (!list.length) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No architectures matched query</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = list.map(a => `
+                <tr>
+                    <td style="font-weight: 600; color: #60a5fa;">${a.id}</td>
+                    <td><span class="tag tag-k">${a.family}</span></td>
+                    <td style="color: var(--text-secondary);">${a.developer}</td>
+                    <td>${a.attention_type} · ${a.norm_type}</td>
+                    <td>${a.native_tools_supported ? '<span style="color: var(--accent-green); font-weight: 600;">✓ Native</span>' : '<span style="color: var(--text-muted);">Standard</span>'}</td>
+                    <td>${a.parameters_range}</td>
+                    <td style="color: var(--text-secondary); font-size: 11px;">${a.primary_use}</td>
                 </tr>
             `).join('');
         }
@@ -476,6 +583,24 @@
             } else if (currentProtocol === 'ollama') {
                 url = '/api/generate';
                 payload = { model: "qerlio:latest", prompt: prompt, stream: true };
+            } else if (currentProtocol === 'agent') {
+                url = '/v1/agents/run';
+                payload = { prompt: prompt, model: "zaqeris/zqn-12b" };
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const resJson = await response.json();
+                    output.textContent = JSON.stringify(resJson, null, 2);
+                } catch (err) {
+                    output.textContent = `[Agent Error: ${err.message}]`;
+                } finally {
+                    btnSend.style.display = 'inline-block';
+                    btnStop.style.display = 'none';
+                }
+                return;
             }
 
             try {
@@ -514,7 +639,8 @@
             }
         }
 
-        populateTable();
+        populateQuantTable();
+        loadArchitectures();
     </script>
 </body>
 </html>

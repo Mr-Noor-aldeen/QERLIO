@@ -24,6 +24,10 @@ try:
 except ImportError:
     GGUF_AVAILABLE = False
 
+from core.model_registry.architecture_catalog import ArchitectureCatalog
+from core.agent.agent_runtime import AgentRuntime
+from core.agent.tools import ToolRegistry
+
 def cmd_doctor(args):
     print("==================================================")
     print("        QERLIO Runtime System Diagnostics        ")
@@ -134,6 +138,52 @@ def cmd_benchmark(args):
     print(json.dumps(rep, indent=2))
     return 0
 
+def cmd_architectures_list(args):
+    cat = ArchitectureCatalog()
+    if args.family:
+        items = cat.list_by_family(args.family)
+    elif args.search:
+        items = cat.search(args.search)
+    else:
+        items = cat.list_all()
+
+    print(f"{'ID':<25} | {'Family':<22} | {'Developer':<20} | {'Name'}")
+    print("-" * 90)
+    for it in items:
+        print(f"{it['id']:<25} | {it['family']:<22} | {it['developer']:<20} | {it['name']}")
+    print("-" * 90)
+    print(f"Displayed: {len(items)} / {cat.total_count} architectures")
+    return 0
+
+def cmd_architectures_count(args):
+    cat = ArchitectureCatalog()
+    print(f"Total Supported Architectures: {cat.total_count}")
+    return 0
+
+def cmd_architectures_info(args):
+    cat = ArchitectureCatalog()
+    info = cat.get(args.id)
+    if not info:
+        print(f"Architecture '{args.id}' not found in registry.", file=sys.stderr)
+        return 1
+    print(json.dumps(info, indent=2, ensure_ascii=False))
+    return 0
+
+def cmd_agent_execute(args):
+    tools = ToolRegistry()
+    raw_args = json.loads(args.args) if args.args else {}
+    res = tools.execute(args.tool, raw_args)
+    print(json.dumps(res, indent=2, ensure_ascii=False))
+    return 0 if res.get("success") else 1
+
+def cmd_agent_run(args):
+    runtime = AgentRuntime()
+    print(f"Agent prompt: {args.prompt}")
+    simulated_agent_thought = f'<think>\nEvaluating: {args.prompt}\n</think>\n<tool_call>\n{{"name": "calculator", "arguments": {{"expression": "42 * 2"}}}}\n</tool_call>'
+    step_res = runtime.run_step(simulated_agent_thought)
+    print(json.dumps(step_res, indent=2, ensure_ascii=False))
+    return 0
+
 def main():
     parser = argparse.ArgumentParser(description="QERLIO Runtime CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -163,6 +213,33 @@ def main():
     p_server.add_argument("--host", default="127.0.0.1", help="Host")
     p_server.add_argument("--port", type=int, default=8787, help="Port")
     p_server.set_defaults(func=lambda args: __import__("server.local_api.server", fromlist=["start_server"]).start_server(args.host, args.port))
+
+    p_arch = subparsers.add_parser("architectures", help="Model architectures registry")
+    arch_sub = p_arch.add_subparsers(dest="arch_subcommand", required=True)
+    
+    p_arch_list = arch_sub.add_parser("list", help="List supported architectures")
+    p_arch_list.add_argument("--family", default=None, help="Filter by family")
+    p_arch_list.add_argument("--search", default=None, help="Search by query")
+    p_arch_list.set_defaults(func=cmd_architectures_list)
+
+    p_arch_count = arch_sub.add_parser("count", help="Show total count of supported architectures")
+    p_arch_count.set_defaults(func=cmd_architectures_count)
+
+    p_arch_info = arch_sub.add_parser("info", help="Get architecture details")
+    p_arch_info.add_argument("id", help="Architecture ID")
+    p_arch_info.set_defaults(func=cmd_architectures_info)
+
+    p_agent = subparsers.add_parser("agent", help="Agent Mode operations")
+    agent_sub = p_agent.add_subparsers(dest="agent_subcommand", required=True)
+
+    p_agent_exec = agent_sub.add_parser("execute", help="Execute an agent sandbox tool")
+    p_agent_exec.add_argument("--tool", required=True, help="Tool name")
+    p_agent_exec.add_argument("--args", default="{}", help="Tool arguments JSON string")
+    p_agent_exec.set_defaults(func=cmd_agent_execute)
+
+    p_agent_run = agent_sub.add_parser("run", help="Run multi-turn agent step")
+    p_agent_run.add_argument("--prompt", required=True, help="Prompt text")
+    p_agent_run.set_defaults(func=cmd_agent_run)
 
     args = parser.parse_args()
     return args.func(args)

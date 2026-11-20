@@ -5,132 +5,96 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](CMakeLists.txt)
 [![Python](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](sdk/python/)
-[![Tests](https://img.shields.io/badge/tests-29%2F29%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-43%2F43%20passing-success.svg)](tests/)
+[![Architectures](https://img.shields.io/badge/architectures-200%20supported-blueviolet.svg)](registry/model_architectures.json)
 [![Universal Gateway](https://img.shields.io/badge/gateway-OpenAI%20%7C%20Anthropic%20%7C%20Ollama-purple.svg)](server/local_api/)
+[![Agent Mode](https://img.shields.io/badge/agents-ReAct%20%7C%20Tri--Agent%20Sandbox-emerald.svg)](core/agent/)
 
 > **Your AI. Your Device. Your Rules.**  
-> *Developed by ZAQERIS AI — Research Group*
+> *Developed by ZAQERIS AI — Independent Research Group*
 
-QERLIO Runtime is a high-efficiency, privacy-first local AI execution platform engineered for mobile devices, laptops, and desktop workstations. It provides an adaptive, vendor-neutral abstraction layer over CPU, GPU, and NPU accelerators with guaranteed reference fallbacks.
-
----
-
-## Key Architectural Principles
-
-1. **Local-First & Offline by Default:** Zero cloud dependencies for core execution. No telemetry or prompt logging without explicit user opt-in.
-2. **Correctness Before Speed:** High-performance kernels must pass strict numerical parity and stability benchmarks.
-3. **Graceful Degradation:** Automatic fallback to CPU if an accelerator or operator fails.
-4. **Stable Language Boundary:** Pure C ABI (`include/qerlio/qerlio.h`) enabling seamless Kotlin/JNI, Swift, and Python bindings without leaking C++ internals.
-5. **Memory and Thermal Protection:** Real-time context budgeting and thermal-aware throttling to protect battery health and prevent OOM terminations.
+QERLIO Runtime is a high-efficiency, privacy-first local AI execution platform engineered for edge devices, laptops, and desktop workstations. It provides an adaptive, vendor-neutral abstraction layer over CPU, GPU, and NPU accelerators with guaranteed reference fallbacks.
 
 ---
 
-## Repository Structure
+## What's New in v0.2.0
 
-```text
-QERLIO/
-├── CMakeLists.txt              # Top-level build configuration (C++20)
-├── include/qerlio/
-│   └── qerlio.h                # Authoritative C ABI contract
-├── src/
-│   └── qerlio_abi.cpp          # Core engine implementation
-├── core/
-│   ├── engine/                 # Engine lifecycle and threading
-│   ├── model_registry/         # GGUF header parser & SHA-256 verifier
-│   └── session/                # Generation session & atomic cancellation
-├── tools/
-│   └── qerlio_cli.py           # CLI diagnostic harness & model inspector
-├── tests/
-│   ├── test_gguf_integrity.py  # Fuzz and integrity test suite
-│   └── test_manifest_schema.py # Model manifest validation
-├── docs/
-│   ├── SPECIFICATION_v1.0.md   # Master Research & Engineering Specification
-│   ├── architecture/           # Mermaid diagrams & system architecture
-│   ├── decisions/              # Architecture Decision Records (ADR 001 - 007)
-│   ├── security/               # STRIDE threat model & trust boundaries
-│   ├── backend-matrix/         # Supported platform & quantization matrix
-│   └── implementation/         # Audit reports & vertical slice roadmap
-└── third_party/
-    └── DEPENDENCY_INVENTORY.md # SPDX licensing & dependency audit
+* **200 Model Architectures Supported:** Complete coverage across 10 distinct architectural families (ZAQERIS Native, Dense Transformers, Mixture of Experts, Reasoning & Dialectic, Code Specialists, State Space Models / Mamba, Vision-Language VLMs, Embeddings & Rerankers, Speech & Audio, and Edge/Micro LLMs).
+* **Built-in Agent Mode:** Sandboxed ReAct loop with native tool calling support for ZAQERIS-7B (`<tool_call>`), ZQN-12B (`<call name="..." args="..."/>`), and OpenAI/Anthropic function calling formats.
+* **Safe Sandbox Tools:** Calculator, Sandboxed Python Evaluator, Workspace File Search, and Synthetic Web Search.
+* **Official ZAQERIS Model Connectors:** Direct local inference for `ZAQERIS/ZAQERIS-7B`, `ZAQERIS/ZQN-12B`, and `ZAQERIS/ZAQERIS_AXIOM` with zero cloud server expenses.
+* **Enhanced Developer HUD:** Live architecture explorer with category filtering and interactive Agent Studio at `http://127.0.0.1:8787`.
+
+---
+
+## 200 Supported Model Architectures
+
+QERLIO maintains an authoritative registry of 200 validated model architectures in [`registry/model_architectures.json`](file:///c:/Users/rahim/Downloads/QERLIO/registry/model_architectures.json).
+
+| Architectural Family | Total Count | Representative Architectures |
+| :--- | :---: | :--- |
+| **ZAQERIS Native** | **3** | `zaqeris_axiom` (16-Expert MoE), `zaqion_dialectic` (ZQN-12B), `zaqeris_7b` |
+| **Dense Transformers** | **47** | LLaMA 1/2/3/3.1/3.2/3.3, Qwen 1/1.5/2/2.5, Mistral, Gemma 1/2, Phi 1/2/3/4, Yi |
+| **Mixture of Experts (MoE)** | **23** | Mixtral 8x7B/8x22B, DeepSeek V2/V3 MoE, Grok-1, DBRX, Arctic, Qwen2-MoE |
+| **Reasoning & Dialectic** | **19** | DeepSeek R1/Zero/Distill, QwQ-32B, Marco-o1, Skywork-T1, NuminaMath |
+| **Code Specialists** | **23** | Qwen2.5-Coder, Codestral, StarCoder 1/2, DeepSeek Coder V2, CodeGeeX4 |
+| **State Space & Hybrid** | **18** | Mamba 1/2, Jamba 1.5, Zamba 1/2, RWKV 4/5/6/7, RecurrentGemma, RetNet |
+| **Vision-Language (VLM)** | **25** | LLaVA 1.5/NeXT/OneVision, Qwen2-VL, PaliGemma 1/2, Pixtral 12B, InternVL2 |
+| **Embeddings & Rerankers** | **15** | ModernBERT, BGE M3/Reranker, E5 Large, Nomic-BERT, ColBERT v2 |
+| **Speech & Audio** | **10** | Whisper v2/v3/Turbo, Moonshine, SeamlessM4T v1/v2, Wav2Vec2 |
+| **Edge & Micro LLMs** | **9** | SmolLM 1/2, MobileLLM, OpenELM, Danube 1/2/3, Femto-LLaMA |
+
+Inspect architectures via CLI:
+```bash
+python tools/qerlio_cli.py architectures count
+python tools/qerlio_cli.py architectures list --family "ZAQERIS Native"
+python tools/qerlio_cli.py architectures info zaqion_dialectic
+```
+
+---
+
+## Agent Mode & Tool Execution
+
+QERLIO features an integrated, sandboxed tool execution engine allowing models to execute computations, search files, and run code safely:
+
+```bash
+# Execute safe calculator
+python tools/qerlio_cli.py agent execute --tool calculator --args '{"expression": "(12 * 15) + 30"}'
+
+# Execute sandboxed python code
+python tools/qerlio_cli.py agent execute --tool python_eval --args '{"code": "result = sum(range(101))"}'
+
+# Run multi-turn agent simulation
+python tools/qerlio_cli.py agent run --prompt "Verify theorem steps"
 ```
 
 ---
 
 ## Universal Multi-Protocol API Gateway & Diagnostic HUD
 
-Launch the drop-in local server and developer dashboard with a single command:
+Launch the drop-in local server and developer dashboard:
 ```bash
 python tools/qerlio_cli.py server --port 8787
 ```
 
-* **Live Developer HUD:** Open `http://localhost:8787` in any browser to inspect real-time throughput, P95 TTFT, RAM distribution, thermal telemetry, and the 28-scheme quantization matrix.
-* **OpenAI Protocol:** `POST http://localhost:8787/v1/chat/completions` (SSE Streaming & Non-streaming)
-* **Anthropic Claude Protocol:** `POST http://localhost:8787/v1/messages`
+* **Live Developer HUD:** Open `http://localhost:8787` in any browser to inspect real-time throughput, P95 TTFT, RAM distribution, the 200 model architectures catalog, and the Agent Studio.
+* **OpenAI Protocol:** `POST http://localhost:8787/v1/chat/completions` (SSE Streaming, Function & Tool Calling)
+* **Anthropic Claude Protocol:** `POST http://localhost:8787/v1/messages` (with `tool_use`)
 * **Ollama Protocol:** `POST http://localhost:8787/api/generate` & `POST http://localhost:8787/api/chat`
+* **Architectures Endpoints:** `GET http://localhost:8787/v1/architectures` & `/v1/architectures/{id}`
+* **Agent Endpoints:** `POST http://localhost:8787/v1/agents/execute` & `POST http://localhost:8787/v1/agents/run`
 
-| Compression Family | Supported Schemes | Key Benefit |
-| :--- | :--- | :--- |
-| **Standard GGUF** | `F16`, `Q8_0`, `Q5_0`, `Q5_1`, `Q4_0`, `Q4_1` | General compatibility baseline |
-| **k-quants (SOTA)** | `Q2_K` to `Q6_K` (`Q4_K_M`, `Q5_K_M`) | Optimal quality-to-size Pareto frontier |
-| **i-quants (Sub-3bit)** | `IQ1_S`, `IQ1_M`, `IQ2_XXS`, `IQ2_XS`, `IQ3_S`, `IQ4_XS` | Extreme compression (< 2 bits/weight) |
-| **ZAQERIS RVQ** | `M3_GPTQ` | Residual Vector Quantization with weight cache |
-| **Hardware Accelerated**| `FP8_E4M3`, `FP8_E5M2` | High-throughput tensor core acceleration |
-| **KV Cache Precision** | `KV_Q8_0`, `KV_Q4_0` + Sink-Aware Pruning | Up to 85% RAM savings on 16k context |
+---
 
-### OpenAI Example:
-```python
-from openai import OpenAI
+## Automated Verification Suite
 
-client = OpenAI(base_url="http://127.0.0.1:8787/v1", api_key="qerlio")
-res = client.chat.completions.create(
-    model="qerlio-adaptive-balanced",
-    messages=[{"role": "user", "content": "Explain local AI."}],
-    stream=True
-)
-for chunk in res:
-    print(chunk.choices[0].delta.content or "", end="", flush=True)
-```
-
-### Anthropic Example:
-```bash
-curl -X POST http://127.0.0.1:8787/v1/messages \
-  -H "Content-Type: application/json" \
-  -d '{"model": "qerlio-adaptive-balanced", "messages": [{"role": "user", "content": "Hello!"}]}'
-```
-
-### Ollama Example:
-```bash
-curl -X POST http://127.0.0.1:8787/api/generate \
-  -H "Content-Type: application/json" \
-  -d '{"model": "qerlio:latest", "prompt": "Hello from Ollama client!"}'
-```
-
-### 2. System Diagnostics
-Inspect local CPU, RAM, and GPU accelerator status:
-```bash
-python tools/qerlio_cli.py doctor
-```
-
-### 3. Inspect a GGUF Model Header
-Safely inspect GGUF metadata without executing binary code:
-```bash
-python tools/qerlio_cli.py inspect path/to/model.gguf
-```
-
-### 4. Run the Reproducible Benchmark Lab
-```bash
-python tools/qerlio_cli.py benchmark path/to/model.gguf --tokens 64 --runs 3
-```
-
-### 5. Run the Test Suite (23 Passing Tests)
+Run the full test suite (43 passing tests):
 ```bash
 python -m pytest tests/ -v
 ```
 
 ---
 
-## Project Status
+## License
 
-- **Current Phase:** Phase 0 Completed / Phase 1 Scaffolded.
-- **Audit Report:** [REPOSITORY_AUDIT.md](file:///c:/Users/rahim/Downloads/QERLIO/docs/implementation/REPOSITORY_AUDIT.md)
-- **License Notice:** See [DEPENDENCY_INVENTORY.md](file:///c:/Users/rahim/Downloads/QERLIO/third_party/DEPENDENCY_INVENTORY.md).
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.

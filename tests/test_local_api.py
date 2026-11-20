@@ -85,7 +85,7 @@ def test_ollama_endpoints():
     assert res_tags.status_code == 200
     tags_data = res_tags.json()
     assert "models" in tags_data
-    assert tags_data["models"][0]["name"] == "qerlio:latest"
+    assert any(m["name"] == "qerlio:latest" for m in tags_data["models"])
 
     # /api/generate
     res_gen = client.post("/api/generate", json={

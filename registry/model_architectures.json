@@ -1,0 +1,3475 @@
+{
+  "schema_version": "1.2.0",
+  "total_count": 200,
+  "supported_families_count": 10,
+  "architectures": [
+    {
+      "id": "zaqeris_axiom",
+      "name": "ZAQERIS AXIOM (16-Expert MoE)",
+      "family": "ZAQERIS Native",
+      "developer": "ZAQERIS AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "M3",
+        "M3_GPTQ",
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "32B (MoE 16x2B)",
+      "primary_use": "High-throughput Dialectical Reasoning & Multi-turn Execution"
+    },
+    {
+      "id": "zaqion_dialectic",
+      "name": "ZAQERIS ZQN-12B Dialectical",
+      "family": "ZAQERIS Native",
+      "developer": "ZAQERIS AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "M3_GPTQ",
+        "Q4_K_M",
+        "Q5_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "12B",
+      "primary_use": "Tri-Agent Deliberation, Self-Healing Code & Deep Reasoning"
+    },
+    {
+      "id": "zaqeris_7b",
+      "name": "ZAQERIS-7B Tool Specialist",
+      "family": "ZAQERIS Native",
+      "developer": "ZAQERIS AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "NF4",
+        "Q4_K_M",
+        "Q8_0",
+        "M3_GPTQ",
+        "FP16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Autonomous Function Calling, Auto-Search & Local VRAM Edge"
+    },
+    {
+      "id": "llama",
+      "name": "LLaMA-1 Foundation",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 65B",
+      "primary_use": "Foundation Pre-training"
+    },
+    {
+      "id": "llama2",
+      "name": "LLaMA-2 Chat/Base",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Conversational Dialogue"
+    },
+    {
+      "id": "llama3",
+      "name": "LLaMA-3 Instruct",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B - 70B",
+      "primary_use": "General Reasoning & Instruction Following"
+    },
+    {
+      "id": "llama3.1",
+      "name": "LLaMA-3.1 128K",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B - 405B",
+      "primary_use": "Long Context & Multilingual"
+    },
+    {
+      "id": "llama3.2",
+      "name": "LLaMA-3.2 Compact",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1B - 3B",
+      "primary_use": "On-Device Mobile Inference"
+    },
+    {
+      "id": "llama3.3",
+      "name": "LLaMA-3.3 70B Enterprise",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "70B",
+      "primary_use": "Frontier Enterprise Reasoning"
+    },
+    {
+      "id": "qwen",
+      "name": "Qwen-7B Original",
+      "family": "Dense Transformer",
+      "developer": "Alibaba Cloud",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 14B",
+      "primary_use": "Bilingual Chinese/English"
+    },
+    {
+      "id": "qwen1.5",
+      "name": "Qwen-1.5 Multi-Scale",
+      "family": "Dense Transformer",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "0.5B - 72B",
+      "primary_use": "Multi-tier Scale Deployment"
+    },
+    {
+      "id": "qwen2",
+      "name": "Qwen2 High-Fidelity",
+      "family": "Dense Transformer",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "0.5B - 72B",
+      "primary_use": "Multilingual & Tool Agent Execution"
+    },
+    {
+      "id": "qwen2.5",
+      "name": "Qwen2.5 Flagship",
+      "family": "Dense Transformer",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "0.5B - 72B",
+      "primary_use": "Coding, Math & Structural Agent Calling"
+    },
+    {
+      "id": "qwen2.5_math",
+      "name": "Qwen2.5-Math Specialized",
+      "family": "Dense Transformer",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.5B - 72B",
+      "primary_use": "Mathematical Reasoning & Step Proofs"
+    },
+    {
+      "id": "mistral_7b_v0.1",
+      "name": "Mistral-7B Base",
+      "family": "Dense Transformer",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B",
+      "primary_use": "Sliding Window Inference"
+    },
+    {
+      "id": "mistral_7b_v0.2",
+      "name": "Mistral-7B Instruct 32K",
+      "family": "Dense Transformer",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Conversational & Context Processing"
+    },
+    {
+      "id": "mistral_7b_v0.3",
+      "name": "Mistral-7B v0.3 Function Call",
+      "family": "Dense Transformer",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Native Tool Calling & Tekken Tokenizer"
+    },
+    {
+      "id": "mistral_nemo",
+      "name": "Mistral NeMo 12B",
+      "family": "Dense Transformer",
+      "developer": "Mistral AI & NVIDIA",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "12B",
+      "primary_use": "128K Multilingual Large Context"
+    },
+    {
+      "id": "gemma",
+      "name": "Google Gemma 1",
+      "family": "Dense Transformer",
+      "developer": "Google DeepMind",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "2B - 7B",
+      "primary_use": "Lightweight Research Edge"
+    },
+    {
+      "id": "gemma2",
+      "name": "Google Gemma 2 Sliding/Global",
+      "family": "Dense Transformer",
+      "developer": "Google DeepMind",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "2B - 27B",
+      "primary_use": "Soft-Capping Logits & High Efficiency"
+    },
+    {
+      "id": "phi1",
+      "name": "Microsoft Phi-1 Code",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.3B",
+      "primary_use": "Textbooks are all you need"
+    },
+    {
+      "id": "phi1.5",
+      "name": "Microsoft Phi-1.5",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.3B",
+      "primary_use": "Synthetic Reasoning"
+    },
+    {
+      "id": "phi2",
+      "name": "Microsoft Phi-2 Small",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "2.7B",
+      "primary_use": "Compact Multi-Step Reasoning"
+    },
+    {
+      "id": "phi3_mini",
+      "name": "Microsoft Phi-3 Mini 4K/128K",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3.8B",
+      "primary_use": "Mobile & Edge Function Calling"
+    },
+    {
+      "id": "phi3_small",
+      "name": "Microsoft Phi-3 Small (BlockSparse)",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "BlockSparse",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Hardware-efficient Attention"
+    },
+    {
+      "id": "phi3_medium",
+      "name": "Microsoft Phi-3 Medium 14B",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "14B",
+      "primary_use": "Mid-tier High Quality Reasoning"
+    },
+    {
+      "id": "phi4",
+      "name": "Microsoft Phi-4 14B Synthetic",
+      "family": "Dense Transformer",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "14B",
+      "primary_use": "Math & Complex Synthesis"
+    },
+    {
+      "id": "yi",
+      "name": "01.AI Yi-34B/6B",
+      "family": "Dense Transformer",
+      "developer": "01.AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "6B - 34B",
+      "primary_use": "200K Long Context Processing"
+    },
+    {
+      "id": "yi_1.5",
+      "name": "01.AI Yi-1.5 Post-Trained",
+      "family": "Dense Transformer",
+      "developer": "01.AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "6B - 34B",
+      "primary_use": "Coding & Math Instruction Following"
+    },
+    {
+      "id": "yi_lightning",
+      "name": "01.AI Yi-Lightning",
+      "family": "Dense Transformer",
+      "developer": "01.AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "34B",
+      "primary_use": "Ultra-fast Low Latency Serving"
+    },
+    {
+      "id": "internlm",
+      "name": "Shanghai AI Lab InternLM",
+      "family": "Dense Transformer",
+      "developer": "Shanghai AI Lab",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 20B",
+      "primary_use": "Bilingual Multimodal Backbone"
+    },
+    {
+      "id": "internlm2",
+      "name": "InternLM2 200K",
+      "family": "Dense Transformer",
+      "developer": "Shanghai AI Lab",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 20B",
+      "primary_use": "Long Context & Agent Reasoning"
+    },
+    {
+      "id": "internlm2.5",
+      "name": "InternLM2.5 1M Context",
+      "family": "Dense Transformer",
+      "developer": "Shanghai AI Lab",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.8B - 20B",
+      "primary_use": "Ultra-Long Document Synthesis"
+    },
+    {
+      "id": "baichuan",
+      "name": "Baichuan-1 Foundation",
+      "family": "Dense Transformer",
+      "developer": "Baichuan Inc",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 13B",
+      "primary_use": "Chinese Foundation"
+    },
+    {
+      "id": "baichuan2",
+      "name": "Baichuan2 2.6T Tokens",
+      "family": "Dense Transformer",
+      "developer": "Baichuan Inc",
+      "attention_type": "ALiBi",
+      "positional_embedding": "ALiBi",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 13B",
+      "primary_use": "Cross-lingual Medical & Knowledge"
+    },
+    {
+      "id": "falcon",
+      "name": "TII Falcon 7B/40B/180B",
+      "family": "Dense Transformer",
+      "developer": "Technology Innovation Institute",
+      "attention_type": "MQA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 180B",
+      "primary_use": "RefinedWeb Parallel Attention"
+    },
+    {
+      "id": "falcon2",
+      "name": "TII Falcon2 11B VLM-Ready",
+      "family": "Dense Transformer",
+      "developer": "Technology Innovation Institute",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "11B",
+      "primary_use": "Vision-to-Language Ready"
+    },
+    {
+      "id": "chinchilla",
+      "name": "DeepMind Chinchilla Compute-Optimal",
+      "family": "Dense Transformer",
+      "developer": "Google DeepMind",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "70B",
+      "primary_use": "Scaling Law Benchmark"
+    },
+    {
+      "id": "opt",
+      "name": "Meta OPT Open Pre-trained",
+      "family": "Dense Transformer",
+      "developer": "Meta AI",
+      "attention_type": "MHA",
+      "positional_embedding": "Learned",
+      "activation": "ReLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "125M - 66B",
+      "primary_use": "Academic Reproducibility"
+    },
+    {
+      "id": "bloom",
+      "name": "BigScience BLOOM 176B",
+      "family": "Dense Transformer",
+      "developer": "BigScience / Hugging Face",
+      "attention_type": "ALiBi",
+      "positional_embedding": "ALiBi",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "560M - 176B",
+      "primary_use": "Open Multi-Lingual Collaborative"
+    },
+    {
+      "id": "bloomz",
+      "name": "BigScience BLOOMZ Zero-shot",
+      "family": "Dense Transformer",
+      "developer": "BigScience / Hugging Face",
+      "attention_type": "ALiBi",
+      "positional_embedding": "ALiBi",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1B - 176B",
+      "primary_use": "Cross-lingual Zero-Shot Prompting"
+    },
+    {
+      "id": "gpt2",
+      "name": "OpenAI GPT-2",
+      "family": "Dense Transformer",
+      "developer": "OpenAI",
+      "attention_type": "MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "124M - 1.5B",
+      "primary_use": "Foundational Autoregressive Baseline"
+    },
+    {
+      "id": "gpt_j",
+      "name": "EleutherAI GPT-J 6B",
+      "family": "Dense Transformer",
+      "developer": "EleutherAI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "6B",
+      "primary_use": "Parallel Attention/FFN Architecture"
+    },
+    {
+      "id": "gpt_neox",
+      "name": "EleutherAI GPT-NeoX 20B",
+      "family": "Dense Transformer",
+      "developer": "EleutherAI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "20B",
+      "primary_use": "Large Scale Open Weight Baseline"
+    },
+    {
+      "id": "pythia",
+      "name": "EleutherAI Pythia Suite",
+      "family": "Dense Transformer",
+      "developer": "EleutherAI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "70M - 12B",
+      "primary_use": "Interpretability & Training Dynamics"
+    },
+    {
+      "id": "stablelm",
+      "name": "Stability AI StableLM",
+      "family": "Dense Transformer",
+      "developer": "Stability AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "3B - 7B",
+      "primary_use": "Accessible Open Source Edge"
+    },
+    {
+      "id": "stablelm2",
+      "name": "Stability AI StableLM-2 1.6B/12B",
+      "family": "Dense Transformer",
+      "developer": "Stability AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.6B - 12B",
+      "primary_use": "High Density Multilingual Edge"
+    },
+    {
+      "id": "mpt",
+      "name": "MosaicML MPT 7B/30B",
+      "family": "Dense Transformer",
+      "developer": "MosaicML / Databricks",
+      "attention_type": "ALiBi",
+      "positional_embedding": "ALiBi",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 30B",
+      "primary_use": "Commercial Extensible Context"
+    },
+    {
+      "id": "solar",
+      "name": "Upstage Solar 10.7B",
+      "family": "Dense Transformer",
+      "developer": "Upstage AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "10.7B",
+      "primary_use": "Depth Up-Scaling (DUS)"
+    },
+    {
+      "id": "solar_pro",
+      "name": "Upstage Solar Pro 22B",
+      "family": "Dense Transformer",
+      "developer": "Upstage AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "22B",
+      "primary_use": "Single-GPU Enterprise Serving"
+    },
+    {
+      "id": "granite_dense",
+      "name": "IBM Granite Dense",
+      "family": "Dense Transformer",
+      "developer": "IBM Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3B - 13B",
+      "primary_use": "Enterprise Knowledge & Governance"
+    },
+    {
+      "id": "granite3_dense",
+      "name": "IBM Granite 3.0 Dense",
+      "family": "Dense Transformer",
+      "developer": "IBM Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "2B - 8B",
+      "primary_use": "Enterprise Agent RAG Optimization"
+    },
+    {
+      "id": "exaone",
+      "name": "LG AI EXAONE 1.0",
+      "family": "Dense Transformer",
+      "developer": "LG AI Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7.8B",
+      "primary_use": "Industrial Scientific Research"
+    },
+    {
+      "id": "exaone3",
+      "name": "LG AI EXAONE 3.0",
+      "family": "Dense Transformer",
+      "developer": "LG AI Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "2.4B - 7.8B",
+      "primary_use": "High Precision Bilingual Korean/English"
+    },
+    {
+      "id": "olmo",
+      "name": "AllenAI OLMo Open Language Model",
+      "family": "Dense Transformer",
+      "developer": "Ai2 (Allen Institute for AI)",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1B - 7B",
+      "primary_use": "Transparent Open Science"
+    },
+    {
+      "id": "olmo2",
+      "name": "AllenAI OLMo 2 13B",
+      "family": "Dense Transformer",
+      "developer": "Ai2 (Allen Institute for AI)",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 13B",
+      "primary_use": "Fully Audited Frontier Open Science"
+    },
+    {
+      "id": "deepseek_llm",
+      "name": "DeepSeek LLM 67B Dense",
+      "family": "Dense Transformer",
+      "developer": "DeepSeek AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 67B",
+      "primary_use": "High Capability Chinese/English General"
+    },
+    {
+      "id": "deepseek_v1",
+      "name": "DeepSeek V1 7B/67B",
+      "family": "Dense Transformer",
+      "developer": "DeepSeek AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 67B",
+      "primary_use": "Mathematical & Reasoning Base"
+    },
+    {
+      "id": "mixtral_8x7b",
+      "name": "Mistral Mixtral 8x7B MoE",
+      "family": "Mixture of Experts",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "46.7B (12.9B active)",
+      "primary_use": "Sparse High Throughput Serving"
+    },
+    {
+      "id": "mixtral_8x22b",
+      "name": "Mistral Mixtral 8x22B MoE",
+      "family": "Mixture of Experts",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "141B (39B active)",
+      "primary_use": "Frontier Sparse Reasoning"
+    },
+    {
+      "id": "deepseek_moe_16b",
+      "name": "DeepSeek MoE 16B",
+      "family": "Mixture of Experts",
+      "developer": "DeepSeek AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "16B (2.8B active)",
+      "primary_use": "Fine-Grained Expert Routing"
+    },
+    {
+      "id": "deepseek_v2_moe",
+      "name": "DeepSeek V2 MLA MoE",
+      "family": "Mixture of Experts",
+      "developer": "DeepSeek AI",
+      "attention_type": "MLA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "236B (21B active)",
+      "primary_use": "Multi-head Latent Attention"
+    },
+    {
+      "id": "deepseek_v2.5_moe",
+      "name": "DeepSeek V2.5 Unified MoE",
+      "family": "Mixture of Experts",
+      "developer": "DeepSeek AI",
+      "attention_type": "MLA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "236B (21B active)",
+      "primary_use": "Unified Chat & Coding MoE"
+    },
+    {
+      "id": "deepseek_v3_moe",
+      "name": "DeepSeek V3 671B MoE",
+      "family": "Mixture of Experts",
+      "developer": "DeepSeek AI",
+      "attention_type": "MLA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "671B (37B active)",
+      "primary_use": "Ultra-Scale Low Cost Frontier"
+    },
+    {
+      "id": "qwen1.5_moe",
+      "name": "Qwen 1.5 MoE A2.7B",
+      "family": "Mixture of Experts",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "14.3B (2.7B active)",
+      "primary_use": "Lightweight High Density MoE"
+    },
+    {
+      "id": "qwen2_moe",
+      "name": "Qwen2 MoE 57B",
+      "family": "Mixture of Experts",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "57B (14B active)",
+      "primary_use": "High Precision Sparse Routing"
+    },
+    {
+      "id": "dbrx",
+      "name": "Databricks DBRX MoE",
+      "family": "Mixture of Experts",
+      "developer": "Databricks Mosaic AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "132B (36B active)",
+      "primary_use": "Fine-Grained 16-Expert Enterprise"
+    },
+    {
+      "id": "grok1",
+      "name": "xAI Grok-1 314B",
+      "family": "Mixture of Experts",
+      "developer": "xAI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP8",
+        "INT4"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "314B (86B active)",
+      "primary_use": "Massive Mixture-of-Experts Open Weights"
+    },
+    {
+      "id": "arctic_moe",
+      "name": "Snowflake Arctic MoE",
+      "family": "Mixture of Experts",
+      "developer": "Snowflake",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "480B (17B active)",
+      "primary_use": "Enterprise SQL & Coding MoE"
+    },
+    {
+      "id": "phi3.5_moe",
+      "name": "Microsoft Phi-3.5 MoE 16x3.8B",
+      "family": "Mixture of Experts",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "42B (6.6B active)",
+      "primary_use": "Edge MoE Reasoning & Code"
+    },
+    {
+      "id": "granite3_moe",
+      "name": "IBM Granite 3.0 MoE",
+      "family": "Mixture of Experts",
+      "developer": "IBM Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3B - 12B",
+      "primary_use": "Low Cost Enterprise Automation"
+    },
+    {
+      "id": "olmoe",
+      "name": "AllenAI OLMoE 1B-7B Sparse",
+      "family": "Mixture of Experts",
+      "developer": "Ai2",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B (1.3B active)",
+      "primary_use": "Open Science Sparse MoE"
+    },
+    {
+      "id": "jetmoe",
+      "name": "JetMoE 8B Compute-Friendly",
+      "family": "Mixture of Experts",
+      "developer": "JetMoE Authors",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "8B (2.2B active)",
+      "primary_use": "Sub-100K Training Budget MoE"
+    },
+    {
+      "id": "starcoder2_moe",
+      "name": "StarCoder2 MoE Sparse Code",
+      "family": "Mixture of Experts",
+      "developer": "BigCode",
+      "attention_type": "MQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "15B (3.5B active)",
+      "primary_use": "Multi-language Code Synthesis"
+    },
+    {
+      "id": "minicpm_moe",
+      "name": "MiniCPM-MoE 8x2B",
+      "family": "Mixture of Experts",
+      "developer": "OpenBMB",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "13.6B (4B active)",
+      "primary_use": "Edge Mobile MoE Deployment"
+    },
+    {
+      "id": "ernie_moe",
+      "name": "Baidu ERNIE MoE",
+      "family": "Mixture of Experts",
+      "developer": "Baidu",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP8",
+        "INT4"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "100B+",
+      "primary_use": "Knowledge-Enhanced Sparse Dialogue"
+    },
+    {
+      "id": "yuan2_moe",
+      "name": "Inspur Yuan 2.0 MoE",
+      "family": "Mixture of Experts",
+      "developer": "Inspur",
+      "attention_type": "LFA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "51B (2.1B active)",
+      "primary_use": "Local Attention Sparse Filtering"
+    },
+    {
+      "id": "btlm_moe",
+      "name": "Cerebras BTLM MoE",
+      "family": "Mixture of Experts",
+      "developer": "Cerebras Systems",
+      "attention_type": "SwiGLU",
+      "positional_embedding": "ALiBi",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B",
+      "primary_use": "Wafer-Scale Memory Optimized"
+    },
+    {
+      "id": "xverse_moe",
+      "name": "XVERSE MoE Sparse",
+      "family": "Mixture of Experts",
+      "developer": "Shenzhen Yuanxiang",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "65B (13B active)",
+      "primary_use": "Enterprise Multilingual Dialogue"
+    },
+    {
+      "id": "aquila_moe",
+      "name": "BAAI Aquila MoE",
+      "family": "Mixture of Experts",
+      "developer": "Beijing Academy of AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "34B",
+      "primary_use": "Open Commercial MoE"
+    },
+    {
+      "id": "internlm_xcomposer_moe",
+      "name": "InternLM XComposer MoE",
+      "family": "Mixture of Experts",
+      "developer": "Shanghai AI Lab",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "28B (7B active)",
+      "primary_use": "Vision-Language Interleaved Sparse"
+    },
+    {
+      "id": "deepseek_r1",
+      "name": "DeepSeek R1 Full Reasoning",
+      "family": "Reasoning & Dialectic",
+      "developer": "DeepSeek AI",
+      "attention_type": "MLA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP8",
+        "Q4_K_M"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "671B (37B active)",
+      "primary_use": "Reinforcement Learning Chain-of-Thought"
+    },
+    {
+      "id": "deepseek_r1_zero",
+      "name": "DeepSeek R1 Zero Pure RL",
+      "family": "Reasoning & Dialectic",
+      "developer": "DeepSeek AI",
+      "attention_type": "MLA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "671B",
+      "primary_use": "Zero-shot Autonomous Self-Evolution"
+    },
+    {
+      "id": "deepseek_r1_distill_qwen",
+      "name": "DeepSeek R1 Distill Qwen",
+      "family": "Reasoning & Dialectic",
+      "developer": "DeepSeek AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.5B - 32B",
+      "primary_use": "Distilled Mathematical & Code Reasoning"
+    },
+    {
+      "id": "deepseek_r1_distill_llama",
+      "name": "DeepSeek R1 Distill LLaMA",
+      "family": "Reasoning & Dialectic",
+      "developer": "DeepSeek AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B - 70B",
+      "primary_use": "Distilled High Integrity Chain-of-Thought"
+    },
+    {
+      "id": "marco_o1",
+      "name": "Alibaba Marco-o1 Open Reasoning",
+      "family": "Reasoning & Dialectic",
+      "developer": "Alibaba International",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "MCTS & Value Guided Search Reasoning"
+    },
+    {
+      "id": "qwq_32b_preview",
+      "name": "Qwen QwQ 32B Preview",
+      "family": "Reasoning & Dialectic",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "32B",
+      "primary_use": "Deep Analytical Thinking & Olympiad Math"
+    },
+    {
+      "id": "skythought",
+      "name": "Skywork Sky-T1 Reasoning",
+      "family": "Reasoning & Dialectic",
+      "developer": "Skywork AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "32B",
+      "primary_use": "Extended Test-time Compute Reasoning"
+    },
+    {
+      "id": "kormo_reasoner",
+      "name": "Kormo Dialectical Solver",
+      "family": "Reasoning & Dialectic",
+      "developer": "Open Research Group",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B - 14B",
+      "primary_use": "Debate & Multi-Perspective Resolution"
+    },
+    {
+      "id": "starcoder_reasoner",
+      "name": "StarCoder Algorithmic Reasoner",
+      "family": "Reasoning & Dialectic",
+      "developer": "BigCode",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "15B",
+      "primary_use": "Algorithm Invariant Verification"
+    },
+    {
+      "id": "numina_math",
+      "name": "NuminaMath CoT 7B",
+      "family": "Reasoning & Dialectic",
+      "developer": "Numina Project",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "AI-MO Math Olympiad Gold Winner"
+    },
+    {
+      "id": "wizard_math",
+      "name": "WizardMath Reinforcement",
+      "family": "Reasoning & Dialectic",
+      "developer": "WizardLM Team",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Reinforcement Learning from Evol-Instruct"
+    },
+    {
+      "id": "metamath",
+      "name": "MetaMath Specialized CoT",
+      "family": "Reasoning & Dialectic",
+      "developer": "MetaMath Project",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Backward Step Decomposition"
+    },
+    {
+      "id": "abel_math",
+      "name": "Abel Mathematical Reasoner",
+      "family": "Reasoning & Dialectic",
+      "developer": "GAIR Lab",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Rigorous Symbolic Math"
+    },
+    {
+      "id": "mathstral",
+      "name": "Mistral Mathstral 7B",
+      "family": "Reasoning & Dialectic",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Scientific Reasoning & High Depth Math"
+    },
+    {
+      "id": "eurus_reasoning",
+      "name": "Eurus UltraInteract LM",
+      "family": "Reasoning & Dialectic",
+      "developer": "PRIS-Lab",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Interactive Multi-turn Problem Solving"
+    },
+    {
+      "id": "tora_math",
+      "name": "ToRA Tool-Integrated Reasoner",
+      "family": "Reasoning & Dialectic",
+      "developer": "Microsoft Research",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Symbolic Solver & Python Tool Integration"
+    },
+    {
+      "id": "open_reasoner_zero",
+      "name": "OpenReasoner-Zero Pure Thinking",
+      "family": "Reasoning & Dialectic",
+      "developer": "Open Reasoner Community",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B - 32B",
+      "primary_use": "Extended Self-Reflection & Exploration"
+    },
+    {
+      "id": "thought_propagation_lm",
+      "name": "Thought Propagation Explorer",
+      "family": "Reasoning & Dialectic",
+      "developer": "Academic Collective",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B - 14B",
+      "primary_use": "Graph-based Chain-of-Thought Search"
+    },
+    {
+      "id": "bespoke_minicheck",
+      "name": "Bespoke MiniCheck Factuality",
+      "family": "Reasoning & Dialectic",
+      "developer": "Bespoke Labs",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B",
+      "primary_use": "Dialectical Claim & Grounding Verification"
+    },
+    {
+      "id": "codellama",
+      "name": "Code LLaMA Base",
+      "family": "Code Specialist",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Program Infilling & Code Foundation"
+    },
+    {
+      "id": "codellama_python",
+      "name": "Code LLaMA Python Fine-Tuned",
+      "family": "Code Specialist",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 34B",
+      "primary_use": "Native Python Software Development"
+    },
+    {
+      "id": "codellama_instruct",
+      "name": "Code LLaMA Instruct",
+      "family": "Code Specialist",
+      "developer": "Meta AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 70B",
+      "primary_use": "Interactive Software Pair Programming"
+    },
+    {
+      "id": "starcoder",
+      "name": "StarCoder 15B Multi-Language",
+      "family": "Code Specialist",
+      "developer": "BigCode",
+      "attention_type": "MQA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "15B",
+      "primary_use": "80+ Programming Languages Support"
+    },
+    {
+      "id": "starcoder2",
+      "name": "StarCoder2 3B/7B/15B",
+      "family": "Code Specialist",
+      "developer": "BigCode",
+      "attention_type": "MQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3B - 15B",
+      "primary_use": "600+ Languages with Fill-in-the-Middle"
+    },
+    {
+      "id": "santacoder",
+      "name": "SantaCoder Small Code",
+      "family": "Code Specialist",
+      "developer": "BigCode",
+      "attention_type": "MQA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.1B",
+      "primary_use": "Python/Java/JS Fast Autocomplete"
+    },
+    {
+      "id": "qwen2.5_coder",
+      "name": "Qwen2.5-Coder Flagship",
+      "family": "Code Specialist",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8",
+        "BF16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "0.5B - 32B",
+      "primary_use": "State-of-the-Art Code Agent & FIM"
+    },
+    {
+      "id": "qwen_coder",
+      "name": "CodeQwen1.5 7B",
+      "family": "Code Specialist",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "64K Long Code Repository Analysis"
+    },
+    {
+      "id": "codestral",
+      "name": "Mistral Codestral 22B",
+      "family": "Code Specialist",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "22B",
+      "primary_use": "32K Context Code Generation & FIM"
+    },
+    {
+      "id": "codestral_mamba",
+      "name": "Mistral Codestral Mamba 7B",
+      "family": "Code Specialist",
+      "developer": "Mistral AI",
+      "attention_type": "Mamba-SSM",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Infinite Context Linear Code Serving"
+    },
+    {
+      "id": "deepseek_coder",
+      "name": "DeepSeek Coder 1.3B/33B",
+      "family": "Code Specialist",
+      "developer": "DeepSeek AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.3B - 33B",
+      "primary_use": "Project Level Code Completion"
+    },
+    {
+      "id": "deepseek_coder_v2",
+      "name": "DeepSeek Coder V2 MoE",
+      "family": "Code Specialist",
+      "developer": "DeepSeek AI",
+      "attention_type": "MLA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "16B - 236B",
+      "primary_use": "338 Languages & Competitive Coding"
+    },
+    {
+      "id": "codegeex",
+      "name": "THUDM CodeGeeX 13B",
+      "family": "Code Specialist",
+      "developer": "Zhipu AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "13B",
+      "primary_use": "Bilingual Code Cross-Translation"
+    },
+    {
+      "id": "codegeex2",
+      "name": "THUDM CodeGeeX2 6B",
+      "family": "Code Specialist",
+      "developer": "Zhipu AI",
+      "attention_type": "MQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "6B",
+      "primary_use": "Low Memory Fast Coding Copilot"
+    },
+    {
+      "id": "codegeex4",
+      "name": "THUDM CodeGeeX4 9B All-Round",
+      "family": "Code Specialist",
+      "developer": "Zhipu AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "9B",
+      "primary_use": "128K Repo Agent & Test Generation"
+    },
+    {
+      "id": "granite_code",
+      "name": "IBM Granite Code 3B-34B",
+      "family": "Code Specialist",
+      "developer": "IBM Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3B - 34B",
+      "primary_use": "Enterprise Mainframe & Legacy Modernization"
+    },
+    {
+      "id": "magicoder",
+      "name": "MagiCoder OSS-Instruct",
+      "family": "Code Specialist",
+      "developer": "UIUC",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "6.7B",
+      "primary_use": "Open Source Code Extraction Distillation"
+    },
+    {
+      "id": "wizardcoder",
+      "name": "WizardCoder Evol-Instruct",
+      "family": "Code Specialist",
+      "developer": "WizardLM Team",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "15B - 34B",
+      "primary_use": "Complex Code Infilling"
+    },
+    {
+      "id": "phind_codellama",
+      "name": "Phind CodeLLaMA 34B v2",
+      "family": "Code Specialist",
+      "developer": "Phind",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "34B",
+      "primary_use": "Technical Search & Developer Assistance"
+    },
+    {
+      "id": "wavecoder",
+      "name": "WaveCoder Multi-Task Code",
+      "family": "Code Specialist",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "6.7B",
+      "primary_use": "Code Repair & Generation Generator"
+    },
+    {
+      "id": "opencoder",
+      "name": "OpenCoder Premier Open LLM",
+      "family": "Code Specialist",
+      "developer": "OpenCoder Consortium",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.5B - 8B",
+      "primary_use": "Fully Transparent Code Corpus Model"
+    },
+    {
+      "id": "replit_code",
+      "name": "Replit Code 3B v1.5",
+      "family": "Code Specialist",
+      "developer": "Replit",
+      "attention_type": "ALiBi",
+      "positional_embedding": "ALiBi",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "3B",
+      "primary_use": "In-Browser Code Suggestion"
+    },
+    {
+      "id": "stable_code",
+      "name": "Stability Stable Code 3B",
+      "family": "Code Specialist",
+      "developer": "Stability AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3B",
+      "primary_use": "Lightweight Edge Code Suggestion"
+    },
+    {
+      "id": "mamba",
+      "name": "Mamba SSM Selective State Space",
+      "family": "State Space & Hybrid",
+      "developer": "Albert Gu & Tri Dao",
+      "attention_type": "Selective SSM",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16",
+        "FP8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "130M - 2.8B",
+      "primary_use": "Linear-Time Sequence Modeling"
+    },
+    {
+      "id": "mamba2",
+      "name": "Mamba-2 State Space Duality (SSD)",
+      "family": "State Space & Hybrid",
+      "developer": "Tri Dao & Albert Gu",
+      "attention_type": "SSD SSM",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16",
+        "FP8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "130M - 8B",
+      "primary_use": "Matrix Hardware Fast Linear Attention"
+    },
+    {
+      "id": "jamba",
+      "name": "AI21 Jamba Hybrid Mamba-Transformer",
+      "family": "State Space & Hybrid",
+      "developer": "AI21 Labs",
+      "attention_type": "Mamba-Transformer Hybrid",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "52B (12B active)",
+      "primary_use": "256K Context Hybrid MoE Throughput"
+    },
+    {
+      "id": "jamba_1.5_mini",
+      "name": "AI21 Jamba 1.5 Mini",
+      "family": "State Space & Hybrid",
+      "developer": "AI21 Labs",
+      "attention_type": "Mamba-Transformer Hybrid",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "12B (4.6B active)",
+      "primary_use": "256K Long Context High Speed"
+    },
+    {
+      "id": "jamba_1.5_large",
+      "name": "AI21 Jamba 1.5 Large",
+      "family": "State Space & Hybrid",
+      "developer": "AI21 Labs",
+      "attention_type": "Mamba-Transformer Hybrid",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "398B (94B active)",
+      "primary_use": "Enterprise Frontier Hybrid MoE"
+    },
+    {
+      "id": "zamba",
+      "name": "Zyphra Zamba 7B Hybrid Mamba",
+      "family": "State Space & Hybrid",
+      "developer": "Zyphra",
+      "attention_type": "Mamba-Shared Transformer",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B",
+      "primary_use": "Shared MLP State Space Processing"
+    },
+    {
+      "id": "zamba2",
+      "name": "Zyphra Zamba2 1.2B/2.7B",
+      "family": "State Space & Hybrid",
+      "developer": "Zyphra",
+      "attention_type": "Mamba2 Hybrid",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.2B - 2.7B",
+      "primary_use": "Compact On-Device Mamba2 Hybrid"
+    },
+    {
+      "id": "rwkv4",
+      "name": "RWKV-4 Raven RNN",
+      "family": "State Space & Hybrid",
+      "developer": "Bo Peng / RWKV Foundation",
+      "attention_type": "Linear Attention WKV",
+      "positional_embedding": "None",
+      "activation": "Squared ReLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "14M - 14B",
+      "primary_use": "Pure RNN Constant Memory Inference"
+    },
+    {
+      "id": "rwkv5",
+      "name": "RWKV-5 Eagle Multi-Head",
+      "family": "State Space & Hybrid",
+      "developer": "Bo Peng / RWKV Foundation",
+      "attention_type": "Multi-Head WKV",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.5B - 7B",
+      "primary_use": "Multi-Channel Linear Recurrence"
+    },
+    {
+      "id": "rwkv6",
+      "name": "RWKV-6 Finch Dynamic State",
+      "family": "State Space & Hybrid",
+      "developer": "Bo Peng / RWKV Foundation",
+      "attention_type": "Dynamic WKV",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.6B - 14B",
+      "primary_use": "Data-Dependent Linear State Space"
+    },
+    {
+      "id": "rwkv7",
+      "name": "RWKV-7 Goose Attention Rebirth",
+      "family": "State Space & Hybrid",
+      "developer": "Bo Peng / RWKV Foundation",
+      "attention_type": "Generalized Matrix Recurrence",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP16"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.5B - 7B",
+      "primary_use": "Expressive Non-Transformer Recurrence"
+    },
+    {
+      "id": "griffin",
+      "name": "Google DeepMind Griffin Hybrid",
+      "family": "State Space & Hybrid",
+      "developer": "Google DeepMind",
+      "attention_type": "RG-LRU & Local MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "2B - 14B",
+      "primary_use": "Recurrent Gated Linear Recurrence Unit"
+    },
+    {
+      "id": "hawk",
+      "name": "Google DeepMind Hawk Linear",
+      "family": "State Space & Hybrid",
+      "developer": "Google DeepMind",
+      "attention_type": "RG-LRU Pure Recurrent",
+      "positional_embedding": "None",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "3B",
+      "primary_use": "Non-Attention Linear Scalable Architecture"
+    },
+    {
+      "id": "recurrentgemma",
+      "name": "Google RecurrentGemma Griffin",
+      "family": "State Space & Hybrid",
+      "developer": "Google DeepMind",
+      "attention_type": "RG-LRU Hybrid",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "2B - 9B",
+      "primary_use": "Low Memory Fast Generation Serving"
+    },
+    {
+      "id": "hgrn",
+      "name": "HGRN Hierarchically Gated RNN",
+      "family": "State Space & Hybrid",
+      "developer": "Zhen Qin et al.",
+      "attention_type": "Linear Gated Recurrence",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1B - 3B",
+      "primary_use": "High Parallel Recurrent Processing"
+    },
+    {
+      "id": "hgrn2",
+      "name": "HGRN2 Gated Linear Attention",
+      "family": "State Space & Hybrid",
+      "developer": "Zhen Qin et al.",
+      "attention_type": "Gated Linear Attention",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.4B - 7B",
+      "primary_use": "Strict Linear Time with State Decay"
+    },
+    {
+      "id": "retnet",
+      "name": "Microsoft RetNet Retentive Network",
+      "family": "State Space & Hybrid",
+      "developer": "Microsoft Research",
+      "attention_type": "Multi-Scale Retention",
+      "positional_embedding": "None",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.3B - 6.7B",
+      "primary_use": "Successor to Transformer Baseline"
+    },
+    {
+      "id": "stripemamba",
+      "name": "StripeMamba Multi-Scale State",
+      "family": "State Space & Hybrid",
+      "developer": "Vision & Language Lab",
+      "attention_type": "Stripe Selective SSM",
+      "positional_embedding": "None",
+      "activation": "SiLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1B - 7B",
+      "primary_use": "Structured Long Context Recurrence"
+    },
+    {
+      "id": "llava_1.5",
+      "name": "LLaVA 1.5 CLIP-LLaMA",
+      "family": "Vision-Language",
+      "developer": "LMSYS / UW-Madison",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 13B",
+      "primary_use": "Multimodal Visual Instruction Following"
+    },
+    {
+      "id": "llava_next",
+      "name": "LLaVA NeXT AnyRes",
+      "family": "Vision-Language",
+      "developer": "LMSYS",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "7B - 34B",
+      "primary_use": "Dynamic High Resolution Document Parsing"
+    },
+    {
+      "id": "llava_onevision",
+      "name": "LLaVA-OneVision Unified Image/Video",
+      "family": "Vision-Language",
+      "developer": "LMSYS",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "0.5B - 72B",
+      "primary_use": "Joint Single Image & Video Reasoning"
+    },
+    {
+      "id": "qwen_vl",
+      "name": "Qwen-VL Vision-Language",
+      "family": "Vision-Language",
+      "developer": "Alibaba Cloud",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "9.6B",
+      "primary_use": "Visual Grounding & OCR"
+    },
+    {
+      "id": "qwen2_vl",
+      "name": "Qwen2-VL Dynamic Resolution",
+      "family": "Vision-Language",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "2B - 72B",
+      "primary_use": "Arbitrary Resolution OCR & Video Analysis"
+    },
+    {
+      "id": "paligemma",
+      "name": "Google PaliGemma 3B SigLIP",
+      "family": "Vision-Language",
+      "developer": "Google DeepMind",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "3B",
+      "primary_use": "Transferable Visual Tasks & Segmentation"
+    },
+    {
+      "id": "paligemma2",
+      "name": "Google PaliGemma 2 Multi-Scale",
+      "family": "Vision-Language",
+      "developer": "Google DeepMind",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "3B - 28B",
+      "primary_use": "State-of-the-Art Compact VLM"
+    },
+    {
+      "id": "pixtral_12b",
+      "name": "Mistral Pixtral 12B Vision",
+      "family": "Vision-Language",
+      "developer": "Mistral AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "12B",
+      "primary_use": "Native Vision-Language with Variable Image Sizing"
+    },
+    {
+      "id": "cogvlm",
+      "name": "THUDM CogVLM Visual Expert",
+      "family": "Vision-Language",
+      "developer": "Zhipu AI",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "17B",
+      "primary_use": "Targeted Visual Feature Fusion"
+    },
+    {
+      "id": "cogvlm2",
+      "name": "THUDM CogVLM2 Video/Image",
+      "family": "Vision-Language",
+      "developer": "Zhipu AI",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "19B",
+      "primary_use": "High Framerate Video & GUI Automation"
+    },
+    {
+      "id": "internvl",
+      "name": "InternVL Open Frontier VLM",
+      "family": "Vision-Language",
+      "developer": "Shanghai AI Lab",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "6B - 40B",
+      "primary_use": "General Visual Perception"
+    },
+    {
+      "id": "internvl2",
+      "name": "InternVL 2.0 Multi-Scale VLM",
+      "family": "Vision-Language",
+      "developer": "Shanghai AI Lab",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1B - 78B",
+      "primary_use": "Medical, Scientific & Document High Res VLM"
+    },
+    {
+      "id": "minicpm_v",
+      "name": "MiniCPM-V Multi-Modal Edge",
+      "family": "Vision-Language",
+      "developer": "OpenBMB",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "2.8B",
+      "primary_use": "End-to-End Phone Image & Audio Processing"
+    },
+    {
+      "id": "minicpm_v2.6",
+      "name": "MiniCPM-V 2.6 Real-Time Video",
+      "family": "Vision-Language",
+      "developer": "OpenBMB",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B",
+      "primary_use": "Dense Video Streaming on iPad/PC"
+    },
+    {
+      "id": "idefics",
+      "name": "Hugging Face IDEFICS 80B",
+      "family": "Vision-Language",
+      "developer": "Hugging Face",
+      "attention_type": "MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "9B - 80B",
+      "primary_use": "Flamingo Reproduction Open Benchmark"
+    },
+    {
+      "id": "idefics2",
+      "name": "Hugging Face IDEFICS 2 8B",
+      "family": "Vision-Language",
+      "developer": "Hugging Face",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B",
+      "primary_use": "Sub-image Splitting Document QA"
+    },
+    {
+      "id": "idefics3",
+      "name": "Hugging Face IDEFICS 3 8B LLaMA-based",
+      "family": "Vision-Language",
+      "developer": "Hugging Face",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "8B",
+      "primary_use": "High Throughput Visual Document Processing"
+    },
+    {
+      "id": "phi3_vision",
+      "name": "Microsoft Phi-3 Vision 4.2B",
+      "family": "Vision-Language",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "4.2B",
+      "primary_use": "High Density Chart & Diagram Reading"
+    },
+    {
+      "id": "phi3.5_vision",
+      "name": "Microsoft Phi-3.5 Vision Multi-Frame",
+      "family": "Vision-Language",
+      "developer": "Microsoft Research",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "4.2B",
+      "primary_use": "Multi-Image Comparison & Video Summarization"
+    },
+    {
+      "id": "florence2",
+      "name": "Microsoft Florence-2 Unified Vision",
+      "family": "Vision-Language",
+      "developer": "Microsoft Azure",
+      "attention_type": "DaViT",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "230M - 770M",
+      "primary_use": "Zero-shot Object Detection & Captioning"
+    },
+    {
+      "id": "moondream",
+      "name": "Moondream 1.6B Tiny VLM",
+      "family": "Vision-Language",
+      "developer": "Vikhyat Korrapati",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.6B",
+      "primary_use": "Sub-2GB RAM Edge Vision"
+    },
+    {
+      "id": "moondream2",
+      "name": "Moondream2 1.86B Fast Vision",
+      "family": "Vision-Language",
+      "developer": "Vikhyat Korrapati",
+      "attention_type": "MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.86B",
+      "primary_use": "Ultra-fast Real-time Vision on Edge"
+    },
+    {
+      "id": "chameleon",
+      "name": "Meta Chameleon Mixed-Modal",
+      "family": "Vision-Language",
+      "developer": "Meta FAIR",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 30B",
+      "primary_use": "Native Early-Fusion Image Generation/Understanding"
+    },
+    {
+      "id": "blip2",
+      "name": "Salesforce BLIP-2 Q-Former",
+      "family": "Vision-Language",
+      "developer": "Salesforce Research",
+      "attention_type": "MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "3.1B - 14B",
+      "primary_use": "Querying Transformers Visual Bottleneck"
+    },
+    {
+      "id": "instructblip",
+      "name": "Salesforce InstructBLIP",
+      "family": "Vision-Language",
+      "developer": "Salesforce Research",
+      "attention_type": "MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "7B - 14B",
+      "primary_use": "Instruction-Tuned Visual Task Solver"
+    },
+    {
+      "id": "bert",
+      "name": "Google BERT Bidirectional Encoder",
+      "family": "Embedding & Reranker",
+      "developer": "Google Research",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP32",
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "110M - 340M",
+      "primary_use": "Masked Language Modeling Baseline"
+    },
+    {
+      "id": "roberta",
+      "name": "Meta RoBERTa Robustly Optimized",
+      "family": "Embedding & Reranker",
+      "developer": "Meta AI",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "125M - 355M",
+      "primary_use": "High Quality Semantic Classification"
+    },
+    {
+      "id": "modernbert",
+      "name": "Answer.AI ModernBERT 8K",
+      "family": "Embedding & Reranker",
+      "developer": "Answer.AI & LightOn",
+      "attention_type": "FlashAttention Unpadding",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16",
+        "BF16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "140M - 395M",
+      "primary_use": "8192 Context Modern Encoder"
+    },
+    {
+      "id": "bge_embedding",
+      "name": "BAAI BGE Embedding v1.5",
+      "family": "Embedding & Reranker",
+      "developer": "BAAI",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "110M - 335M",
+      "primary_use": "Dense Semantic Retrieval"
+    },
+    {
+      "id": "bge_reranker",
+      "name": "BAAI BGE Reranker Large",
+      "family": "Embedding & Reranker",
+      "developer": "BAAI",
+      "attention_type": "Cross-Encoder MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "560M",
+      "primary_use": "High Precision Cross-Attention Reranking"
+    },
+    {
+      "id": "bge_m3",
+      "name": "BAAI BGE-M3 Multi-lingual Multi-Granularity",
+      "family": "Embedding & Reranker",
+      "developer": "BAAI",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "570M",
+      "primary_use": "Dense, Sparse & Multi-Vector Hybrid Search"
+    },
+    {
+      "id": "e5_embedding",
+      "name": "Microsoft E5 Embedding v2",
+      "family": "Embedding & Reranker",
+      "developer": "Microsoft Research",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "110M - 335M",
+      "primary_use": "General Purpose Text Embeddings"
+    },
+    {
+      "id": "multilingual_e5",
+      "name": "Microsoft Multilingual E5 Large",
+      "family": "Embedding & Reranker",
+      "developer": "Microsoft Research",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "560M",
+      "primary_use": "100+ Languages Cross-Lingual Search"
+    },
+    {
+      "id": "nomic_bert",
+      "name": "Nomic Embed Text 8K",
+      "family": "Embedding & Reranker",
+      "developer": "Nomic AI",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "137M",
+      "primary_use": "Fully Audited 8K Context Embedding"
+    },
+    {
+      "id": "colbert",
+      "name": "Stanford ColBERT Late Interaction",
+      "family": "Embedding & Reranker",
+      "developer": "Stanford University",
+      "attention_type": "Late Interaction Token MHA",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "110M",
+      "primary_use": "Token-level MaxSim Search"
+    },
+    {
+      "id": "colbert_v2",
+      "name": "Stanford ColBERT v2 Compressed",
+      "family": "Embedding & Reranker",
+      "developer": "Stanford University",
+      "attention_type": "Residual Vector Quantized Token",
+      "positional_embedding": "Learned",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "INT2",
+        "INT4",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "110M",
+      "primary_use": "Sub-byte Memory Scale Retrieval"
+    },
+    {
+      "id": "jina_bert_v2",
+      "name": "Jina Embeddings v2 8K",
+      "family": "Embedding & Reranker",
+      "developer": "Jina AI",
+      "attention_type": "ALiBi Bidirectional",
+      "positional_embedding": "ALiBi",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "161M",
+      "primary_use": "Long Document Retrieval"
+    },
+    {
+      "id": "jina_embeddings_v3",
+      "name": "Jina Embeddings v3 Task-Specific",
+      "family": "Embedding & Reranker",
+      "developer": "Jina AI",
+      "attention_type": "FlashAttention LoRA-Adapter",
+      "positional_embedding": "RoPE",
+      "activation": "GeGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "570M",
+      "primary_use": "Multi-Task Asymmetric Search"
+    },
+    {
+      "id": "gte_embedding",
+      "name": "Alibaba GTE General Text Embedding",
+      "family": "Embedding & Reranker",
+      "developer": "Alibaba Cloud",
+      "attention_type": "Bidirectional MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "110M - 305M",
+      "primary_use": "MTEB Leaderboard Top Ranking"
+    },
+    {
+      "id": "gte_qwen2",
+      "name": "Alibaba GTE Qwen2 8K",
+      "family": "Embedding & Reranker",
+      "developer": "Alibaba Cloud",
+      "attention_type": "GQA Bidirectional",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "FP16",
+        "FP8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.5B - 7B",
+      "primary_use": "LLM-Scale Text & Code Embeddings"
+    },
+    {
+      "id": "whisper",
+      "name": "OpenAI Whisper Standard",
+      "family": "Speech & Audio",
+      "developer": "OpenAI",
+      "attention_type": "Encoder-Decoder MHA",
+      "positional_embedding": "Sinusoidal",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "39M - 1.5B",
+      "primary_use": "Robust Multilingual Speech-to-Text"
+    },
+    {
+      "id": "whisper_large_v3",
+      "name": "OpenAI Whisper Large v3",
+      "family": "Speech & Audio",
+      "developer": "OpenAI",
+      "attention_type": "Encoder-Decoder MHA",
+      "positional_embedding": "Sinusoidal",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.55B",
+      "primary_use": "State of the art Automatic Speech Recognition"
+    },
+    {
+      "id": "whisper_large_v3_turbo",
+      "name": "OpenAI Whisper Large v3 Turbo",
+      "family": "Speech & Audio",
+      "developer": "OpenAI",
+      "attention_type": "Encoder-Decoder MHA (Pruned)",
+      "positional_embedding": "Sinusoidal",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "809M",
+      "primary_use": "4x Faster Low-Latency Transcription"
+    },
+    {
+      "id": "moonshine",
+      "name": "Useful Sensors Moonshine Fast ASR",
+      "family": "Speech & Audio",
+      "developer": "Useful Sensors",
+      "attention_type": "Encoder-Decoder MHA",
+      "positional_embedding": "RoPE",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "INT8",
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "27M - 110M",
+      "primary_use": "Ultra-light Microcontroller ASR"
+    },
+    {
+      "id": "seamless_m4t",
+      "name": "Meta SeamlessM4T Multi-Task",
+      "family": "Speech & Audio",
+      "developer": "Meta AI",
+      "attention_type": "Conformer-Transformer",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "2.3B",
+      "primary_use": "Speech-to-Speech & Speech-to-Text Translation"
+    },
+    {
+      "id": "seamless_m4t_v2",
+      "name": "Meta SeamlessM4T v2 Expressive",
+      "family": "Speech & Audio",
+      "developer": "Meta AI",
+      "attention_type": "UnitY2 Multi-Stage",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "2.3B",
+      "primary_use": "Zero-shot Prosodic & Expressive Translation"
+    },
+    {
+      "id": "mms_speech",
+      "name": "Meta MMS 1400 Languages",
+      "family": "Speech & Audio",
+      "developer": "Meta AI",
+      "attention_type": "Wav2Vec2 Conformer",
+      "positional_embedding": "Convolutional",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "300M - 1B",
+      "primary_use": "Massive Multilingual Audio Coverage"
+    },
+    {
+      "id": "wav2vec2",
+      "name": "Meta Wav2Vec 2.0 Self-Supervised",
+      "family": "Speech & Audio",
+      "developer": "Meta AI",
+      "attention_type": "Convolutional + Transformer",
+      "positional_embedding": "Convolutional Relative",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "95M - 317M",
+      "primary_use": "Acoustic Pre-training Representation"
+    },
+    {
+      "id": "hubert",
+      "name": "Meta HuBERT Hidden-Unit",
+      "family": "Speech & Audio",
+      "developer": "Meta AI",
+      "attention_type": "Convolutional + Transformer",
+      "positional_embedding": "Convolutional Relative",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16",
+        "INT8"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "95M - 1B",
+      "primary_use": "Acoustic Unit Discovery"
+    },
+    {
+      "id": "audioldm2",
+      "name": "Surrey AudioLDM 2 Audio Generation",
+      "family": "Speech & Audio",
+      "developer": "University of Surrey",
+      "attention_type": "Latent Diffusion + AudioMAE",
+      "positional_embedding": "Sinusoidal",
+      "activation": "GeLU",
+      "norm_type": "LayerNorm",
+      "supported_quantizations": [
+        "FP16"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "350M - 750M",
+      "primary_use": "Text-to-Audio and Sound Effects Synthesis"
+    },
+    {
+      "id": "smollm",
+      "name": "Hugging Face SmolLM 135M/360M",
+      "family": "Edge & Micro",
+      "developer": "Hugging Face",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "135M - 360M",
+      "primary_use": "On-Device Browser / WebAssembly"
+    },
+    {
+      "id": "smollm2",
+      "name": "Hugging Face SmolLM2 1.7B",
+      "family": "Edge & Micro",
+      "developer": "Hugging Face",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "135M - 1.7B",
+      "primary_use": "Instruction Following Edge Reasoning"
+    },
+    {
+      "id": "openelm",
+      "name": "Apple OpenELM Non-Uniform Layer",
+      "family": "Edge & Micro",
+      "developer": "Apple",
+      "attention_type": "GQA Non-Uniform",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "270M - 3B",
+      "primary_use": "Layer-Variable Efficiency on Apple Silicon"
+    },
+    {
+      "id": "danube",
+      "name": "H2O Danube 1.8B Mobile",
+      "family": "Edge & Micro",
+      "developer": "H2O.ai",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "1.8B",
+      "primary_use": "Mobile Edge Enterprise Baseline"
+    },
+    {
+      "id": "danube2",
+      "name": "H2O Danube2 1.8B High Performance",
+      "family": "Edge & Micro",
+      "developer": "H2O.ai",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "1.8B",
+      "primary_use": "Edge Task Execution"
+    },
+    {
+      "id": "danube3",
+      "name": "H2O Danube3 500M/4B",
+      "family": "Edge & Micro",
+      "developer": "H2O.ai",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0",
+        "FP8"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "500M - 4B",
+      "primary_use": "Sub-1GB VRAM On-Device Processing"
+    },
+    {
+      "id": "mobilellm",
+      "name": "Meta MobileLLM Sub-Billion",
+      "family": "Edge & Micro",
+      "developer": "Meta AI",
+      "attention_type": "GQA Deep-Thin",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": true,
+      "parameters_range": "125M - 1B",
+      "primary_use": "Embedding Sharing On-Device Smartphones"
+    },
+    {
+      "id": "femto_llama",
+      "name": "Femto LLaMA Micro Edge",
+      "family": "Edge & Micro",
+      "developer": "Edge Research Consortium",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "68M",
+      "primary_use": "Embedded IoT & Wearable Inference"
+    },
+    {
+      "id": "pico_qwen",
+      "name": "Pico Qwen Ultra-Light",
+      "family": "Edge & Micro",
+      "developer": "Edge Research Consortium",
+      "attention_type": "GQA",
+      "positional_embedding": "RoPE",
+      "activation": "SwiGLU",
+      "norm_type": "RMSNorm",
+      "supported_quantizations": [
+        "Q4_K_M",
+        "Q8_0"
+      ],
+      "native_tools_supported": false,
+      "parameters_range": "100M",
+      "primary_use": "Embedded Wearable NLP & Telemetry"
+    }
+  ]
+}
