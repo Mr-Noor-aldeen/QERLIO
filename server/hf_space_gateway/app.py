@@ -203,6 +203,7 @@ def chat_completions(req: ChatCompletionRequest, _: bool = Depends(verify_secret
             "object": "chat.completion",
             "created": created_ts,
             "model": req.model,
+            "simulated": True,
             "choices": [
                 {
                     "index": 0,
@@ -251,6 +252,7 @@ def chat_completions(req: ChatCompletionRequest, _: bool = Depends(verify_secret
         "object": "chat.completion",
         "created": created_ts,
         "model": req.model,
+        "simulated": True,
         "choices": [
             {
                 "index": 0,

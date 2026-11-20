@@ -251,6 +251,79 @@ def cmd_hermes_test(args):
         return 0
     return 1
 
+def cmd_hermes_download(args):
+    print("==================================================")
+    print(" QERLIO: Downloading Hermes 4.3 36B Official GGUF")
+    print("==================================================")
+    repo_id = "NousResearch/Hermes-4.3-36B-GGUF"
+    quant_file = f"hermes-4_3_36b-{args.quant}.gguf"
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    print(f"Repository: {repo_id}")
+    print(f"Quantization: {args.quant} ({quant_file})")
+    print(f"Target Directory: {output_dir.resolve()}")
+    
+    try:
+        from huggingface_hub import hf_hub_download
+        print(f"Initiating download from Hugging Face...")
+        path = hf_hub_download(
+            repo_id=repo_id,
+            filename=quant_file,
+            local_dir=str(output_dir),
+            token=os.environ.get("HF_TOKEN")
+        )
+        print(f"[SUCCESS] Download completed: {path}")
+        return 0
+    except Exception as e:
+        print(f"[ERROR] Failed to download GGUF from {repo_id}: {e}")
+        print("Note: You can also download directly via CLI:")
+        print(f"  hf download {repo_id} {quant_file} --local-dir {output_dir}")
+        return 1
+
+def cmd_hermes_run(args):
+    print("==================================================")
+    print(" QERLIO: Running Hermes 4.3 36B Local GGUF Engine")
+    print("==================================================")
+    model_path = Path(args.model_path)
+    if not model_path.exists():
+        print(f"[ERROR] Model file not found at: {model_path}")
+        print("Download first via: qerlio hermes download --quant Q4_K_M")
+        return 1
+
+    adapter = Hermes36BAdapter(thinking=args.thinking)
+    messages = [{"role": "user", "content": args.prompt}]
+    formatted_prompt = adapter.format_chat_prompt(messages)
+
+    try:
+        from sdk.python.qerlio import QerlioEngine, GenerationConfig
+        engine = QerlioEngine()
+        model = engine.load_model(str(model_path), context_length=args.context_length)
+        session = model.create_session()
+        
+        print(f"Model: {model_path.name}")
+        print(f"Base: ByteDance Seed 36B / Llama-3-Chat")
+        print(f"Prompt: {args.prompt}")
+        print("-" * 60)
+        
+        config = GenerationConfig(max_output_tokens=args.max_tokens, temperature=0.6, top_p=0.95)
+        raw_output = []
+        for chunk in session.generate_stream(formatted_prompt, config=config):
+            raw_output.append(chunk)
+            print(chunk, end="", flush=True)
+        print("\n" + "-" * 60)
+        
+        full_text = "".join(raw_output)
+        parsed = adapter.parse_generation(full_text)
+        if parsed.get("thinking"):
+            print(f"[Extracted Thinking]:\n{parsed['thinking']}")
+        if parsed.get("tool_calls"):
+            print(f"[Extracted Tool Calls]:\n{json.dumps(parsed['tool_calls'], indent=2)}")
+        return 0
+    except Exception as e:
+        print(f"[ERROR] Engine execution failure: {e}")
+        return 1
+
 def main():
     parser = argparse.ArgumentParser(description="QERLIO Runtime CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -321,6 +394,19 @@ def main():
     p_h_test = hermes_sub.add_parser("test", help="Run end-to-end conformance test for Hermes 4.3 36B")
     p_h_test.add_argument("--remote-url", default=None, help="Remote API URL")
     p_h_test.set_defaults(func=cmd_hermes_test)
+
+    p_h_download = hermes_sub.add_parser("download", help="Download official Hermes 4.3 36B GGUF weights")
+    p_h_download.add_argument("--quant", default="Q4_K_M", choices=["Q3_K_M", "Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0"], help="Quantization scheme")
+    p_h_download.add_argument("--output-dir", default="models", help="Destination folder")
+    p_h_download.set_defaults(func=cmd_hermes_download)
+
+    p_h_run = hermes_sub.add_parser("run", help="Run Hermes 4.3 36B locally using QERLIO GGUF engine")
+    p_h_run.add_argument("--model-path", required=True, help="Path to local GGUF weights")
+    p_h_run.add_argument("--prompt", required=True, help="Prompt text")
+    p_h_run.add_argument("--thinking", action="store_true", default=True, help="Enable hybrid reasoning")
+    p_h_run.add_argument("--context-length", type=int, default=4096, help="Context length")
+    p_h_run.add_argument("--max-tokens", type=int, default=512, help="Max tokens to generate")
+    p_h_run.set_defaults(func=cmd_hermes_run)
 
     args = parser.parse_args()
     return args.func(args)
