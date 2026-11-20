@@ -146,18 +146,22 @@ def cmd_architectures_list(args):
         items = cat.search(args.search)
     else:
         items = cat.list_all()
+    if getattr(args, "status", None):
+        items = [it for it in items if it.get("support_status", "").lower() == args.status.lower()]
 
-    print(f"{'ID':<25} | {'Family':<22} | {'Developer':<20} | {'Name'}")
-    print("-" * 90)
+    print(f"{'ID':<25} | {'Status':<12} | {'Family':<22} | {'Developer':<20} | {'Name'}")
+    print("-" * 105)
     for it in items:
-        print(f"{it['id']:<25} | {it['family']:<22} | {it['developer']:<20} | {it['name']}")
-    print("-" * 90)
+        print(f"{it['id']:<25} | {it.get('support_status', ''):<12} | {it['family']:<22} | {it['developer']:<20} | {it['name']}")
+    print("-" * 105)
     print(f"Displayed: {len(items)} / {cat.total_count} architectures")
     return 0
 
 def cmd_architectures_count(args):
     cat = ArchitectureCatalog()
-    print(f"Total Supported Architectures: {cat.total_count}")
+    print(f"Total Catalogued Architectures: {cat.total_count}")
+    print(f"  Tested:       {cat.tested_count}")
+    print(f"  Experimental: {cat.experimental_count}")
     return 0
 
 def cmd_architectures_info(args):
@@ -217,12 +221,13 @@ def main():
     p_arch = subparsers.add_parser("architectures", help="Model architectures registry")
     arch_sub = p_arch.add_subparsers(dest="arch_subcommand", required=True)
     
-    p_arch_list = arch_sub.add_parser("list", help="List supported architectures")
+    p_arch_list = arch_sub.add_parser("list", help="List catalogued architectures")
     p_arch_list.add_argument("--family", default=None, help="Filter by family")
     p_arch_list.add_argument("--search", default=None, help="Search by query")
+    p_arch_list.add_argument("--status", default=None, choices=["tested", "experimental"], help="Filter by support tier")
     p_arch_list.set_defaults(func=cmd_architectures_list)
 
-    p_arch_count = arch_sub.add_parser("count", help="Show total count of supported architectures")
+    p_arch_count = arch_sub.add_parser("count", help="Show architecture counts by support tier")
     p_arch_count.set_defaults(func=cmd_architectures_count)
 
     p_arch_info = arch_sub.add_parser("info", help="Get architecture details")
