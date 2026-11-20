@@ -231,6 +231,7 @@ def openai_chat_completions(req: OpenAIChatRequest, _: bool = Depends(verify_tok
             "object": "chat.completion",
             "created": created_ts,
             "model": req.model,
+            "simulated": True,
             "choices": [
                 {
                     "index": 0,
@@ -289,6 +290,7 @@ def openai_chat_completions(req: OpenAIChatRequest, _: bool = Depends(verify_tok
         "object": "chat.completion",
         "created": created_ts,
         "model": req.model,
+        "simulated": True,
         "choices": [
             {
                 "index": 0,

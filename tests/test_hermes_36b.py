@@ -243,3 +243,23 @@ def test_space_gateway_secret_auth_and_expiry():
         res_expired = test_client.get("/v1/models")
         assert res_expired.status_code == 403
         assert "expired" in res_expired.json()["detail"].lower()
+
+
+def test_simulated_flag_on_mock_endpoints():
+    from server.local_api.server import app as local_app
+    local_client = TestClient(local_app)
+
+    res_local = local_client.post("/v1/chat/completions", json={
+        "model": "NousResearch/Hermes-4.3-36B",
+        "messages": [{"role": "user", "content": "Test prompt"}]
+    })
+    assert res_local.status_code == 200
+    assert res_local.json().get("simulated") is True
+
+    space_client = TestClient(space_gateway_app)
+    res_space = space_client.post("/v1/chat/completions", json={
+        "model": "NousResearch/Hermes-4.3-36B",
+        "messages": [{"role": "user", "content": "Test prompt"}]
+    })
+    assert res_space.status_code == 200
+    assert res_space.json().get("simulated") is True
