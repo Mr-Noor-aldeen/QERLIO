@@ -8,7 +8,7 @@
 #include <chrono>
 #include <thread>
 
-static const char* QERLIO_VERSION_STRING = "0.2.1";
+static const char* QERLIO_VERSION_STRING = "0.2.2";
 
 const char* qerlio_get_version(void) {
     return QERLIO_VERSION_STRING;
@@ -177,12 +177,13 @@ qerlio_status_t qerlio_generate_stream(
 
     if (out_metrics) {
         out_metrics->tokens_generated = generated;
-        out_metrics->prompt_tokens_evaluated = static_cast<uint32_t>(std::strlen(prompt) / 4);
-        out_metrics->generation_tokens_per_sec = (duration_sec > 0.0) ? (generated / duration_sec) : 0.0;
-        out_metrics->time_to_first_token_ms = 15;
-        out_metrics->peak_memory_bytes = 1024 * 1024 * 64;
-        out_metrics->kv_cache_bytes = 1024 * 512;
-        out_metrics->active_backend_name = "qerlio-reference-cpu";
+        out_metrics->prompt_tokens_evaluated = 0;
+        out_metrics->prompt_tokens_per_sec = 0.0;
+        out_metrics->generation_tokens_per_sec = 0.0;
+        out_metrics->time_to_first_token_ms = 0;
+        out_metrics->peak_memory_bytes = 0;
+        out_metrics->kv_cache_bytes = 0;
+        out_metrics->active_backend_name = "qerlio-reference-cpu-stub";
     }
 
     session->is_generating.store(false, std::memory_order_release);

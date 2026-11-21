@@ -31,14 +31,15 @@ class GenerationConfig:
 
 @dataclass
 class GenerationMetrics:
-    time_to_first_token_ms: float = 0.0
-    prompt_tokens_per_sec: float = 0.0
-    generation_tokens_per_sec: float = 0.0
+    time_to_first_token_ms: Optional[float] = None
+    prompt_tokens_per_sec: Optional[float] = None
+    generation_tokens_per_sec: Optional[float] = None
     prompt_tokens_evaluated: int = 0
     tokens_generated: int = 0
-    peak_memory_bytes: int = 0
-    kv_cache_bytes: int = 0
+    peak_memory_bytes: Optional[int] = None
+    kv_cache_bytes: Optional[int] = None
     active_backend_name: str = "qerlio-reference-cpu"
+    simulated: bool = True
 
 class QerlioSession:
     def __init__(self, model: 'QerlioModel', session_id: str):
@@ -67,8 +68,11 @@ class QerlioSession:
         tokens_generated = 0
         prompt_tokens = len(prompt.split())
 
-        cores = psutil.cpu_count(logical=False) or 4
-        sample_chunks = ["The", " architecture", " provides", " high", " throughput", " local", " execution", " with", " zero", " latency", "."]
+        sample_chunks = [
+            "[stub_0]", " [stub_1]", " [stub_2]", " [stub_3]",
+            " [stub_4]", " [stub_5]", " [stub_6]", " [stub_7]",
+            " [stub_8]", " [stub_9]", " [stub_10]"
+        ]
 
         for i in range(min(config.max_output_tokens, len(sample_chunks))):
             if self.is_cancelled:
@@ -89,19 +93,16 @@ class QerlioSession:
 
             yield token
 
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
-        gen_tps = (tokens_generated / total_time) if total_time > 0 else 0.0
-
         metrics = GenerationMetrics(
-            time_to_first_token_ms=first_token_time or 0.0,
-            prompt_tokens_per_sec=prompt_tokens / 0.01,
-            generation_tokens_per_sec=gen_tps,
+            time_to_first_token_ms=None,
+            prompt_tokens_per_sec=None,
+            generation_tokens_per_sec=None,
             prompt_tokens_evaluated=prompt_tokens,
             tokens_generated=tokens_generated,
-            peak_memory_bytes=self.model.header_info.get("file_size_bytes", 0) + 256 * 1024 * 1024,
-            kv_cache_bytes=128 * 1024 * 1024,
-            active_backend_name="qerlio-reference-cpu"
+            peak_memory_bytes=None,
+            kv_cache_bytes=None,
+            active_backend_name="qerlio-reference-cpu",
+            simulated=True
         )
         
         self.is_generating = False

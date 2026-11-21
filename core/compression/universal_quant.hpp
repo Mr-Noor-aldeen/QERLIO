@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -57,7 +58,7 @@ struct QuantProfile {
     QuantizationFamily family;
     float bits_per_weight;
     uint32_t block_size;
-    float typical_perplexity_delta;
+    std::optional<float> perplexity_delta;
     bool hardware_accelerated;
 };
 
