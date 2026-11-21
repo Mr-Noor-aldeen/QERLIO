@@ -85,3 +85,22 @@ python tools/qerlio_cli.py hermes download --quant Q4_K_M --output-dir models
 ```bash
 python -m pytest tests/test_hermes_36b.py tests/test_t1_t2_gguf_and_dequant.py tests/test_t3_tokenizer.py tests/test_t4_to_t10_engine.py -v
 ```
+
+---
+
+## 5. Track B SHA-256 & Live 64-Layer Verification
+
+Official GGUF artifact verified locally (gitignored under `models/`):
+
+- **Artifact:** `NousResearch/Hermes-4.3-36B-GGUF` (`hermes-4_3_36b-Q4_K_M.gguf`)
+- **Size:** `21,762,145,216` bytes
+- **SHA-256:** `17823599694fa3503ef54bf748d5078c6ce881f4d01616cafa255dc05d215a08`
+- **GGUF Header & Tensors (`SeedOssEngine(..., preload_weights=False, header_only=False)`):**
+  - `architecture=seed_oss`, `name='Hermes 4_3_36b'`
+  - `kv_count=27`, `tensor_count=771`, `layers=64`, `hidden=5120`, `ffn=27648`, `heads=80`, `kv_heads=8`, `head_dim=128`, `vocab=155136`
+  - Engine `mmap` initialization: `0.67s`
+- **Tokenizer & Adapter Check:** `Hermes36BAdapter(thinking=False, keep_cots=False)` 33-token chat prompt exact encode/decode round-trip passed.
+- **Full 64-Layer Forward Pass (`'The capital of France is'` -> `[0, 1063, 9203, 437, 10341, 506]`):**
+  - Checkpoints every 8 layers: layer 8 (`60.6s`), 16 (`110.6s`), 24 (`161.3s`), 32 (`203.8s`), 40 (`253.2s`), 48 (`300.2s`), 56 (`358.2s`), 64 (`408.8s`) — all `finite=True`
+  - Total elapsed including LM head: `419.43s` (`logits shape=(155136,)`, `dtype=float32`, `finite=True`)
+  - Top-3 predicted next tokens: `#1 ' Paris'` (`id=10805`, `logit=16.4356`), `#2 ' a'` (`id=387`, `logit=13.9003`), `#3 ' the'` (`id=405`, `logit=13.0227`)
