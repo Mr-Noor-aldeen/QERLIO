@@ -14,6 +14,7 @@ from typing import Any, Callable, Dict, Generator, Iterable, List, Optional, Seq
 
 import numpy as np
 
+from core.inference.dequant import compute_tensor_bytes, dequantize_bytes
 from core.inference.gguf_loader import GGUFLoader
 from core.inference.kv_cache import (
     ContextLengthExceededError,
@@ -337,12 +338,60 @@ class SeedOssEngine:
             out = out + bias
         return out
 
+    def _matmul_weight(
+        self,
+        x: np.ndarray,
+        weight_name: str,
+        bias_name: Optional[str] = None,
+        chunk_rows: int = 16384,
+    ) -> np.ndarray:
+        """Compute `x @ W.T (+ bias)` in float32, streaming row chunks directly
+        from `mmap` when weights are not preloaded and `out_rows > chunk_rows`.
+        """
+        bias = self._get_optional_tensor(bias_name) if bias_name else None
+        if self._cache_weights:
+            w = self._get_tensor(weight_name)
+            return self._linear(x, w, bias)
+
+        info = self.loader.get_tensor_info(weight_name)
+        if len(info.dims) != 2 or self.loader._mmap is None:
+            w = self.loader.get_tensor_f32(weight_name)
+            return self._linear(x, w, bias)
+
+        in_dim, out_rows = int(info.dims[0]), int(info.dims[1])
+        if out_rows <= chunk_rows:
+            w = self.loader.get_tensor_f32(weight_name)
+            return self._linear(x, w, bias)
+
+        row_bytes = compute_tensor_bytes(info.type_id, in_dim)
+        base_offset = self.loader.data_offset + info.offset
+        mm = self.loader._mmap
+
+        out_shape = (*x.shape[:-1], out_rows)
+        result = np.empty(out_shape, dtype=np.float32)
+
+        for start_row in range(0, out_rows, chunk_rows):
+            end_row = min(start_row + chunk_rows, out_rows)
+            n_rows = end_row - start_row
+            byte_start = base_offset + start_row * row_bytes
+            byte_end = byte_start + n_rows * row_bytes
+            raw_chunk = mm[byte_start:byte_end]
+            w_chunk = dequantize_bytes(raw_chunk, info.type_id, n_rows * in_dim).reshape(
+                (n_rows, in_dim)
+            )
+            result[..., start_row:end_row] = np.matmul(x, w_chunk.T)
+
+        if bias is not None:
+            result = result + bias
+        return result
+
     def forward(
         self,
         token_ids: Sequence[int],
         kv_cache: Optional[KVCache] = None,
         start_pos: Optional[int] = None,
         last_token_only: bool = False,
+        layer_callback: Optional[Callable[[int, np.ndarray], None]] = None,
     ) -> np.ndarray:
         """
         Execute a full SeedOssForCausalLM forward pass over `token_ids`.
@@ -358,6 +407,8 @@ class SeedOssEngine:
         last_token_only : bool
             If True, only project and return the final token's logits of shape `(vocab_size,)`.
             If False (default), return all positions' logits of shape `(seq_len, vocab_size)`.
+        layer_callback : Callable[[int, np.ndarray], None], optional
+            Optional hook called at the end of each layer with `(layer_idx, hidden_states)`.
         """
         if not isinstance(token_ids, (list, tuple, np.ndarray)):
             token_ids = list(token_ids)
@@ -390,18 +441,9 @@ class SeedOssEngine:
             attn_norm_w = self._get_tensor(f"{prefix}attn_norm.weight")
             normed = self._rms_norm(hidden_states, attn_norm_w, cfg.rms_norm_eps)
 
-            q_w = self._get_tensor(f"{prefix}attn_q.weight")
-            q_b = self._get_optional_tensor(f"{prefix}attn_q.bias")
-            k_w = self._get_tensor(f"{prefix}attn_k.weight")
-            k_b = self._get_optional_tensor(f"{prefix}attn_k.bias")
-            v_w = self._get_tensor(f"{prefix}attn_v.weight")
-            v_b = self._get_optional_tensor(f"{prefix}attn_v.bias")
-            o_w = self._get_tensor(f"{prefix}attn_output.weight")
-            o_b = self._get_optional_tensor(f"{prefix}attn_output.bias")
-
-            q = self._linear(normed, q_w, q_b)
-            k = self._linear(normed, k_w, k_b)
-            v = self._linear(normed, v_w, v_b)
+            q = self._matmul_weight(normed, f"{prefix}attn_q.weight", f"{prefix}attn_q.bias")
+            k = self._matmul_weight(normed, f"{prefix}attn_k.weight", f"{prefix}attn_k.bias")
+            v = self._matmul_weight(normed, f"{prefix}attn_v.weight", f"{prefix}attn_v.bias")
 
             # Reshape to (heads, seq_len, head_dim)
             q = q.reshape(seq_len, cfg.head_count, cfg.key_length).transpose(1, 0, 2)
@@ -432,7 +474,7 @@ class SeedOssEngine:
 
             attn_out = np.matmul(attn_probs, v_rep)  # (head_count, seq_len, value_length)
             attn_out = attn_out.transpose(1, 0, 2).reshape(seq_len, cfg.head_count * cfg.value_length)
-            attn_proj = self._linear(attn_out, o_w, o_b)
+            attn_proj = self._matmul_weight(attn_out, f"{prefix}attn_output.weight", f"{prefix}attn_output.bias")
             hidden_states = residual + attn_proj
 
             # Post-attention RMSNorm + SwiGLU FFN
@@ -445,31 +487,25 @@ class SeedOssEngine:
             post_norm_w = self._get_tensor(post_norm_name)
             ffn_normed = self._rms_norm(hidden_states, post_norm_w, cfg.rms_norm_eps)
 
-            gate_w = self._get_tensor(f"{prefix}ffn_gate.weight")
-            up_w = self._get_tensor(f"{prefix}ffn_up.weight")
-            down_w = self._get_tensor(f"{prefix}ffn_down.weight")
-
-            gate = self._linear(ffn_normed, gate_w)
-            up = self._linear(ffn_normed, up_w)
+            gate = self._matmul_weight(ffn_normed, f"{prefix}ffn_gate.weight")
+            up = self._matmul_weight(ffn_normed, f"{prefix}ffn_up.weight")
             # SiLU(x) = x * sigmoid(x)
-            silu_gate = gate / (np.float32(1.0) + np.exp(-gate))
+            silu_gate = gate / (np.float32(1.0) + np.exp(-np.clip(gate, -88.0, 88.0)))
             ffn_hidden = silu_gate * up
-            ffn_out = self._linear(ffn_hidden, down_w)
+            ffn_out = self._matmul_weight(ffn_hidden, f"{prefix}ffn_down.weight")
 
             hidden_states = residual + ffn_out
+            if layer_callback is not None:
+                layer_callback(layer_idx, hidden_states)
 
         output_norm_w = self._get_tensor("output_norm.weight")
         hidden_states = self._rms_norm(hidden_states, output_norm_w, cfg.rms_norm_eps)
 
         output_w_name = "output.weight" if "output.weight" in self.loader.tensors else "token_embd.weight"
-        output_w = self._get_tensor(output_w_name)
-
+        target_h = hidden_states[-1:] if last_token_only else hidden_states
+        logits = self._matmul_weight(target_h, output_w_name)
         if last_token_only:
-            last_h = hidden_states[-1:]
-            logits = self._linear(last_h, output_w)[0]
-            return logits
-
-        logits = self._linear(hidden_states, output_w)
+            return logits[0]
         return logits
 
     def _resolve_input_tokens(self, prompt_or_tokens: Union[str, Sequence[int]]) -> List[int]:

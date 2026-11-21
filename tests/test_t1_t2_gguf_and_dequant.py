@@ -56,6 +56,7 @@ HERMES_Q6K_FIXTURE_PATH = (
     REPO_ROOT / "tests" / "fixtures" / "hermes_output_weight_rows0_3_q6k.bin"
 )
 HERMES_PREFIX_BIN_CANDIDATES = [
+    REPO_ROOT / "models" / "hermes-4_3_36b-Q4_K_M.gguf",
     Path("C:/Users/rahim/.gemini/antigravity/brain/dc714e6b-287c-4524-a387-3f332fb5705d/scratch/hermes_prefix.bin"),
     REPO_ROOT / "tests" / "fixtures" / "hermes_prefix.bin",
 ]
@@ -355,7 +356,9 @@ def test_t1_gguf_loader_matches_hermes_prefix_bin_100_percent(tmp_path: Path) ->
 
     fixture = json.loads(HERMES_FIXTURE_PATH.read_text(encoding="utf-8"))
     for prefix_bin in targets:
-        with GGUFLoader(prefix_bin, header_only=True) as loader:
+        # Open full official checkpoint with header_only=False to validate 21.76 GB mmap & all tensor bounds
+        is_full_checkpoint = prefix_bin.name == "hermes-4_3_36b-Q4_K_M.gguf"
+        with GGUFLoader(prefix_bin, header_only=not is_full_checkpoint) as loader:
             summary = loader.extract_architecture_summary()
             for key, expected_val in summary.items():
                 assert fixture[key] == expected_val, f"Mismatch on summary field {key} ({prefix_bin})"
@@ -460,10 +463,10 @@ def test_t1_gguf_loader_rejects_corrupt_and_truncated_files(tmp_path: Path) -> N
     with pytest.raises(ValueError, match="Truncated GGUF tensor data"):
         GGUFLoader(trunc_data, header_only=False)
 
-    # 7. Real/reconstructed prefix file opened with header_only=False must raise ValueError because full 21.7GB tensors are truncated
-    prefix_bin = _get_hermes_prefix_bin(tmp_path)
+    # 7. Reconstructed truncated prefix opened with header_only=False must raise ValueError because full 21.7GB tensors are truncated
+    trunc_prefix = _build_hermes_header_prefix_from_fixture(tmp_path)
     with pytest.raises(ValueError, match="Truncated GGUF tensor data"):
-        GGUFLoader(prefix_bin, header_only=False)
+        GGUFLoader(trunc_prefix, header_only=False)
 
 
 # ==============================================================================
