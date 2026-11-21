@@ -60,7 +60,7 @@
 | **Tampering** | Model weights corrupted or tampered on disk | Periodic hash check; rejection of mismatched checksums; read-only memory mappings (`mmap` with read permissions only). |
 | **Repudiation** | Audit log evasion during sensitive tool executions | Local append-only audit log for all permission-gated tool calls with timestamp, tool name, and caller identifier. |
 | **Information Disclosure** | Memory leaks across sessions; private prompt text logged to disk | Explicit memory zeroization for sensitive buffers; strict rule forbidding prompt and output tokens in default log files. |
-| **Denial of Service** | Malformed model causing crash; unbounded prompt exhausting RAM/VRAM | Fuzz-tested GGUF parser; strict context budgeting; pre-allocation memory checks; cooperative thread cancellation. |
+| **Denial of Service** | Malformed model causing crash; unbounded prompt exhausting system memory | Fuzz-tested GGUF parser; strict context budgeting; pre-allocation memory checks; cooperative thread cancellation. |
 | **Elevation of Privilege** | Model hallucinates or is injected with tool call to execute `cmd.exe` or `rm -rf` | Tool calls pass through an isolated Permission Gateway. No tool is permitted arbitrary OS shell execution. Write and delete operations require explicit user confirmation. |
 
 ---

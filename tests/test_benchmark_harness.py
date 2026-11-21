@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from tools.benchmark.benchmark_suite import run_benchmark
 from tests.test_gguf_integrity import create_synthetic_gguf
 
+
 def test_benchmark_execution(tmp_path):
     model_file = tmp_path / "bench_model.gguf"
     create_synthetic_gguf(str(model_file), magic=b"GGUF", version=3, tensor_count=64, kv_count=16)
@@ -23,8 +24,11 @@ def test_benchmark_execution(tmp_path):
 
     assert report["schema_version"] == "1.0"
     assert report["backend"] == "qerlio-reference-cpu"
+    assert report["simulated"] is True
     assert report["profile"] == "mobile-entry"
     assert "results" in report
-    assert report["results"]["generation_tps_median"] > 0
-    assert report["results"]["peak_rss_bytes"] > 0
-    assert report["device"]["cpu_cores_physical"] > 0
+    assert report["results"]["measurement_status"] == "no_live_measurement"
+    assert report["results"]["ttft_ms_median"] is None
+    assert report["results"]["ttft_ms_p95"] is None
+    assert report["results"]["generation_tps_median"] is None
+    assert report["results"]["peak_rss_bytes"] is None

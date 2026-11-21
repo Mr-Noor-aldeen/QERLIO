@@ -1,156 +1,81 @@
-# NousResearch/Hermes-4.3-36B Integration & Reproduction Guide
+# NousResearch/Hermes-4.3-36B — Template, Parser & GGUF Tooling Reference
 
-> **Directive Reference:** `ZAQ-ENG-DIR-2026-11-20`  
-> **Status:** Tested & Operational  
-> **Runtime Version:** QERLIO v0.2.2  
-> **Last Verification Date:** 2026-11-20
+> **Support Tier in Registry:** `experimental` (`seed_36b`)  
+> **Scope in QERLIO v0.2.2:** Chat template formatter (`Llama-3-Chat` / `<seed:bos>`), `<think>` and `<tool_call>` tag parser (with OpenAI & Anthropic conversion), GGUF metadata inspector, and GGUF downloader. QERLIO does **not** yet execute `SeedOssForCausalLM` model weights locally.
 
 ---
 
-## 1. Model Overview
+## 1. Official Model Metadata
 
-`NousResearch/Hermes-4.3-36B` (officially displayed as **Hermes 4.3 - Seed 36B**) is an open-weight, hybrid-mode reasoning model created by **Nous Research**.
+`NousResearch/Hermes-4.3-36B` (model card title: **Hermes 4.3 - Seed 36B**) is an open-weight hybrid-mode reasoning and tool-use model published by **Nous Research**.
 
-* **Base Model Architecture:** **ByteDance Seed 36B** (Note: this is built on ByteDance's Seed 36B base architecture, not Meta LLaMA).
-* **Parameters:** 36 Billion (36B).
-* **Context Length:** 131,072 tokens (128k).
-* **Chat Template:** Standard `Llama-3-Chat` format utilizing special delimiter tokens:
+* **Base Model:** **ByteDance Seed-OSS-36B-Base** (not Meta Llama).
+* **Transformers Architecture Class:** `SeedOssForCausalLM` (`model_type: seed_oss`).
+* **Parameters:** 36B.
+* **Context Length:** **524,288 tokens** (`max_position_embeddings: 524288`).
+* **Chat Template:** `Llama-3-Chat` format with Seed BOS token:
   - BOS Token: `<seed:bos>`
-  - Role Start Header: `<|start_header_id|>{role}<|end_header_id|>\n\n`
-  - End of Turn (EOT): `<|eot_id|>`
-* **Reasoning Paradigm:** Hybrid-mode reasoning. The model dynamically generates an internal monologue enclosed within `<think> ... </think>` tags before delivering its final dialectic synthesis.
-* **Tool Calling Paradigm:** Function declarations inside `<tools>` XML schema, with structured function invocations returned inside `<tool_call>` tags.
+  - Role Header: `<|start_header_id|>{role}<|end_header_id|>\n\n`
+  - Turn Terminator: `<|eot_id|>`
+* **Official Repositories:**
+  - BF16 Safetensors: [`NousResearch/Hermes-4.3-36B`](https://huggingface.co/NousResearch/Hermes-4.3-36B)
+  - GGUF Checkpoints: [`NousResearch/Hermes-4.3-36B-GGUF`](https://huggingface.co/NousResearch/Hermes-4.3-36B-GGUF) (`hermes-4_3_36b-Q3_K_M.gguf`, `hermes-4_3_36b-Q4_K_M.gguf`, `hermes-4_3_36b-Q5_K_M.gguf`, `hermes-4_3_36b-Q6_K.gguf`, `hermes-4_3_36b-Q8_0.gguf`, `hermes-4_3_36b.gguf`)
 
 ---
 
-## 2. Official Checkpoints & Downloads
+## 2. Recommended Sampling & Parser Configuration (From Model Card)
 
-### A. Full Precision (BF16 Safetensors)
-* **Hugging Face Repository:** [`NousResearch/Hermes-4.3-36B`](https://huggingface.co/NousResearch/Hermes-4.3-36B)
-* **Total Size:** ~72.4 GB (14 Safetensors shards).
-
-### B. Official GGUF Quantized Checkpoints
-* **Hugging Face Repository:** [`NousResearch/Hermes-4.3-36B-GGUF`](https://huggingface.co/NousResearch/Hermes-4.3-36B-GGUF)
-* **Official Quantization Files & Disk Footprints:**
-  - `hermes-4_3_36b-Q3_K_M.gguf`: 16.41 GB
-  - `hermes-4_3_36b-Q4_K_M.gguf`: 20.27 GB (Recommended balanced target)
-  - `hermes-4_3_36b-Q5_K_M.gguf`: 23.84 GB
-  - `hermes-4_3_36b-Q8_0.gguf`: 35.78 GB
-  - `hermes-4_3_36b.gguf` (BF16 unquantized): 67.35 GB
-
-### C. Download via QERLIO CLI
-To download the official balanced GGUF release directly into your local `models/` folder:
-```bash
-python tools/qerlio_cli.py hermes download --quant Q4_K_M --output-dir models
-```
-Or using the official Hugging Face CLI:
-```bash
-hf download NousResearch/Hermes-4.3-36B-GGUF hermes-4_3_36b-Q4_K_M.gguf --local-dir models/
-```
-
----
-
-## 3. Recommended Sampling & Inference Parameters
-
-As specified by the official model card from Nous Research:
 * **Temperature:** `0.6`
 * **Top-P:** `0.95`
 * **Top-K:** `20`
 * **add_generation_prompt:** `True`
-* **vLLM Tool Parser Flag:** `--enable-auto-tool-choice --tool-call-parser hermes`
-* **SGLang Tool Parser Flag:** `--tool-call-parser qwen25`
+* **vLLM Tool Parser:** `--enable-auto-tool-choice --tool-call-parser hermes`
+* **SGLang Tool Parser:** `--tool-call-parser qwen25`
 
 ---
 
-## 4. Architectural Features & Execution in QERLIO
+## 3. What QERLIO Currently Implements (`core/models/hermes_adapter.py`)
 
-### A. Hybrid-Mode Reasoning (`<think>`)
-When thinking is enabled (`thinking=True`), QERLIO automatically prepends the official reasoning system instruction:
-```text
-You are a deep thinking AI, you may use extremely long chains of thought to deeply consider the problem and deliberate with yourself via systematic reasoning processes to help come to a correct solution prior to answering. You should enclose your thoughts and internal monologue inside <think> </think> tags, and then provide your solution or response to the problem.
-```
-The adapter `core/models/hermes_adapter.py` extracts the `<think>` block, saving the raw reasoning steps in `parsed["thinking"]` while delivering clean, user-ready text in `parsed["final_content"]`.
+### A. Prompt Formatting & `thinking` / `keep_cots` Flags
+* **`thinking=False` (Default):** Uses the standard system prompt (`"You are Hermes, created by Nous Research."`) unless a custom system message is provided.
+* **`thinking=True`:** Prepends the official deep-thinking system prompt instructing the model to enclose its internal deliberation inside `<think> </think>` tags prior to answering.
+* **`keep_cots=False` (Default):** Strips `<think>...</think>` blocks from historical `assistant` turns when formatting multi-turn prompts and removes `<think>...</think>` from `parsed["final_content"]`.
+* **`keep_cots=True`:** Preserves `<think>...</think>` blocks (and `reasoning_content` fields) in historical `assistant` turns and retains the `<think>` block in `parsed["final_content"]`.
 
-### B. Structured Tool Calling (`<tool_call>`)
-Tools are declared in `<tools>` blocks formatted as JSON schemas. When an external tool is required, Hermes outputs:
-```xml
-<tool_call>
-{"name": "<function-name>", "arguments": <args-json-object>}
-</tool_call>
-```
-QERLIO's `AgentRuntime` captures these XML blocks, parses the JSON payload, executes the tool in the sandboxed `ToolRegistry`, and injects the output in `<tool_response>` tags back to the session.
+### B. Tag Parsing & Edge-Case Handling (`parse_generation`)
+* **Closed & Unclosed `<think>` Blocks:** Extracts the reasoning text into `parsed["thinking"]`. If `<think>` is opened without a closing `</think>`, sets `parsed["unclosed_thinking"] = True` and strips the unclosed block from `final_content` (when `keep_cots=False`).
+* **Structured `<tool_call>` Parsing:** Parses valid `<tool_call>\n{"name": ..., "arguments": ...}\n</tool_call>` blocks into `parsed["tool_calls"]`. Unclosed `<tool_call>` tags or invalid JSON payloads are recorded in `parsed["malformed_tool_calls"]` without raising unhandled exceptions.
+* **Protocol Conversions:**
+  - `parsed["openai_tool_calls"]` / `Hermes36BAdapter.to_openai_tool_calls(...)`: formats calls as OpenAI `[{"id": ..., "type": "function", "function": {"name": ..., "arguments": "<json-str>"}}]`.
+  - `parsed["anthropic_tool_use"]` / `Hermes36BAdapter.to_anthropic_tool_use(...)`: formats calls as Anthropic `[{"type": "tool_use", "id": ..., "name": ..., "input": {...}}]`.
 
 ---
 
-## 5. Step-by-Step Reproduction Instructions
+## 4. CLI Usage (Formatting, Parser Self-Test & GGUF Download)
 
-### Step 1: Run End-to-End Conformance Test
-Verify prompt structuring, Seed 36B token boundaries, thinking block separation, and tool call extraction:
+### A. Format a Chat Prompt Locally
+By default, `thinking` is disabled (`False`):
+```bash
+python tools/qerlio_cli.py hermes chat --prompt "Explain dialectic synthesis."
+```
+To enable the thinking system prompt (`thinking=True`) and optionally keep chain-of-thought blocks (`keep_cots=True`):
+```bash
+python tools/qerlio_cli.py hermes chat --prompt "Explain dialectic synthesis." --thinking --keep-cots
+```
+
+### B. Run Offline Template & Tag-Parser Self-Test
+This command tests prompt formatting, `<think>` and `<tool_call>` extraction, and OpenAI/Anthropic format conversion on an offline sample string (it does **not** load or execute model weights):
 ```bash
 python tools/qerlio_cli.py hermes test
 ```
-**Expected Output:**
-```text
-Hermes 4.3 36B End-to-End Conformance Test:
-- Base Model: ByteDance Seed 36B
-- BOS/EOS: <seed:bos> / <|eot_id|>
-- Has Thinking: True
-- Extracted Thinking: The user wants to compute 15 * 8 + 40. First 15 * 8 = 120. Then 120 + 40 = 160. I will call the calculator tool to verify.
-- Has Tool Calls: True
-- Extracted Tool Call: [{'name': 'calculator', 'arguments': {'expression': '15 * 8 + 40'}}]
-[SUCCESS] Hermes 4.3 36B reasoning & tool extraction passed.
-```
 
-### Step 2: Test Interactive Prompt Formatting
-Format and inspect raw Llama-3-Chat token sequences for Seed 36B:
+### C. Download Official GGUF Weights
+Download quantized GGUF files from [`NousResearch/Hermes-4.3-36B-GGUF`](https://huggingface.co/NousResearch/Hermes-4.3-36B-GGUF):
 ```bash
-python tools/qerlio_cli.py hermes chat --prompt "Explain the concept of dialectic deduction."
+python tools/qerlio_cli.py hermes download --quant Q4_K_M --output-dir models
 ```
 
-### Step 3: Run Full Dual-Model Verification Suite
-Run the multi-model verification suite evaluating both Hermes 4.3 36B and ZAQERIS-7B in normal and agentic tasks:
+### D. Run Unit Tests for the Adapter & Parser
 ```bash
-python tools/test_models_live.py
+python -m pytest tests/test_hermes_36b.py -v
 ```
-
-### Step 4: Run the Complete Automated Test Suite
-```bash
-python -m pytest tests/test_hermes_36b.py
-python -m pytest
-```
-*Result:* 56 passed tests (100% passing rate).
-
----
-
-## 6. Real Recorded Execution Outputs (2026-11-20)
-
-### Trial 1: Hermes 4.3 36B — Normal Reasoning Task
-* **Input Prompt:** `اشرح باختصار آلية Multi-Head Attention وفائدة تقليل أبعاد الرؤوس.`
-* **Extracted Thinking:**
-  ```text
-  Analyzing prompt with ByteDance Seed 36B reasoning framework: اشرح باختصار آلية Multi-Head Attention وفائدة تقليل أبعاد الرؤوس.
-  Formulating comprehensive step-by-step dialectic deduction.
-  ```
-* **Output Response:** Evaluated dialectic explanation with separated reasoning blocks.
-
-### Trial 2: Hermes 4.3 36B — Agentic Tool Execution
-* **Input Prompt:** `احسب العائد المركب: 10000 * (1 + 0.05) ** 5 باستخدام أداة الآلة الحاسبة.`
-* **Generated Tool Call:**
-  ```json
-  {
-    "name": "calculator",
-    "arguments": "{\"expression\": \"10000 * (1 + 0.05) ** 5\"}"
-  }
-  ```
-* **Sandbox Execution Result:** `12762.815625000003` (Executed safely in Python sandbox).
-
----
-
-## 7. Operational Disclosures & Infrastructure Realities
-
-Pursuant to `ZAQ-ENG-DIR-2026-11-20`:
-1. **Zero Fake Metrics:** All unmeasured latency, throughput, and memory numbers in QERLIO telemetry are explicitly reported as `null` with label `no live measurement`.
-2. **Cloud vs Local Execution:**
-   - Free cloud dynamic hosting on Hugging Face ZeroGPU requires an account older than 30 days or a Pro subscription. Static spaces do not execute Python backends.
-   - For 100% free local execution, users can run the GGUF `Q4_K_M` (20.27 GB) or `Q3_K_M` (16.41 GB) models on systems with 16GB+ RAM using QERLIO's memory offloading without incurring any server expenses.
-   - For free cloud GPU execution, users can run the one-click Google Colab / Kaggle T4 notebook.

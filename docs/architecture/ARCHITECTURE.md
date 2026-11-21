@@ -91,7 +91,7 @@ flowchart TD
 - Emits chunks via user-supplied token callback.
 
 ### 2.4 Backend Router & Fallback Controller
-- Evaluates device capabilities (CPU vector extensions, available VRAM, driver versions).
+- Evaluates device capabilities (CPU vector extensions, available memory, driver versions).
 - Directs model execution to the optimal verified backend.
 - Automatically and gracefully falls back to CPU reference execution if GPU/NPU initialization fails.
 

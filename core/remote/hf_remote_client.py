@@ -5,11 +5,33 @@ import urllib.error
 from typing import Any, Dict, Generator, List, Optional
 from core.models.hermes_adapter import Hermes36BAdapter, DEFAULT_GENERATION_CONFIG
 
+
 class HFRemoteClient:
-    def __init__(self, base_url: Optional[str] = None, token: Optional[str] = None):
+    """
+    HTTP client for OpenAI-compatible remote chat completion endpoints.
+
+    Note on chat templating:
+    - When calling `/chat/completions` (`generate` and `stream_generate`), the remote
+      server applies its own tokenizer chat template to the `messages` array. For
+      Hermes/Seed models, this client uses `Hermes36BAdapter.prepare_messages` to
+      inject the appropriate system prompt (`thinking=True` vs `thinking=False`) and
+      filter historical chain-of-thought blocks (`keep_cots`), and uses
+      `Hermes36BAdapter.parse_generation` to parse `<think>` and `<tool_call>` tags
+      from the returned content.
+    - To apply the raw `<seed:bos>` / `Llama-3-Chat` string template locally, call
+      `format_prompt(...)`.
+    """
+
+    def __init__(
+        self,
+        base_url: Optional[str] = None,
+        token: Optional[str] = None,
+        thinking: bool = False,
+        keep_cots: bool = False
+    ):
         self.base_url = (base_url or os.environ.get("QERLIO_REMOTE_URL") or "https://router.huggingface.co/v1").rstrip("/")
         self.token = token or os.environ.get("HF_TOKEN") or ""
-        self.hermes_adapter = Hermes36BAdapter(thinking=True)
+        self.hermes_adapter = Hermes36BAdapter(thinking=thinking, keep_cots=keep_cots)
 
     def _headers(self) -> Dict[str, str]:
         headers = {
@@ -19,6 +41,24 @@ class HFRemoteClient:
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
         return headers
+
+    @staticmethod
+    def _is_hermes_or_seed(model: str) -> bool:
+        lowered = model.lower()
+        return "hermes" in lowered or "seed" in lowered
+
+    def format_prompt(
+        self,
+        messages: List[Dict[str, Any]],
+        tools: Optional[List[Dict[str, Any]]] = None,
+        thinking: Optional[bool] = None,
+        keep_cots: Optional[bool] = None
+    ) -> str:
+        adapter = Hermes36BAdapter(
+            thinking=self.hermes_adapter.thinking if thinking is None else thinking,
+            keep_cots=self.hermes_adapter.keep_cots if keep_cots is None else keep_cots
+        )
+        return adapter.format_chat_prompt(messages, tools=tools)
 
     def ping(self) -> Dict[str, Any]:
         endpoints = [f"{self.base_url}/models", f"{self.base_url}/healthz", self.base_url]
@@ -40,15 +80,23 @@ class HFRemoteClient:
         model: str,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.6,
-        top_p: float = 0.95,
+        temperature: float = DEFAULT_GENERATION_CONFIG["temperature"],
+        top_p: float = DEFAULT_GENERATION_CONFIG["top_p"],
         max_tokens: int = 512,
-        thinking: bool = True
+        thinking: bool = False,
+        keep_cots: bool = False
     ) -> Dict[str, Any]:
         endpoint = f"{self.base_url}/chat/completions"
-        payload = {
+        adapter = Hermes36BAdapter(thinking=thinking, keep_cots=keep_cots)
+        outgoing_messages = (
+            adapter.prepare_messages(messages)
+            if self._is_hermes_or_seed(model)
+            else messages
+        )
+
+        payload: Dict[str, Any] = {
             "model": model,
-            "messages": messages,
+            "messages": outgoing_messages,
             "temperature": temperature,
             "top_p": top_p,
             "max_tokens": max_tokens,
@@ -67,13 +115,16 @@ class HFRemoteClient:
                 message = choice.get("message", {})
                 raw_content = message.get("content") or ""
 
-                if "hermes" in model.lower() or "seed" in model.lower():
-                    parsed = self.hermes_adapter.parse_generation(raw_content)
+                if self._is_hermes_or_seed(model):
+                    parsed = adapter.parse_generation(raw_content)
                     return {
                         "model": model,
                         "raw_response": res_json,
                         "thinking": parsed["thinking"],
+                        "unclosed_thinking": parsed["unclosed_thinking"],
                         "tool_calls": parsed["tool_calls"] or message.get("tool_calls", []),
+                        "openai_tool_calls": parsed["openai_tool_calls"] or message.get("tool_calls", []),
+                        "anthropic_tool_use": parsed["anthropic_tool_use"],
                         "content": parsed["final_content"]
                     }
 
@@ -81,7 +132,10 @@ class HFRemoteClient:
                     "model": model,
                     "raw_response": res_json,
                     "thinking": None,
+                    "unclosed_thinking": False,
                     "tool_calls": message.get("tool_calls", []),
+                    "openai_tool_calls": message.get("tool_calls", []),
+                    "anthropic_tool_use": [],
                     "content": raw_content
                 }
         except urllib.error.HTTPError as e:
@@ -95,14 +149,23 @@ class HFRemoteClient:
         model: str,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.6,
-        top_p: float = 0.95,
-        max_tokens: int = 512
+        temperature: float = DEFAULT_GENERATION_CONFIG["temperature"],
+        top_p: float = DEFAULT_GENERATION_CONFIG["top_p"],
+        max_tokens: int = 512,
+        thinking: bool = False,
+        keep_cots: bool = False
     ) -> Generator[str, None, None]:
         endpoint = f"{self.base_url}/chat/completions"
-        payload = {
+        adapter = Hermes36BAdapter(thinking=thinking, keep_cots=keep_cots)
+        outgoing_messages = (
+            adapter.prepare_messages(messages)
+            if self._is_hermes_or_seed(model)
+            else messages
+        )
+
+        payload: Dict[str, Any] = {
             "model": model,
-            "messages": messages,
+            "messages": outgoing_messages,
             "temperature": temperature,
             "top_p": top_p,
             "max_tokens": max_tokens,

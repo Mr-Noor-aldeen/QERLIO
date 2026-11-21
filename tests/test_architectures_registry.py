@@ -14,7 +14,6 @@ client = TestClient(app)
 
 REGISTRY_PATH = Path(__file__).resolve().parent.parent / "registry" / "model_architectures.json"
 ZAQERIS_NATIVE_IDS = {"zaqeris_axiom", "zqn_12b", "zaqeris_7b"}
-TESTED_ARCH_IDS = ZAQERIS_NATIVE_IDS | {"seed_36b"}
 VALID_STATUSES = {"tested", "experimental"}
 
 
@@ -43,7 +42,12 @@ def test_support_status_tiers():
     assert raw["experimental_count"] == len(experimental)
     assert raw["tested_count"] + raw["experimental_count"] == raw["total_count"]
     # Only architectures with a code path exercised in this repo may be marked tested.
-    assert tested == TESTED_ARCH_IDS
+    assert tested == ZAQERIS_NATIVE_IDS
+    seed = next(a for a in archs if a["id"] == "seed_36b")
+    assert seed["support_status"] == "experimental"
+    assert "Seed-OSS" in seed["name"]
+    assert seed["huggingface_repo"] == "NousResearch/Hermes-4.3-36B"
+    assert seed["gguf_repo"] == "NousResearch/Hermes-4.3-36B-GGUF"
 
 
 def test_architectures_schema_completeness():
@@ -108,7 +112,7 @@ def test_architectures_api_endpoints():
 
     res_tested = client.get("/v1/architectures", params={"status": "tested"})
     assert res_tested.status_code == 200
-    assert {a["id"] for a in res_tested.json()["data"]} == TESTED_ARCH_IDS
+    assert {a["id"] for a in res_tested.json()["data"]} == ZAQERIS_NATIVE_IDS
 
     res_404 = client.get("/v1/architectures/non_existent_arch_xyz")
     assert res_404.status_code == 404

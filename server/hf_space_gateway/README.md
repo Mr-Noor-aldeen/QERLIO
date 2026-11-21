@@ -1,5 +1,5 @@
 ---
-title: QERLIO ZeroGPU Gateway
+title: QERLIO Remote API Gateway
 emoji: ⚡
 colorFrom: blue
 colorTo: indigo
@@ -10,32 +10,28 @@ pinned: false
 license: apache-2.0
 ---
 
-# QERLIO ZeroGPU Gateway
+# QERLIO Remote API Gateway (Template Stub)
 
-Open-Source multi-model OpenAI-compatible inference gateway for **NousResearch/Hermes-4.3-36B** and **ZAQERIS/ZAQERIS-7B** running on Hugging Face ZeroGPU (NVIDIA H100 80GB VRAM).
+OpenAI-compatible FastAPI/Gradio HTTP gateway scaffold (`POST /v1/chat/completions`, `GET /v1/models`, `GET /healthz`) with optional bearer-token authentication and a configurable 7-day trial expiration check.
 
-## Features
-- Full OpenAI API Compatibility: `POST /v1/chat/completions` (Streaming & Non-Streaming).
-- Model Catalog: `GET /v1/models`.
-- Hybrid Reasoning Mode: Emits and formats `<think> ... </think>` blocks.
-- Structured Tool Calling: Parses `<tool_call>` schemas.
-- Zero Server Expenses: Dynamically allocated on Hugging Face ZeroGPU infrastructure.
+## Scope & Honest Status
+- **HTTP Gateway Scaffold Only:** This service provides the HTTP routing, secret token verification (`QERLIO_GATEWAY_SECRET`), and trial expiration timer (`GATEWAY_LAUNCH_TIMESTAMP`).
+- **No Model Weights Attached by Default:** Until a live inference engine is connected, `/v1/chat/completions` returns an explicit stub notice (`"simulated": true`, `"usage": null`) and does not execute or impersonate any model.
+- **Model Metadata Listed:** Lists `NousResearch/Hermes-4.3-36B` (`ByteDance Seed-OSS-36B-Base` / `SeedOssForCausalLM`, 524,288 context window; GGUF repository: `NousResearch/Hermes-4.3-36B-GGUF`) and `ZAQERIS/ZAQERIS-7B`.
 
 ## Usage with OpenAI Python SDK
 ```python
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://<your-space-name>.hf.space/v1",
-    api_key="none"
+    base_url="http://localhost:7860/v1",
+    api_key="your-gateway-secret"
 )
 
 response = client.chat.completions.create(
     model="NousResearch/Hermes-4.3-36B",
-    messages=[{"role": "user", "content": "Explain hybrid-mode reasoning."}],
-    stream=True
+    messages=[{"role": "user", "content": "Ping gateway stub."}],
+    stream=False
 )
-
-for chunk in response:
-    print(chunk.choices[0].delta.content or "", end="", flush=True)
+print(response.choices[0].message.content)
 ```

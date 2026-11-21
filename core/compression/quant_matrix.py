@@ -108,7 +108,7 @@ def compute_layer_adaptive_mixed_precision(
         "hybrid_quant_gb": round(hybrid_bytes / (1024**3), 2),
         "saved_vs_baseline_pct": round(saved_vs_baseline_pct, 1),
         "saved_vs_uniform_pct": round(saved_vs_uniform_pct, 1),
-        "reasoning_retention_score": 0.984
+        "reasoning_retention_score": None
     }
 
 def calculate_sink_aware_kv_cache(

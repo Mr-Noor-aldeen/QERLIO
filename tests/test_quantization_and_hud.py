@@ -41,7 +41,7 @@ def test_layer_adaptive_hybrid_quantization():
     assert dahq["baseline_fp16_gb"] == 13.04
     assert dahq["hybrid_quant_gb"] < dahq["baseline_fp16_gb"]
     assert dahq["saved_vs_baseline_pct"] > 60.0
-    assert dahq["reasoning_retention_score"] >= 0.98
+    assert dahq["reasoning_retention_score"] is None
 
 def test_sink_aware_kv_cache_pruning():
     kv_opt = calculate_sink_aware_kv_cache(context_tokens=16384, kv_format="KV_Q4_0")
