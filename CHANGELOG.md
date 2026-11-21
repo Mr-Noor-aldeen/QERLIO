@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-11-21
+
+### Added
+- **From-Scratch GGUF v2/v3 Loader (`core/inference/gguf_loader.py`):** Pure Python stdlib + NumPy GGUF binary parser, metadata KV reader, alignment calculator, zero-copy memory-mapped tensor access (`mmap`), row-slicing (`get_tensor_rows_f32`), and corrupt/truncated file rejection.
+- **16 GGML Dequantization Kernels (`core/inference/dequant.py`):** Vectorized NumPy kernels and pure-Python scalar reference decoders verified within `< 1e-6` absolute error across `F32`, `F16`, `BF16`, `Q4_0`, `Q4_1`, `Q5_0`, `Q5_1`, `Q8_0`, `Q2_K`, `Q3_K`, `Q4_K`, `Q5_K`, `Q6_K`, `IQ4_NL`, `IQ3_S`, and `IQ4_XS`.
+- **Native Byte-Level BPE Tokenizer (`core/inference/tokenizer.py`):** Pure-Python tokenizer reading vocab, merges, and special/control tokens directly from GGUF metadata with NFC normalization, `seed-coder` / `qwen35` / `gpt2` pre-tokenization, and exact encode/decode round-trip.
+- **`SeedOssForCausalLM` Native Inference Engine (`core/inference/seed_oss_model.py`):** From-scratch implementation of Hermes 4.3 36B (`seed_oss` architecture: RMSNorm, half-split RoPE, GQA with QKV biases, `post_attention_norm`, SwiGLU MLP, dynamic GGUF hyperparameter loading, streaming generation, and `Hermes36BAdapter` integration).
+- **`Qwen35ForCausalLM` Hybrid Engine (`core/inference/qwen35_model.py`):** Native implementation of `qwen35` hybrid Gated DeltaNet linear-attention layers + Gated Full-Attention layers with `Qwen35HybridCache`, partial half-split RoPE, and ChatML formatting; verified on full 64-layer `models/Qwen3.8-27B-UD-Q4_K_M.gguf` (`'The capital of France is'` -> `' Paris.\nThe'`).
+- **Position-Aware `KVCache` & `Sampler` (`core/inference/kv_cache.py`, `core/inference/sampler.py`):** Dynamic KV cache with upfront memory budget validation (`InsufficientMemoryError`, `ContextLengthExceededError`), plus greedy, temperature, top-k, top-p, repetition penalty, stop sequences, and mid-stream cancellation.
+- **Live Local API & CLI Model Execution (`server/local_api/server.py`, `tools/qerlio_cli.py`):** Added `POST /v1/models/load`, `POST /v1/models/unload`, unified `load_gguf_engine`, live non-simulated `/v1/chat/completions` and `/v1/messages` inference (`"simulated": false`), and `qerlio hermes chat --model-path`.
+- **Registry & CI Updates:** Marked `seed_36b` and `qwen35` as `support_status: "tested"` in `registry/model_architectures.json` (184 total: 5 tested, 179 experimental), and added C++20 AddressSanitizer/UndefinedBehaviorSanitizer testing in CMake/CI (`tests/cpp_safety_test.cpp`).
+
+---
+
 ## [0.2.2] - 2026-11-20
 
 ### Added

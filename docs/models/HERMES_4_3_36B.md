@@ -1,7 +1,7 @@
-# NousResearch/Hermes-4.3-36B — Template, Parser & GGUF Tooling Reference
+# NousResearch/Hermes-4.3-36B — Native Engine, Template & GGUF Reference
 
-> **Support Tier in Registry:** `experimental` (`seed_36b`)  
-> **Scope in QERLIO v0.2.2:** Chat template formatter (`Llama-3-Chat` / `<seed:bos>`), `<think>` and `<tool_call>` tag parser (with OpenAI & Anthropic conversion), GGUF metadata inspector, and GGUF downloader. QERLIO does **not** yet execute `SeedOssForCausalLM` model weights locally.
+> **Support Tier in Registry:** `tested` (`seed_36b`)  
+> **Scope in QERLIO v0.3.0:** From-scratch native GGUF v3 inference engine (`core/inference/seed_oss_model.py`, `gguf_loader.py`, `dequant.py`, `tokenizer.py`, `kv_cache.py`, `sampler.py`) using only the Python standard library and NumPy, integrated with `Hermes36BAdapter` (`Llama-3-Chat` / `<seed:bos>`, `<think>` / `<tool_call>` parsing) and the local API gateway (`/v1/models/load`, `/v1/chat/completions`, `/v1/messages`).
 
 ---
 
@@ -53,7 +53,13 @@
 
 ## 4. CLI Usage (Formatting, Parser Self-Test & GGUF Download)
 
-### A. Format a Chat Prompt Locally
+### A. Run Local Inference with the Native Engine
+Load a local GGUF checkpoint directly via CLI or via the local API server (`POST /v1/models/load`):
+```bash
+python tools/qerlio_cli.py hermes chat --model-path models/hermes-4_3_36b-Q4_K_M.gguf --prompt "Explain dialectic synthesis." --thinking
+```
+
+### B. Format a Chat Prompt Locally
 By default, `thinking` is disabled (`False`):
 ```bash
 python tools/qerlio_cli.py hermes chat --prompt "Explain dialectic synthesis."
@@ -63,19 +69,19 @@ To enable the thinking system prompt (`thinking=True`) and optionally keep chain
 python tools/qerlio_cli.py hermes chat --prompt "Explain dialectic synthesis." --thinking --keep-cots
 ```
 
-### B. Run Offline Template & Tag-Parser Self-Test
+### C. Run Offline Template & Tag-Parser Self-Test
 This command tests prompt formatting, `<think>` and `<tool_call>` extraction, and OpenAI/Anthropic format conversion on an offline sample string (it does **not** load or execute model weights):
 ```bash
 python tools/qerlio_cli.py hermes test
 ```
 
-### C. Download Official GGUF Weights
+### D. Download Official GGUF Weights
 Download quantized GGUF files from [`NousResearch/Hermes-4.3-36B-GGUF`](https://huggingface.co/NousResearch/Hermes-4.3-36B-GGUF):
 ```bash
 python tools/qerlio_cli.py hermes download --quant Q4_K_M --output-dir models
 ```
 
-### D. Run Unit Tests for the Adapter & Parser
+### E. Run Native Inference & Adapter Verification Tests
 ```bash
-python -m pytest tests/test_hermes_36b.py -v
+python -m pytest tests/test_hermes_36b.py tests/test_t1_t2_gguf_and_dequant.py tests/test_t3_tokenizer.py tests/test_t4_to_t10_engine.py -v
 ```

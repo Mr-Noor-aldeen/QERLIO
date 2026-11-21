@@ -50,7 +50,7 @@ def run_benchmark(
     report = {
         "schema_version": "1.0",
         "timestamp_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "qerlio_version": "0.2.2",
+        "qerlio_version": "0.3.0",
         "backend": "qerlio-reference-cpu",
         "simulated": True,
         "profile": profile_name,

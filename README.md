@@ -6,18 +6,33 @@
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](CMakeLists.txt)
 [![Python](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](sdk/python/)
 [![Tests](https://img.shields.io/badge/tests-pytest-success.svg)](tests/)
-[![Architectures](https://img.shields.io/badge/architectures-3%20tested%20%7C%20180%20experimental-blueviolet.svg)](registry/model_architectures.json)
+[![Architectures](https://img.shields.io/badge/architectures-5%20tested%20%7C%20179%20experimental-blueviolet.svg)](registry/model_architectures.json)
 [![Universal Gateway](https://img.shields.io/badge/gateway-OpenAI%20%7C%20Anthropic%20%7C%20Ollama-purple.svg)](server/local_api/)
 [![Agent Mode](https://img.shields.io/badge/agents-ReAct%20%7C%20Tri--Agent%20Sandbox-emerald.svg)](core/agent/)
 
 > **Your AI. Your Device. Your Rules.**  
 > *Developed by ZAQERIS AI — Independent Research Group*
 
-QERLIO Runtime is a local-first AI execution platform and tooling suite providing an abstraction layer, GGUF header/metadata inspector, chat-template and tool-call parsers, and a multi-protocol local API gateway.
+QERLIO Runtime is a local-first AI execution platform and tooling suite providing a from-scratch GGUF v2/v3 native inference engine (Python standard library + NumPy), a C++20 runtime core, chat-template and tool-call parsers, and a multi-protocol local API gateway.
 
 ---
 
-## What's New in v0.2.2
+## What's New in v0.3.0
+
+* **From-Scratch GGUF v2/v3 Loader & MMAP Streaming (`core/inference/gguf_loader.py`):** Binary parser and zero-copy memory-mapped tensor reader with strict magic/version/bounds validation and row-level dequantized lookup (`get_tensor_rows_f32`).
+* **16 GGML Dequantization Kernels (`core/inference/dequant.py`):** Vectorized NumPy + scalar reference decoders matching within `< 1e-6` absolute error for `F32`, `F16`, `BF16`, `Q4_0`, `Q4_1`, `Q5_0`, `Q5_1`, `Q8_0`, `Q2_K`, `Q3_K`, `Q4_K`, `Q5_K`, `Q6_K`, `IQ4_NL`, `IQ3_S`, and `IQ4_XS`.
+* **Native Byte-Level BPE Tokenizer (`core/inference/tokenizer.py`):** Pure-Python GGUF tokenizer supporting NFC normalization, `seed-coder` / `qwen35` / `gpt2` pre-tokenization, special/control token splitting, and exact round-trip encode/decode.
+* **`SeedOssForCausalLM` Native Engine (`core/inference/seed_oss_model.py`):** Executes ByteDance Seed-OSS / `NousResearch/Hermes-4.3-36B` checkpoints (`seed_oss` architecture: RMSNorm, GQA with QKV biases, half-split RoPE, `post_attention_norm`, SwiGLU MLP) with zero runtime dependency on external inference libraries.
+* **`Qwen35ForCausalLM` Hybrid Engine (`core/inference/qwen35_model.py`):** Executes `qwen35` hybrid checkpoints combining Gated DeltaNet recurrent linear-attention layers (`attn_qkv`/`attn_gate`, causal depthwise `ssm_conv1d`, `ssm_beta`/`ssm_alpha`/`ssm_dt`/`ssm_a`, gated RMSNorm `ssm_norm`, `ssm_out`) and Gated Full-Attention layers (`attn_q` + sigmoid gate, Q/K RMSNorm, partial half-split RoPE), with a unified `Qwen35HybridCache` and ChatML support. Verified locally on `models/Qwen3.8-27B-UD-Q4_K_M.gguf` (all 64 trunk layers: 48 Gated DeltaNet + 16 Gated Full-Attention + 248,320 LM head; prompt `'The capital of France is'` predicted top-1 token `' Paris'` (`logit=17.5078`, `prefill=610.40s`) and generated `' Paris.\nThe'` (`[11751, 13, 198, 760]`) across 4 greedy tokens via `Qwen35HybridCache`).
+* **KV Cache, Sampler & Streaming (`core/inference/kv_cache.py`, `core/inference/sampler.py`):** Position-aware GQA `KVCache` with upfront memory budget checking (`InsufficientMemoryError`, `ContextLengthExceededError`), greedy/temperature/top-k/top-p/repetition-penalty sampling, stop sequences, and clean mid-stream cancellation.
+* **Live Gateway Execution (`server/local_api/server.py`, `tools/qerlio_cli.py`):** `/v1/models/load`, `/v1/models/unload`, `/v1/chat/completions`, and `/v1/messages` execute the loaded native engine with `"simulated": false` when a GGUF model is loaded, and return explicit `"simulated": true` stubs only when no model is loaded. CLI `qerlio hermes chat --model-path <model.gguf>` invokes `load_gguf_engine`.
+
+### Known Limitations (v0.3.0)
+* Inference executes on CPU via pure NumPy + Python stdlib; CUDA/Metal/Vulkan GPU acceleration and quantized C++ GEMM kernels are not yet wired into the Python tensor forward pass.
+* Only `seed_oss` and `qwen35` (`Qwen3.5`/`Qwen3.8` dense hybrid) text decoder graphs are implemented in `core/inference/`; vision encoders and Mixture-of-Experts (`qwen35moe`, `zaqeris_axiom` weights) are not yet executed locally.
+* Memory-mapped multi-gigabyte checkpoints dequantize weight tiles on demand into float32 on CPU, which prioritizes correctness and portability over interactive tok/s latency.
+
+## What Was in v0.2.2
 
 * **Hermes 4.3 36B (`Seed-OSS`) Template & Tag Parser (`core/models/hermes_adapter.py`):** Chat template formatter and output parser for [`NousResearch/Hermes-4.3-36B`](https://huggingface.co/NousResearch/Hermes-4.3-36B) (official GGUF repository: [`NousResearch/Hermes-4.3-36B-GGUF`](https://huggingface.co/NousResearch/Hermes-4.3-36B-GGUF)), built on **ByteDance Seed-OSS-36B-Base** (`SeedOssForCausalLM`, `model_type: seed_oss`, 524,288 context window) with the `Llama-3-Chat` template (`<seed:bos>`, `<|start_header_id|>`, `<|end_header_id|>`, `<|eot_id|>`).
 * **Reasoning & Tool-Call Parsing:** Supports `thinking=False` by default, optional `thinking=True` system prompt injection, `keep_cots` history filtering, unclosed `<think>` / `<tool_call>` and malformed JSON handling, and conversion of `<tool_call>` blocks into OpenAI `tool_calls` and Anthropic `tool_use` formats.
@@ -43,21 +58,21 @@ QERLIO Runtime is a local-first AI execution platform and tooling suite providin
 
 ---
 
-## Model Architectures: 3 Tested, 180 Experimental
+## Model Architectures: 5 Tested, 179 Experimental
 
-QERLIO keeps a registry of 183 model architectures in [`registry/model_architectures.json`](registry/model_architectures.json), generated by [`scripts/build_architectures_registry.py`](scripts/build_architectures_registry.py). Each entry has a `support_status`:
+QERLIO keeps a registry of 184 model architectures in [`registry/model_architectures.json`](registry/model_architectures.json), generated by [`scripts/build_architectures_registry.py`](scripts/build_architectures_registry.py). Each entry has a `support_status`:
 
-* **`tested` (3):** the architecture has a dedicated code path in this repository that the test suite exercises. Today these are the three ZAQERIS models: ZAQERIS-7B (`<tool_call>` parsing), ZQN-12B (`<call .../>` parsing), and AXIOM (ZAQERIS-M3 adapter interface).
-* **`experimental` (180):** catalog metadata and/or template/header tooling only. These are real, publicly available open-weight models, but QERLIO does not yet load and run their tensor weights end to end.
+* **`tested` (5):** the architecture has a dedicated code path in this repository exercised by the test suite: `seed_36b` (`SeedOssForCausalLM` native forward pass, KV cache, BPE tokenizer, chat/tool calling), `qwen35` (`Qwen35ForCausalLM` hybrid Gated DeltaNet + Gated Full-Attention engine), plus ZAQERIS-7B (`<tool_call>` parsing), ZQN-12B (`<call .../>` parsing), and AXIOM (ZAQERIS-M3 adapter interface).
+* **`experimental` (179):** catalog metadata and/or template/header tooling only. These are real, publicly available open-weight models, but QERLIO does not yet load and run their tensor weights end to end.
 
 | Architectural Family | Tested | Experimental | Representative Architectures |
 | :--- | :---: | :---: | :--- |
 | **ZAQERIS Native** | 3 | 0 | `zaqeris_axiom`, `zqn_12b`, `zaqeris_7b` |
 | **Dense Transformer** | 0 | 51 | Llama 1/2/3/3.1/3.2/3.3, Qwen 1/1.5/2/2.5, Mistral 7B, Gemma 1/2, Phi 1/2/3/4, Yi, Falcon, OLMo |
 | **Mixture of Experts** | 0 | 19 | Mixtral 8x7B/8x22B, DeepSeek-V2/V3, Grok-1, DBRX, Snowflake Arctic, Qwen2-MoE, OLMoE |
-| **Reasoning & Dialectic** | 0 | 17 | `seed_36b` (ByteDance Seed-OSS-36B / Hermes 4.3 36B), DeepSeek-R1 / R1-Zero / Distill, QwQ-32B-Preview, Marco-o1, Sky-T1, NuminaMath |
+| **Reasoning & Dialectic** | 1 | 16 | `seed_36b` (ByteDance Seed-OSS-36B / Hermes 4.3 36B — **tested**), DeepSeek-R1 / R1-Zero / Distill, QwQ-32B-Preview, Marco-o1, Sky-T1, NuminaMath |
 | **Code Specialist** | 0 | 22 | Qwen2.5-Coder, Codestral, StarCoder 1/2, DeepSeek-Coder-V2, CodeGeeX4 |
-| **State Space & Hybrid** | 0 | 14 | Mamba 1/2, Jamba, Zamba 1/2, RWKV 4/5/6/7, RecurrentGemma, HGRN |
+| **State Space & Hybrid** | 1 | 14 | `qwen35` (Qwen3.5 / Qwen3.8 Hybrid — **tested**), Mamba 1/2, Jamba, Zamba 1/2, RWKV 4/5/6/7, RecurrentGemma, HGRN |
 | **Vision-Language** | 0 | 25 | LLaVA 1.5/NeXT/OneVision, Qwen2-VL, PaliGemma 1/2, Pixtral 12B, InternVL2 |
 | **Embedding & Reranker** | 0 | 15 | ModernBERT, BGE-M3 / Reranker, E5, nomic-embed-text, ColBERTv2 |
 | **Speech & Audio** | 0 | 10 | Whisper large-v3 / turbo, Moonshine, SeamlessM4T v1/v2, wav2vec 2.0 |

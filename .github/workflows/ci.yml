@@ -21,7 +21,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pydantic psutil fastapi httpx uvicorn
+          pip install pytest numpy pydantic psutil fastapi httpx uvicorn
 
       - name: Run Full Test Suite
         run: |
@@ -42,3 +42,24 @@ jobs:
 
       - name: Build QERLIO Core
         run: cmake --build build --config Release
+
+      - name: Run C++ Core Safety Tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+  cpp-sanitizers:
+    name: C++20 AddressSanitizer & UndefinedBehaviorSanitizer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake with ASan & UBSan
+        run: cmake -B build-asan -DCMAKE_BUILD_TYPE=Debug -DQERLIO_BUILD_TESTS=ON -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -Wall -Wextra -Wpedantic"
+
+      - name: Build C++ Safety Test Binary
+        run: cmake --build build-asan --target qerlio_cpp_safety_test
+
+      - name: Run T10 Memory Safety Suite under ASan + UBSan
+        env:
+          ASAN_OPTIONS: detect_leaks=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: ctest --test-dir build-asan --output-on-failure

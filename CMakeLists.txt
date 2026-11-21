@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(qerlio VERSION 0.2.2 LANGUAGES C CXX)
+project(qerlio VERSION 0.3.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -52,3 +52,11 @@ install(TARGETS qerlio qerlio_core
 )
 
 install(DIRECTORY include/qerlio DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+option(QERLIO_BUILD_TESTS "Build C++20 memory-safety test suite" ON)
+if(QERLIO_BUILD_TESTS)
+    enable_testing()
+    add_executable(qerlio_cpp_safety_test tests/cpp_safety_test.cpp)
+    target_link_libraries(qerlio_cpp_safety_test PRIVATE qerlio_core)
+    add_test(NAME qerlio_cpp_safety_test COMMAND qerlio_cpp_safety_test)
+endif()

@@ -8,7 +8,7 @@
 #include <chrono>
 #include <thread>
 
-static const char* QERLIO_VERSION_STRING = "0.2.2";
+static const char* QERLIO_VERSION_STRING = "0.3.0";
 
 const char* qerlio_get_version(void) {
     return QERLIO_VERSION_STRING;
@@ -174,6 +174,7 @@ qerlio_status_t qerlio_generate_stream(
 
     auto end_time = std::chrono::steady_clock::now();
     double duration_sec = std::chrono::duration<double>(end_time - start_time).count();
+    (void)duration_sec;
 
     if (out_metrics) {
         out_metrics->tokens_generated = generated;
