@@ -1,9 +1,11 @@
 #include "qerlio/qerlio.h"
+#include "qerlio/native_gemm.h"
 #include "core/compression/universal_quant.hpp"
 #include "core/memory/memory_planner.hpp"
 #include "core/model_registry/gguf_parser.hpp"
 #include "core/scheduler/adaptive_scheduler.hpp"
 
+#include <cmath>
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>
@@ -277,6 +279,76 @@ void test_memory_scheduler_and_quant() {
     QERLIO_CHECK(qerlio::UniversalQuantizer::estimate_model_bytes(1000000ULL, qerlio::QuantType::Q4_K_M) > 0);
 }
 
+void test_native_gemm_kernels_and_bounds() {
+    const int has_avx2 = qerlio_gemm_has_avx2();
+    QERLIO_CHECK(has_avx2 == 0 || has_avx2 == 1);
+
+    std::vector<float> x(256, 1.0f);
+    std::vector<uint8_t> w_q4k(2 * 144, 0);
+    std::vector<uint8_t> w_q6k(2 * 210, 0);
+    std::vector<uint8_t> w_q8_0(2 * 34, 0);
+    std::vector<float> w_f32(2 * 16, 0.5f);
+    std::vector<float> y(2, -1.0f);
+
+    // Null & bounds rejections
+    QERLIO_CHECK(qerlio_gemm_q4_k_f32(nullptr, w_q4k.data(), y.data(), 1, 2, 256, 0, 2) == -1);
+    QERLIO_CHECK(qerlio_gemm_q4_k_f32(x.data(), w_q4k.data(), y.data(), 0, 2, 256, 0, 2) == -2);
+    QERLIO_CHECK(qerlio_gemm_q4_k_f32(x.data(), w_q4k.data(), y.data(), 1, 2, 256, 0, 3) == -3);
+    QERLIO_CHECK(qerlio_gemm_q4_k_f32(x.data(), w_q4k.data(), y.data(), 1, 2, 128, 0, 2) == -4);
+    QERLIO_CHECK(qerlio_gemm_q6_k_f32(x.data(), w_q6k.data(), y.data(), 1, 2, 128, 0, 2) == -4);
+    QERLIO_CHECK(qerlio_gemm_q8_0_f32(x.data(), w_q8_0.data(), y.data(), 1, 2, 16, 0, 2) == -4);
+    QERLIO_CHECK(qerlio_gemm_f32(nullptr, w_f32.data(), y.data(), 1, 2, 16, 0, 2) == -1);
+
+    // Row 0 of Q4_K: d=1.0 (0x3C00), dmin=0, sc[0..7]=1 -> subblock0 weights=0x11 -> q=1 -> dot(all_ones)=64.0
+    for (int r = 0; r < 2; ++r) {
+        uint8_t* blk = w_q4k.data() + r * 144;
+        blk[0] = 0x00;
+        blk[1] = 0x3C;  // fp16 1.0
+        for (int j = 0; j < 4; ++j) {
+            blk[4 + j] = 1;
+            blk[4 + 4 + j] = 0;
+        }
+        blk[12] = 0x01;
+        blk[13] = 0x01;
+        blk[14] = 0x01;
+        blk[15] = 0x01;
+        std::memset(blk + 16, (r == 0) ? 0x11 : 0x22, 128);
+    }
+    QERLIO_CHECK(qerlio_gemm_q4_k_f32(x.data(), w_q4k.data(), y.data(), 1, 2, 256, 0, 2) == 0);
+    QERLIO_CHECK(std::fabs(y[0] - 256.0f) < 1e-3f);
+    QERLIO_CHECK(std::fabs(y[1] - 512.0f) < 1e-3f);
+
+    // Row slice [1..2) of Q6_K: d=1.0, scales=1, all ql/qh zero -> q = -32 -> dot(all_ones) = 256 * (-32) = -8192.0
+    for (int r = 0; r < 2; ++r) {
+        uint8_t* blk = w_q6k.data() + r * 210;
+        std::memset(blk + 192, (r == 1) ? 1 : 2, 16);
+        blk[208] = 0x00;
+        blk[209] = 0x3C;  // fp16 1.0
+    }
+    std::vector<float> y_q6k(2, 0.0f);
+    QERLIO_CHECK(qerlio_gemm_q6_k_f32(x.data(), w_q6k.data() + 210, y_q6k.data(), 1, 2, 256, 1, 2) == 0);
+    QERLIO_CHECK(std::fabs(y_q6k[0]) < 1e-6f);
+    QERLIO_CHECK(std::fabs(y_q6k[1] - (-8192.0f)) < 1e-2f);
+
+    // Q8_0: d=1.0, qs=3 -> 32 * 3 = 96.0
+    for (int r = 0; r < 2; ++r) {
+        uint8_t* blk = w_q8_0.data() + r * 34;
+        blk[0] = 0x00;
+        blk[1] = 0x3C;
+        std::memset(blk + 2, (r == 0) ? 3 : 5, 32);
+    }
+    std::vector<float> y_q8(2, 0.0f);
+    QERLIO_CHECK(qerlio_gemm_q8_0_f32(x.data(), w_q8_0.data(), y_q8.data(), 1, 2, 32, 0, 2) == 0);
+    QERLIO_CHECK(std::fabs(y_q8[0] - 96.0f) < 1e-3f);
+    QERLIO_CHECK(std::fabs(y_q8[1] - 160.0f) < 1e-3f);
+
+    // F32
+    std::vector<float> y_f32(2, 0.0f);
+    QERLIO_CHECK(qerlio_gemm_f32(x.data(), w_f32.data(), y_f32.data(), 1, 2, 16, 0, 2) == 0);
+    QERLIO_CHECK(std::fabs(y_f32[0] - 8.0f) < 1e-4f);
+    QERLIO_CHECK(std::fabs(y_f32[1] - 8.0f) < 1e-4f);
+}
+
 }  // namespace
 
 int main() {
@@ -284,6 +356,7 @@ int main() {
     test_abi_and_null_guards(tmp_dir);
     test_gguf_parser_sha256_and_metadata(tmp_dir);
     test_memory_scheduler_and_quant();
+    test_native_gemm_kernels_and_bounds();
     std::cout << "[PASS] qerlio_cpp_safety_test passed all C++20 memory-safety checks.\n";
     return 0;
 }

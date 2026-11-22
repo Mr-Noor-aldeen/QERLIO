@@ -22,6 +22,7 @@ from core.inference.kv_cache import (
     KVCache,
     get_available_memory_bytes,
 )
+from core.inference.native_gemm import NativeGemmBackend, SequentialTensorStreamer
 from core.inference.sampler import Sampler, SamplerConfig
 from core.inference.tokenizer import GGUFTokenizer
 from core.models.hermes_adapter import Hermes36BAdapter
@@ -209,14 +210,27 @@ class SeedOssEngine:
         ).astype(np.float32)
 
         # Automatic weight caching policy: cache tensors in memory for compact models (<256 MiB),
-        # or stream on-demand from mmap for multi-gigabyte checkpoints.
+        # or stream on-demand via sequential I/O + native C GEMM kernels for multi-gigabyte checkpoints.
         if preload_weights is None:
             self._cache_weights = self.loader.file_size < (256 * 1024 * 1024)
         else:
             self._cache_weights = bool(preload_weights)
 
         self._tensor_cache: Dict[str, np.ndarray] = {}
+        self._native_gemm: Optional[NativeGemmBackend] = NativeGemmBackend.get_default()
+        self._streamer: Optional[SequentialTensorStreamer] = None
+        if not self._cache_weights and not header_only:
+            self._preload_small_tensors()
+            self._streamer = SequentialTensorStreamer(self.loader.path)
         self.active_sessions: int = 0
+
+    def _preload_small_tensors(self) -> None:
+        for name, info in self.loader.tensors.items():
+            if info.n_bytes <= 1024 * 1024:  # <= 1 MiB (norms, biases)
+                self._tensor_cache[name] = self.loader.get_tensor_f32(name)
+
+    def _resolve_optional_tensor_cache(self, name: str) -> Optional[np.ndarray]:
+        return self._tensor_cache.get(name)
 
     def create_kv_cache(
         self,
@@ -243,14 +257,13 @@ class SeedOssEngine:
         )
 
     def _get_tensor(self, name: str) -> np.ndarray:
+        cached = self._tensor_cache.get(name)
+        if cached is not None:
+            return cached
+        arr = self.loader.get_tensor_f32(name)
         if self._cache_weights:
-            cached = self._tensor_cache.get(name)
-            if cached is not None:
-                return cached
-            arr = self.loader.get_tensor_f32(name)
             self._tensor_cache[name] = arr
-            return arr
-        return self.loader.get_tensor_f32(name)
+        return arr
 
     def _get_optional_tensor(self, name: str) -> Optional[np.ndarray]:
         if name not in self.loader.tensors:
@@ -338,15 +351,33 @@ class SeedOssEngine:
             out = out + bias
         return out
 
+    def _get_prefetch_slice(
+        self, weight_name: Optional[str], chunk_rows: int
+    ) -> Optional[Tuple[int, int]]:
+        if not weight_name or self._streamer is None or weight_name not in self.loader.tensors:
+            return None
+        p_info = self.loader.get_tensor_info(weight_name)
+        if len(p_info.dims) != 2:
+            return None
+        p_in, p_rows = int(p_info.dims[0]), int(p_info.dims[1])
+        p_row_bytes = compute_tensor_bytes(p_info.type_id, p_in)
+        n_first = min(p_rows, chunk_rows)
+        return (self.loader.data_offset + p_info.offset, n_first * p_row_bytes)
+
     def _matmul_weight(
         self,
         x: np.ndarray,
         weight_name: str,
         bias_name: Optional[str] = None,
         chunk_rows: int = 16384,
+        prefetch_weight: Optional[str] = None,
     ) -> np.ndarray:
-        """Compute `x @ W.T (+ bias)` in float32, streaming row chunks directly
-        from `mmap` when weights are not preloaded and `out_rows > chunk_rows`.
+        """Compute `x @ W.T (+ bias)` in float32.
+
+        Uses preloaded tensors when `_cache_weights` is enabled, or streams raw
+        quantized bytes sequentially into the from-scratch C SIMD GEMM backend
+        with async double-buffered prefetching (falling back to chunked NumPy
+        dequantization for non-GEMM types).
         """
         bias = self._get_optional_tensor(bias_name) if bias_name else None
         if self._cache_weights:
@@ -354,36 +385,281 @@ class SeedOssEngine:
             return self._linear(x, w, bias)
 
         info = self.loader.get_tensor_info(weight_name)
-        if len(info.dims) != 2 or self.loader._mmap is None:
+        if len(info.dims) != 2:
             w = self.loader.get_tensor_f32(weight_name)
             return self._linear(x, w, bias)
 
         in_dim, out_rows = int(info.dims[0]), int(info.dims[1])
+        use_c_gemm = (self._native_gemm is not None) and self._native_gemm.supports(
+            info.type_id, in_dim
+        )
+        row_bytes = compute_tensor_bytes(info.type_id, in_dim)
+        base_offset = self.loader.data_offset + info.offset
+        next_prefetch = self._get_prefetch_slice(prefetch_weight, chunk_rows)
+
         if out_rows <= chunk_rows:
+            out_shape = (*x.shape[:-1], out_rows)
+            if self._streamer is not None:
+                raw_u8, raw_ptr = self._streamer.acquire(
+                    base_offset, out_rows * row_bytes, prefetch=next_prefetch
+                )
+                if use_c_gemm and self._native_gemm is not None:
+                    result = np.empty(out_shape, dtype=np.float32)
+                    return self._native_gemm.matmul_raw_chunk(
+                        x, raw_ptr, result, info.type_id, out_rows, in_dim, 0, out_rows, bias=bias
+                    )
+                w = dequantize_bytes(raw_u8, info.type_id, out_rows * in_dim).reshape(
+                    (out_rows, in_dim)
+                )
+                return self._linear(x, w, bias)
+
+            if self.loader._mmap is not None and use_c_gemm and self._native_gemm is not None:
+                raw_view = self.loader.get_tensor_raw(weight_name)
+                try:
+                    raw_u8 = np.frombuffer(raw_view, dtype=np.uint8)
+                    result = np.empty(out_shape, dtype=np.float32)
+                    return self._native_gemm.matmul_raw_chunk(
+                        x, int(raw_u8.ctypes.data), result, info.type_id, out_rows, in_dim, 0, out_rows, bias=bias
+                    )
+                finally:
+                    raw_view.release()
+
             w = self.loader.get_tensor_f32(weight_name)
             return self._linear(x, w, bias)
 
-        row_bytes = compute_tensor_bytes(info.type_id, in_dim)
-        base_offset = self.loader.data_offset + info.offset
-        mm = self.loader._mmap
+        if self._streamer is None and self.loader._mmap is None:
+            w = self.loader.get_tensor_f32(weight_name)
+            return self._linear(x, w, bias)
 
         out_shape = (*x.shape[:-1], out_rows)
         result = np.empty(out_shape, dtype=np.float32)
+        mm = self.loader._mmap
 
         for start_row in range(0, out_rows, chunk_rows):
             end_row = min(start_row + chunk_rows, out_rows)
             n_rows = end_row - start_row
             byte_start = base_offset + start_row * row_bytes
-            byte_end = byte_start + n_rows * row_bytes
-            raw_chunk = mm[byte_start:byte_end]
-            w_chunk = dequantize_bytes(raw_chunk, info.type_id, n_rows * in_dim).reshape(
-                (n_rows, in_dim)
-            )
-            result[..., start_row:end_row] = np.matmul(x, w_chunk.T)
+            n_chunk_bytes = n_rows * row_bytes
+
+            if end_row < out_rows:
+                next_end = min(end_row + chunk_rows, out_rows)
+                chunk_prefetch: Optional[Tuple[int, int]] = (
+                    base_offset + end_row * row_bytes,
+                    (next_end - end_row) * row_bytes,
+                )
+            else:
+                chunk_prefetch = next_prefetch
+
+            if self._streamer is not None:
+                raw_u8, raw_ptr = self._streamer.acquire(
+                    byte_start, n_chunk_bytes, prefetch=chunk_prefetch
+                )
+                if use_c_gemm and self._native_gemm is not None:
+                    self._native_gemm.matmul_raw_chunk(
+                        x, raw_ptr, result, info.type_id, out_rows, in_dim, start_row, end_row
+                    )
+                else:
+                    w_chunk = dequantize_bytes(raw_u8, info.type_id, n_rows * in_dim).reshape(
+                        (n_rows, in_dim)
+                    )
+                    result[..., start_row:end_row] = np.matmul(x, w_chunk.T)
+            else:
+                assert mm is not None
+                raw_chunk = mm[byte_start : byte_start + n_chunk_bytes]
+                if use_c_gemm and self._native_gemm is not None:
+                    raw_u8 = np.frombuffer(raw_chunk, dtype=np.uint8)
+                    self._native_gemm.matmul_raw_chunk(
+                        x,
+                        int(raw_u8.ctypes.data),
+                        result,
+                        info.type_id,
+                        out_rows,
+                        in_dim,
+                        start_row,
+                        end_row,
+                    )
+                else:
+                    w_chunk = dequantize_bytes(raw_chunk, info.type_id, n_rows * in_dim).reshape(
+                        (n_rows, in_dim)
+                    )
+                    result[..., start_row:end_row] = np.matmul(x, w_chunk.T)
 
         if bias is not None:
             result = result + bias
         return result
+
+    def _attend_single(
+        self,
+        q_slice: np.ndarray,
+        k_slice: np.ndarray,
+        v_slice: np.ndarray,
+        cos: np.ndarray,
+        sin: np.ndarray,
+        layer_idx: int,
+        pos0: int,
+        kv_cache: Optional[KVCache],
+    ) -> np.ndarray:
+        cfg = self.config
+        seq_len = int(q_slice.shape[0])
+        num_kv_groups = cfg.head_count // cfg.head_count_kv
+        scaling = np.float32(1.0 / math.sqrt(cfg.key_length))
+
+        q = q_slice.reshape(seq_len, cfg.head_count, cfg.key_length).transpose(1, 0, 2)
+        k = k_slice.reshape(seq_len, cfg.head_count_kv, cfg.key_length).transpose(1, 0, 2)
+        v = v_slice.reshape(seq_len, cfg.head_count_kv, cfg.value_length).transpose(1, 0, 2)
+
+        q, k = self._apply_rotary_pos_emb(q, k, cos, sin)
+
+        if kv_cache is not None:
+            k, v = kv_cache.update(layer_idx, k, v, start_pos=pos0)
+
+        total_seq_len = k.shape[1]
+        k_rep = self._repeat_kv(k, num_kv_groups)
+        v_rep = self._repeat_kv(v, num_kv_groups)
+
+        attn_weights = np.matmul(q, np.swapaxes(k_rep, -1, -2)) * scaling
+
+        if seq_len > 1 or total_seq_len > pos0 + seq_len:
+            q_positions = (pos0 + np.arange(seq_len, dtype=np.int64))[:, None]
+            k_positions = np.arange(total_seq_len, dtype=np.int64)[None, :]
+            causal_mask = k_positions > q_positions
+            attn_weights = np.where(causal_mask[None, :, :], np.float32(-np.inf), attn_weights)
+
+        max_scores = np.max(attn_weights, axis=-1, keepdims=True)
+        exp_scores = np.exp(attn_weights - max_scores)
+        attn_probs = exp_scores / np.sum(exp_scores, axis=-1, keepdims=True)
+
+        attn_out = np.matmul(attn_probs, v_rep)
+        return attn_out.transpose(1, 0, 2).reshape(seq_len, cfg.head_count * cfg.value_length)
+
+    def _forward_core(
+        self,
+        token_id_batches: Sequence[Sequence[int]],
+        kv_caches: Optional[Sequence[Optional[KVCache]]],
+        start_positions: Sequence[int],
+        last_token_only: bool,
+        layer_callback: Optional[Callable[[int, np.ndarray], None]],
+    ) -> List[np.ndarray]:
+        cfg = self.config
+        spans: List[Tuple[int, int]] = []
+        flat_tokens: List[int] = []
+        pos_segments: List[np.ndarray] = []
+
+        for idx, seq in enumerate(token_id_batches):
+            seq_list = [int(t) for t in seq]
+            seq_len = len(seq_list)
+            if seq_len == 0:
+                raise ValueError("token_ids must not be empty.")
+            pos0 = int(start_positions[idx])
+            if pos0 < 0:
+                raise ValueError(f"start_pos must be >= 0, got {pos0}")
+            if pos0 + seq_len > self.max_context_length:
+                raise ContextLengthExceededError(
+                    f"Sequence length {pos0 + seq_len} (start_pos={pos0} + seq_len={seq_len}) "
+                    f"exceeds max_context_length={self.max_context_length}."
+                )
+            start_off = len(flat_tokens)
+            flat_tokens.extend(seq_list)
+            spans.append((start_off, start_off + seq_len))
+            pos_segments.append(np.arange(pos0, pos0 + seq_len, dtype=np.int64))
+
+        hidden_states = self._lookup_embeddings(flat_tokens)
+        position_ids = np.concatenate(pos_segments, axis=0)
+        cos_all, sin_all = self._compute_rope_embeddings(position_ids)
+        output_w_name = (
+            "output.weight" if "output.weight" in self.loader.tensors else "token_embd.weight"
+        )
+
+        for layer_idx in range(cfg.block_count):
+            prefix = f"blk.{layer_idx}."
+            next_layer_first = (
+                f"blk.{layer_idx + 1}.attn_q.weight"
+                if layer_idx + 1 < cfg.block_count
+                else output_w_name
+            )
+            residual = hidden_states
+
+            attn_norm_w = self._get_tensor(f"{prefix}attn_norm.weight")
+            normed = self._rms_norm(hidden_states, attn_norm_w, cfg.rms_norm_eps)
+
+            q_all = self._matmul_weight(
+                normed,
+                f"{prefix}attn_q.weight",
+                f"{prefix}attn_q.bias",
+                prefetch_weight=f"{prefix}attn_k.weight",
+            )
+            k_all = self._matmul_weight(
+                normed,
+                f"{prefix}attn_k.weight",
+                f"{prefix}attn_k.bias",
+                prefetch_weight=f"{prefix}attn_v.weight",
+            )
+            v_all = self._matmul_weight(
+                normed,
+                f"{prefix}attn_v.weight",
+                f"{prefix}attn_v.bias",
+                prefetch_weight=f"{prefix}attn_output.weight",
+            )
+
+            attn_out_all = np.empty(
+                (hidden_states.shape[0], cfg.head_count * cfg.value_length), dtype=np.float32
+            )
+            for b_idx, (s, e) in enumerate(spans):
+                kv_c = kv_caches[b_idx] if kv_caches is not None else None
+                attn_out_all[s:e] = self._attend_single(
+                    q_all[s:e],
+                    k_all[s:e],
+                    v_all[s:e],
+                    cos_all[s:e],
+                    sin_all[s:e],
+                    layer_idx=layer_idx,
+                    pos0=int(start_positions[b_idx]),
+                    kv_cache=kv_c,
+                )
+
+            attn_proj = self._matmul_weight(
+                attn_out_all,
+                f"{prefix}attn_output.weight",
+                f"{prefix}attn_output.bias",
+                prefetch_weight=f"{prefix}ffn_gate.weight",
+            )
+            hidden_states = residual + attn_proj
+
+            residual = hidden_states
+            post_norm_name = (
+                f"{prefix}post_attention_norm.weight"
+                if f"{prefix}post_attention_norm.weight" in self.loader.tensors
+                else f"{prefix}ffn_norm.weight"
+            )
+            post_norm_w = self._get_tensor(post_norm_name)
+            ffn_normed = self._rms_norm(hidden_states, post_norm_w, cfg.rms_norm_eps)
+
+            gate = self._matmul_weight(
+                ffn_normed, f"{prefix}ffn_gate.weight", prefetch_weight=f"{prefix}ffn_up.weight"
+            )
+            up = self._matmul_weight(
+                ffn_normed, f"{prefix}ffn_up.weight", prefetch_weight=f"{prefix}ffn_down.weight"
+            )
+            silu_gate = gate / (np.float32(1.0) + np.exp(-np.clip(gate, -88.0, 88.0)))
+            ffn_hidden = silu_gate * up
+            ffn_out = self._matmul_weight(
+                ffn_hidden, f"{prefix}ffn_down.weight", prefetch_weight=next_layer_first
+            )
+
+            hidden_states = residual + ffn_out
+            if layer_callback is not None:
+                layer_callback(layer_idx, hidden_states)
+
+        output_norm_w = self._get_tensor("output_norm.weight")
+        hidden_states = self._rms_norm(hidden_states, output_norm_w, cfg.rms_norm_eps)
+
+        if last_token_only:
+            last_indices = [e - 1 for _, e in spans]
+            logits_all = self._matmul_weight(hidden_states[last_indices], output_w_name)
+            return [logits_all[i] for i in range(len(spans))]
+
+        logits_all = self._matmul_weight(hidden_states, output_w_name)
+        return [logits_all[s:e] for s, e in spans]
 
     def forward(
         self,
@@ -395,118 +671,50 @@ class SeedOssEngine:
     ) -> np.ndarray:
         """
         Execute a full SeedOssForCausalLM forward pass over `token_ids`.
-
-        Parameters
-        ----------
-        token_ids : Sequence[int]
-            Input token IDs of length `seq_len >= 1`.
-        kv_cache : KVCache, optional
-            Optional KV cache for incremental prefill / autoregressive decoding.
-        start_pos : int, optional
-            Starting sequence index. Defaults to `kv_cache.seq_len` if `kv_cache` is provided, else `0`.
-        last_token_only : bool
-            If True, only project and return the final token's logits of shape `(vocab_size,)`.
-            If False (default), return all positions' logits of shape `(seq_len, vocab_size)`.
-        layer_callback : Callable[[int, np.ndarray], None], optional
-            Optional hook called at the end of each layer with `(layer_idx, hidden_states)`.
         """
         if not isinstance(token_ids, (list, tuple, np.ndarray)):
             token_ids = list(token_ids)
-        seq_len = len(token_ids)
-        if seq_len == 0:
-            raise ValueError("token_ids must not be empty.")
-
         pos0 = (kv_cache.seq_len if kv_cache is not None else 0) if start_pos is None else int(start_pos)
-        if pos0 < 0:
-            raise ValueError(f"start_pos must be >= 0, got {pos0}")
-        if pos0 + seq_len > self.max_context_length:
-            raise ContextLengthExceededError(
-                f"Sequence length {pos0 + seq_len} (start_pos={pos0} + seq_len={seq_len}) "
-                f"exceeds max_context_length={self.max_context_length}."
-            )
+        outputs = self._forward_core(
+            token_id_batches=[token_ids],
+            kv_caches=[kv_cache] if kv_cache is not None else None,
+            start_positions=[pos0],
+            last_token_only=last_token_only,
+            layer_callback=layer_callback,
+        )
+        return outputs[0]
 
-        cfg = self.config
-        hidden_states = self._lookup_embeddings(token_ids)  # (seq_len, embedding_length)
+    def forward_batch(
+        self,
+        token_id_batches: Sequence[Sequence[int]],
+        kv_caches: Optional[Sequence[Optional[KVCache]]] = None,
+        start_positions: Optional[Sequence[int]] = None,
+        last_token_only: bool = True,
+        layer_callback: Optional[Callable[[int, np.ndarray], None]] = None,
+    ) -> List[np.ndarray]:
+        """Execute a batched forward pass across `len(token_id_batches)` independent sequences,
+        reading each weight tensor once per layer while keeping each sequence's KVCache separate.
+        """
+        if len(token_id_batches) == 0:
+            raise ValueError("token_id_batches must not be empty.")
+        if kv_caches is not None and len(kv_caches) != len(token_id_batches):
+            raise ValueError("kv_caches length must match token_id_batches length.")
+        if start_positions is not None:
+            if len(start_positions) != len(token_id_batches):
+                raise ValueError("start_positions length must match token_id_batches length.")
+            pos_list = [int(p) for p in start_positions]
+        elif kv_caches is not None:
+            pos_list = [c.seq_len if c is not None else 0 for c in kv_caches]
+        else:
+            pos_list = [0] * len(token_id_batches)
 
-        position_ids = np.arange(pos0, pos0 + seq_len, dtype=np.int64)
-        cos, sin = self._compute_rope_embeddings(position_ids)
-
-        num_kv_groups = cfg.head_count // cfg.head_count_kv
-        scaling = np.float32(1.0 / math.sqrt(cfg.key_length))
-
-        for layer_idx in range(cfg.block_count):
-            prefix = f"blk.{layer_idx}."
-            residual = hidden_states
-
-            attn_norm_w = self._get_tensor(f"{prefix}attn_norm.weight")
-            normed = self._rms_norm(hidden_states, attn_norm_w, cfg.rms_norm_eps)
-
-            q = self._matmul_weight(normed, f"{prefix}attn_q.weight", f"{prefix}attn_q.bias")
-            k = self._matmul_weight(normed, f"{prefix}attn_k.weight", f"{prefix}attn_k.bias")
-            v = self._matmul_weight(normed, f"{prefix}attn_v.weight", f"{prefix}attn_v.bias")
-
-            # Reshape to (heads, seq_len, head_dim)
-            q = q.reshape(seq_len, cfg.head_count, cfg.key_length).transpose(1, 0, 2)
-            k = k.reshape(seq_len, cfg.head_count_kv, cfg.key_length).transpose(1, 0, 2)
-            v = v.reshape(seq_len, cfg.head_count_kv, cfg.value_length).transpose(1, 0, 2)
-
-            q, k = self._apply_rotary_pos_emb(q, k, cos, sin)
-
-            if kv_cache is not None:
-                k, v = kv_cache.update(layer_idx, k, v, start_pos=pos0)
-
-            total_seq_len = k.shape[1]
-            k_rep = self._repeat_kv(k, num_kv_groups)
-            v_rep = self._repeat_kv(v, num_kv_groups)
-
-            # Scaled dot-product attention: (head_count, seq_len, total_seq_len)
-            attn_weights = np.matmul(q, np.swapaxes(k_rep, -1, -2)) * scaling
-
-            if seq_len > 1 or total_seq_len > pos0 + seq_len:
-                q_positions = (pos0 + np.arange(seq_len, dtype=np.int64))[:, None]
-                k_positions = np.arange(total_seq_len, dtype=np.int64)[None, :]
-                causal_mask = k_positions > q_positions
-                attn_weights = np.where(causal_mask[None, :, :], np.float32(-np.inf), attn_weights)
-
-            max_scores = np.max(attn_weights, axis=-1, keepdims=True)
-            exp_scores = np.exp(attn_weights - max_scores)
-            attn_probs = exp_scores / np.sum(exp_scores, axis=-1, keepdims=True)
-
-            attn_out = np.matmul(attn_probs, v_rep)  # (head_count, seq_len, value_length)
-            attn_out = attn_out.transpose(1, 0, 2).reshape(seq_len, cfg.head_count * cfg.value_length)
-            attn_proj = self._matmul_weight(attn_out, f"{prefix}attn_output.weight", f"{prefix}attn_output.bias")
-            hidden_states = residual + attn_proj
-
-            # Post-attention RMSNorm + SwiGLU FFN
-            residual = hidden_states
-            post_norm_name = (
-                f"{prefix}post_attention_norm.weight"
-                if f"{prefix}post_attention_norm.weight" in self.loader.tensors
-                else f"{prefix}ffn_norm.weight"
-            )
-            post_norm_w = self._get_tensor(post_norm_name)
-            ffn_normed = self._rms_norm(hidden_states, post_norm_w, cfg.rms_norm_eps)
-
-            gate = self._matmul_weight(ffn_normed, f"{prefix}ffn_gate.weight")
-            up = self._matmul_weight(ffn_normed, f"{prefix}ffn_up.weight")
-            # SiLU(x) = x * sigmoid(x)
-            silu_gate = gate / (np.float32(1.0) + np.exp(-np.clip(gate, -88.0, 88.0)))
-            ffn_hidden = silu_gate * up
-            ffn_out = self._matmul_weight(ffn_hidden, f"{prefix}ffn_down.weight")
-
-            hidden_states = residual + ffn_out
-            if layer_callback is not None:
-                layer_callback(layer_idx, hidden_states)
-
-        output_norm_w = self._get_tensor("output_norm.weight")
-        hidden_states = self._rms_norm(hidden_states, output_norm_w, cfg.rms_norm_eps)
-
-        output_w_name = "output.weight" if "output.weight" in self.loader.tensors else "token_embd.weight"
-        target_h = hidden_states[-1:] if last_token_only else hidden_states
-        logits = self._matmul_weight(target_h, output_w_name)
-        if last_token_only:
-            return logits[0]
-        return logits
+        return self._forward_core(
+            token_id_batches=token_id_batches,
+            kv_caches=kv_caches,
+            start_positions=pos_list,
+            last_token_only=last_token_only,
+            layer_callback=layer_callback,
+        )
 
     def _resolve_input_tokens(self, prompt_or_tokens: Union[str, Sequence[int]]) -> List[int]:
         if isinstance(prompt_or_tokens, str):
@@ -781,6 +989,9 @@ class SeedOssEngine:
         }
 
     def close(self) -> None:
+        if self._streamer is not None:
+            self._streamer.close()
+            self._streamer = None
         if self._owns_loader:
             self.loader.close()
 
