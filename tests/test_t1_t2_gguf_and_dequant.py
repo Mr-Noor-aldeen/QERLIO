@@ -57,7 +57,11 @@ HERMES_Q6K_FIXTURE_PATH = (
 )
 HERMES_PREFIX_BIN_CANDIDATES = [
     REPO_ROOT / "models" / "hermes-4_3_36b-Q4_K_M.gguf",
-    Path("C:/Users/rahim/.gemini/antigravity/brain/dc714e6b-287c-4524-a387-3f332fb5705d/scratch/hermes_prefix.bin"),
+    *(
+        [Path(os.environ["QERLIO_HERMES_GGUF_PATH"])]
+        if os.environ.get("QERLIO_HERMES_GGUF_PATH")
+        else []
+    ),
     REPO_ROOT / "tests" / "fixtures" / "hermes_prefix.bin",
 ]
 
@@ -554,6 +558,28 @@ def test_t2_real_hermes_output_weight_q6_k_blocks(tmp_path: Path) -> None:
     max_abs_err = float(np.max(np.abs(vec_row0 - scalar_arr)))
     assert max_abs_err < 1e-6
     np.testing.assert_allclose(rows_f32[0], vec_row0, atol=0.0, rtol=0.0)
+
+
+def test_t2_matches_offline_gguf_py_reference_fixture() -> None:
+    """Verify `dequantize_bytes` matches the offline `gguf-py` reference fixture within < 1e-6
+    across real Hermes 4.3 36B tensor slices (`Q4_K`, `Q6_K`, `F32`) and all 16 GGML types.
+    """
+    ref_path = REPO_ROOT / "tests" / "fixtures" / "t2_gguf_py_dequant_reference.json"
+    assert ref_path.is_file(), f"Missing T2 offline reference fixture: {ref_path}"
+    ref = json.loads(ref_path.read_text(encoding="utf-8"))
+    assert ref["generator"]["unsupported_by_gguf_py"] == []
+    cases = ref["cases"]
+    assert len(cases) >= 21
+
+    for case in cases:
+        raw_bytes = bytes.fromhex(case["raw_hex"])
+        expected = np.asarray(case["expected_f32"], dtype=np.float32)
+        actual = dequantize_bytes(raw_bytes, int(case["type_id"]), int(case["num_elements"]))
+        assert actual.shape == expected.shape
+        max_abs_err = float(np.max(np.abs(actual - expected)))
+        assert max_abs_err < 1e-6, (
+            f"Offline gguf-py mismatch on {case['id']} ({case['type_name']}): max_abs_err={max_abs_err}"
+        )
 
 
 def test_t2_dequant_validation_errors() -> None:

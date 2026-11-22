@@ -10,7 +10,7 @@
   "pad_token_id": 1,
   "eos_token_id": 155127,
   "tokenizers_version": "0.23.3",
-  "generator_command": "python -c \"import tokenizers; tok = tokenizers.Tokenizer.from_file('tokenizer.json'); ids = tok.encode(text, add_special_tokens=False).ids\"",
+  "generator_command": "python tests/reference/generate_t3_tokenizer_reference.py",
   "cases": [
     {
       "id": "english_hello",
@@ -1123,7 +1123,7 @@
     },
     {
       "id": "code_json_telemetry",
-      "text": "{\"status\": \"ok\", \"metrics\": {\"ttft_ms\": 42.75, \"tps\": 18.4, \"vram_mb\": 21504, \"valid\": true, \"error\": null}}",
+      "text": "{\"status\": \"ok\", \"metrics\": {\"ttft_ms\": 42.75, \"tps\": 18.4, \"mem_mb\": 21504, \"valid\": true, \"error\": null}}",
       "token_ids": [
         13059,
         13667,
@@ -1157,8 +1157,7 @@
         147,
         139,
         696,
-        213,
-        4990,
+        10011,
         3473,
         193,
         2754,
@@ -13878,6 +13877,10 @@
       "155135": [
         "[PAD155135]",
         5
+      ],
+      "10011": [
+        "mem",
+        1
       ]
     },
     "ordered_merges": [
@@ -15253,6 +15256,7 @@
       "Ġlet ter",
       "g in",
       "âĶ Ģ",
+      "m em",
       "Ġaw ait",
       "st d",
       "n am",
