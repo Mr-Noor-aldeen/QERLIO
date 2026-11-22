@@ -12,19 +12,9 @@ import json
 import argparse
 import platform
 import psutil
+import numpy as np
 
-try:
-    import torch
-    TORCH_AVAILABLE = True
-except ImportError:
-    TORCH_AVAILABLE = False
-
-try:
-    import gguf
-    GGUF_AVAILABLE = True
-except ImportError:
-    GGUF_AVAILABLE = False
-
+from core.inference.native_gemm import NativeGemmBackend
 from core.model_registry.architecture_catalog import ArchitectureCatalog
 from core.agent.agent_runtime import AgentRuntime
 from core.agent.tools import ToolRegistry
@@ -69,14 +59,10 @@ def cmd_doctor(args):
     avail_ram_gb = ram.available / (1024 ** 3)
     print(f"Physical Memory:      {total_ram_gb:.2f} GB total, {avail_ram_gb:.2f} GB available")
 
-    if TORCH_AVAILABLE:
-        print(f"PyTorch Version:      {torch.__version__}")
-        cuda_avail = torch.cuda.is_available()
-        print(f"CUDA Available:       {cuda_avail}")
-    else:
-        print("PyTorch:              Not installed in active environment")
-
-    print(f"GGUF Python Support:  {'Installed' if GGUF_AVAILABLE else 'Not installed'}")
+    print(f"NumPy Version:        {np.__version__}")
+    print("Native GGUF Engine:   Built-in (core.inference)")
+    gemm_info = NativeGemmBackend.probe_status()
+    print(f"Native C GEMM Kernel: {gemm_info}")
     print("==================================================")
     return 0
 

@@ -1804,7 +1804,7 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "0.5B - 32B",
-      "primary_use": "State-of-the-Art Code Agent & FIM",
+      "primary_use": "Code Agent & FIM",
       "support_status": "experimental"
     },
     {
@@ -2486,7 +2486,7 @@
       ],
       "native_tools_supported": true,
       "parameters_range": "3B - 28B",
-      "primary_use": "State-of-the-Art Compact VLM",
+      "primary_use": "Compact VLM",
       "support_status": "experimental"
     },
     {

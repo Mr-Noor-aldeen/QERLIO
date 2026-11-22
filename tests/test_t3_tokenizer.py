@@ -30,7 +30,12 @@ FIXTURE_PATH = REPO_ROOT / "tests" / "fixtures" / "hermes_tokenizer_reference.js
 
 CANDIDATE_GGUF_PATHS = [
     REPO_ROOT / "models" / "hermes-4_3_36b-Q4_K_M.gguf",
-    Path(r"C:\Users\rahim\.gemini\antigravity\brain\dc714e6b-287c-4524-a387-3f332fb5705d\scratch\hermes_prefix.bin"),
+    *(
+        [Path(os.environ["QERLIO_HERMES_GGUF_PATH"])]
+        if os.environ.get("QERLIO_HERMES_GGUF_PATH")
+        else []
+    ),
+    REPO_ROOT / "tests" / "fixtures" / "hermes_prefix.bin",
 ]
 
 PROHIBITED_MODULES = {"transformers", "tokenizers", "tiktoken", "gguf", "torch"}
