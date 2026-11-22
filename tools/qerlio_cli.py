@@ -12,19 +12,9 @@ import json
 import argparse
 import platform
 import psutil
+import numpy as np
 
-try:
-    import torch
-    TORCH_AVAILABLE = True
-except ImportError:
-    TORCH_AVAILABLE = False
-
-try:
-    import gguf
-    GGUF_AVAILABLE = True
-except ImportError:
-    GGUF_AVAILABLE = False
-
+from core.inference.native_gemm import NativeGemmBackend
 from core.model_registry.architecture_catalog import ArchitectureCatalog
 from core.agent.agent_runtime import AgentRuntime
 from core.agent.tools import ToolRegistry
@@ -69,14 +59,10 @@ def cmd_doctor(args):
     avail_ram_gb = ram.available / (1024 ** 3)
     print(f"Physical Memory:      {total_ram_gb:.2f} GB total, {avail_ram_gb:.2f} GB available")
 
-    if TORCH_AVAILABLE:
-        print(f"PyTorch Version:      {torch.__version__}")
-        cuda_avail = torch.cuda.is_available()
-        print(f"CUDA Available:       {cuda_avail}")
-    else:
-        print("PyTorch:              Not installed in active environment")
-
-    print(f"GGUF Python Support:  {'Installed' if GGUF_AVAILABLE else 'Not installed'}")
+    print(f"NumPy Version:        {np.__version__}")
+    print("Native GGUF Engine:   Built-in (core.inference)")
+    gemm_info = NativeGemmBackend.probe_status()
+    print(f"Native C GEMM Kernel: {gemm_info}")
     print("==================================================")
     return 0
 
@@ -301,17 +287,38 @@ def cmd_agent_run(args):
 
 def cmd_hermes_chat(args):
     keep_cots = getattr(args, "keep_cots", False)
+    model_path = getattr(args, "model_path", None)
+    max_tokens = getattr(args, "max_tokens", 64)
     adapter = Hermes36BAdapter(thinking=args.thinking, keep_cots=keep_cots)
-    client = HFRemoteClient(base_url=args.remote_url, thinking=args.thinking, keep_cots=keep_cots)
     messages = [{"role": "user", "content": args.prompt}]
 
+    if model_path:
+        from core.inference import load_gguf_engine
+
+        print(f"Loading local GGUF checkpoint via native QERLIO engine: {model_path}")
+        with load_gguf_engine(model_path) as engine:
+            res = engine.chat(
+                messages,
+                thinking=args.thinking,
+                keep_cots=keep_cots,
+                max_new_tokens=max_tokens,
+            )
+            if res.get("thinking"):
+                print(f"[Thinking / Internal Monologue]:\n{res['thinking']}\n")
+            if res.get("tool_calls"):
+                print(f"[Tool Calls]:\n{json.dumps(res['tool_calls'], indent=2, ensure_ascii=False)}\n")
+            print(f"[Answer]:\n{res.get('content') or res.get('raw_output')}")
+        return 0
+
+    client = HFRemoteClient(base_url=args.remote_url, thinking=args.thinking, keep_cots=keep_cots)
     if args.remote_url:
         print(f"Connecting to remote endpoint: {args.remote_url}")
         res = client.generate(
             model="NousResearch/Hermes-4.3-36B",
             messages=messages,
             thinking=args.thinking,
-            keep_cots=keep_cots
+            keep_cots=keep_cots,
+            max_tokens=max_tokens,
         )
         if res.get("thinking"):
             print(f"[Thinking / Internal Monologue]:\n{res['thinking']}\n")
@@ -469,8 +476,10 @@ def main():
     p_hermes = subparsers.add_parser("hermes", help="Hermes 4.3 36B template, parser & GGUF download tools")
     hermes_sub = p_hermes.add_subparsers(dest="hermes_subcommand", required=True)
 
-    p_h_chat = hermes_sub.add_parser("chat", help="Format prompt or query a remote endpoint for Hermes 4.3 36B")
+    p_h_chat = hermes_sub.add_parser("chat", help="Format prompt, run local GGUF engine, or query a remote endpoint")
     p_h_chat.add_argument("--prompt", required=True, help="User prompt")
+    p_h_chat.add_argument("--model-path", default=None, help="Optional local GGUF file path for native execution")
+    p_h_chat.add_argument("--max-tokens", type=int, default=64, help="Maximum new tokens to generate")
     p_h_chat.add_argument("--thinking", action="store_true", default=False, help="Enable hybrid reasoning (<think>)")
     p_h_chat.add_argument("--keep-cots", action="store_true", default=False, help="Keep <think> blocks in history and parsed output")
     p_h_chat.add_argument("--remote-url", default=None, help="Optional remote OpenAI-compatible API URL")

@@ -4,13 +4,14 @@
 
 ---
 
-## 1. Direct Dependencies
+## 1. Direct Runtime Dependencies
+
+QERLIO's native inference engine (`core/inference/`) is implemented from scratch using only the Python standard library, NumPy, and standard C11/C++20 (zero runtime dependency on external inference libraries).
 
 | Dependency Name | Upstream Repository / Source | Pinned Version / Commit | SPDX License Identifier | Usage in QERLIO | Compliance Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **llama.cpp** | `https://github.com/ggml-org/llama.cpp` | To be pinned on submodule pull | `MIT` | Primary GGUF execution backend (`backends/gguf_llama_cpp`) | Full MIT license text and copyright notices preserved in `third_party/licenses/LLAMA_CPP_LICENSE.txt` |
-| **ggml** | Sub-component of `llama.cpp` | Pinned with llama.cpp | `MIT` | Tensor computation library | Attribution retained; no modifications to upstream copyright headers |
-| **nlohmann/json** | `https://github.com/nlohmann/json` | v3.11.3 | `MIT` | Model manifest & JSON configuration parsing | Header-only integration; license in `third_party/licenses/JSON_LICENSE.txt` |
+| **NumPy** | `https://numpy.org` | >= 1.24 | `BSD-3-Clause` | Python numerical kernels (`core/inference/`) | Only Python third-party runtime dependency of the native engine |
+| **nlohmann/json** | `https://github.com/nlohmann/json` | v3.11.3 | `MIT` | Model manifest & JSON configuration parsing (optional C++ tooling) | Header-only integration; license in `third_party/licenses/JSON_LICENSE.txt` |
 
 ---
 
@@ -22,11 +23,16 @@
 
 ---
 
-## 3. Tooling & Testing Dependencies (Build/Dev Only)
+## 3. Offline Reference Tools (Dev/Test Fixture Generation Only — Never Runtime Dependencies)
 
-| Tool / Library | Version in Host | License | Purpose |
+Per v0.3.0 policy, external inference engines and reference libraries are never imported or linked by `core/inference/` at runtime. They may be run strictly offline inside `tests/reference/` to generate static verification fixtures once.
+
+| Tool / Library | Version | License | Offline Usage |
 | :--- | :--- | :--- | :--- |
-| **pytest** | 9.1.1 | MIT | Test suite execution for Python tools |
-| **gguf-py** | 0.19.0 | MIT | Reference GGUF header parsing & validation tests |
-| **safetensors** | 0.8.0 | Apache-2.0 | Conversion & integrity checks |
-| **pydantic** | 2.14.1 | MIT | Manifest schema validation |
+| **pytest** | >= 7.0 | `MIT` | Test suite execution (`tests/`) |
+| **gguf (`gguf-py`)** | 0.19.0 | `MIT` | Offline GGUF metadata, tensor inspection & T2 dequantization reference fixture generation (`tests/reference/`) |
+| **tokenizers** | 0.23.3 | `Apache-2.0` | Offline T3 BPE tokenizer reference fixture generation (`tests/reference/`) |
+| **transformers** | 5.20.1 | `Apache-2.0` | Offline T4/T5 `SeedOssForCausalLM` / `SeedOssDecoderLayer` reference verification (`tests/reference/`); never imported by `core/inference/` |
+| **torch** | 2.11.0+cu128 | `BSD-3-Clause` | Offline tensor execution for `transformers` reference verification (`tests/reference/`); never imported by `core/inference/` |
+| **safetensors** | >= 0.4 | `Apache-2.0` | Offline conversion & reference inspection only |
+| **pydantic / fastapi / uvicorn** | >= 2.0 | `MIT` / `BSD-3-Clause` | Optional local HTTP API server (`server/local_api/`) |

@@ -13,7 +13,7 @@
 - Formulation of STRIDE Threat Model and Trust Boundaries.
 - Formulation of the Legal, Technical, and Operational Risk Register.
 - Formulation of Third-Party Dependency Inventory and SPDX License Audit.
-- Construction of the production-ready C ABI contract (`include/qerlio/qerlio.h`).
+- Construction of the C ABI contract (`include/qerlio/qerlio.h`).
 - Construction of the C++20 core engine implementation and safe GGUF header parser.
 - Development of the Python CLI diagnostic tool (`tools/qerlio_cli.py`).
 - Development and execution of automated verification and integrity test suites.

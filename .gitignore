@@ -50,12 +50,14 @@ venv/
 
 # Models & Large Weights (Keep out of git repo)
 *.bin
+!tests/fixtures/hermes_output_weight_rows0_3_q6k.bin
 *.gguf
 *.safetensors
 *.pt
 *.pth
 *.onnx
 weights/
+models/
 models_cache/
 
 # Local dashboard screenshots (may expose host details; never commit)
