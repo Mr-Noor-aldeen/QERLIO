@@ -88,7 +88,27 @@ python -m pytest tests/test_hermes_36b.py tests/test_t1_t2_gguf_and_dequant.py t
 
 ---
 
-## 5. Track B SHA-256 & Live 64-Layer Verification
+## 5. Real-Weight T1–T9 Verification
+
+Command: `python scripts/verify_hermes_36b_real.py --model-path models/hermes-4_3_36b-Q4_K_M.gguf --reference-fixture tests/fixtures/hermes_4_3_36b_transformers_reference.json`
+
+| Test | Result | Recorded value |
+| :--- | :--- | :--- |
+| T1 GGUF loader | PASS | 27 KVs, 771 tensors match `tests/fixtures/hermes_4_3_36b_q4_k_m_metadata.json` |
+| T2 Dequantization | PASS | 21 cases vs `gguf-py 0.19.0`, `max_abs_err=0.00e+00` |
+| T3 Tokenizer | PASS | 64/64 cases, exact round-trip |
+| T4 Logits | PASS | top-1 5/5, top-5 overlap 5/5, max top-20 diff `2.10e-05` vs `transformers 5.20.1`; batched prefill `47.87s` |
+| T5 Greedy 64 tokens | PASS | `320/320` tokens identical; batched generation `2362.87s` |
+| T6 KV cache | PASS | `max_abs_diff=7.58e-05`, top-1 `1371` both ways |
+| T7 Chat | PASS | Turn 1 `'The capital of France is Paris.'`; Turn 2 `'The Seine River flows through Paris.'`; `thinking=True` closed `</think>` then `**4**` answer; `keep_cots` checked |
+| T8 Tool call | PASS | `<tool_call>{"name": "get_weather", "arguments": {"location": "Paris", "unit": "celsius"}}</tool_call>` → OpenAI `tool_calls` and Anthropic `tool_use` |
+| T9 Robustness | PASS | context overflow, KV budget error, stop sequence `" Paris"`, cancel callback |
+
+The `thinking=True` greedy output was produced in two segments: the first 160 tokens in an earlier run, then deterministic continuation from that exact prefix (T6 shows cached decoding matches full recomputation). Reference generators: `tests/reference/generate_hermes_36b_transformers_reference.py`, `generate_t2_dequant_reference.py`, `generate_t3_tokenizer_reference.py`.
+
+---
+
+## 6. Track B SHA-256 & Live 64-Layer Verification
 
 Official GGUF artifact verified locally (gitignored under `models/`):
 
