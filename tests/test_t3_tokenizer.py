@@ -118,15 +118,13 @@ def reference_fixture() -> Dict[str, Any]:
 
 @pytest.fixture(scope="module")
 def tokenizer(reference_fixture: Dict[str, Any], tmp_path_factory: pytest.TempPathFactory) -> GGUFTokenizer:
-    for path in CANDIDATE_GGUF_PATHS:
-        if path.exists():
-            return GGUFTokenizer.from_gguf_file(str(path))
-
-    # Fallback for headless CI without the 20 GB GGUF or local scratch prefix binary
+    """Build deterministic GGUF prefix from the committed Hermes tokenizer reference fixture.
+    (Real-weight full-file T3 check runs in opt-in `tests/test_real_hermes_36b_optin.py`.)
+    """
     tmp_dir = tmp_path_factory.mktemp("gguf_tokenizer_prefix")
-    fallback_gguf = tmp_dir / "hermes_fallback_prefix.gguf"
-    fallback_gguf.write_bytes(_build_gguf_prefix_bytes_from_fixture(reference_fixture))
-    return GGUFTokenizer.from_gguf_file(str(fallback_gguf))
+    prefix_gguf = tmp_dir / "hermes_tokenizer_prefix.gguf"
+    prefix_gguf.write_bytes(_build_gguf_prefix_bytes_from_fixture(reference_fixture))
+    return GGUFTokenizer.from_gguf_file(str(prefix_gguf))
 
 
 def test_t3_zero_prohibited_imports() -> None:

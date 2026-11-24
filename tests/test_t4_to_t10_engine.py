@@ -1,12 +1,21 @@
 """
-Tests T4 through T10 for ZAQERIS / QERLIO v0.3.0 Native GGUF Inference Engine:
-- T4: Single forward-pass parity on 5 fixed prompts against HuggingFace transformers SeedOssForCausalLM reference fixture
-- T5: Greedy 64-token generation parity (64/64 tokens across all 5 prompts) and sampler verification
-- T6: KV cache equivalence (step-by-step cached decoding vs full-sequence recomputation at every step)
-- T7: Multi-turn chat and thinking mode (<think>...</think> separation & keep_cots history handling)
-- T8: Real forward-pass tool-call generation (<tool_call>...</tool_call>) and OpenAI / Anthropic schema mapping
-- T9: Robustness & error handling (corrupt GGUF, wrong architecture, empty prompt, context overflow, OOM guard, stop sequences, mid-stream cancellation)
-- T10: C++20 memory safety, bounds checking, atomic cancellation, and 64-bit overflow audit
+Synthetic Unit & Plumbing Tests (T4–T10) for ZAQERIS / QERLIO Native GGUF Inference Engine.
+
+NOTE (v0.3.1 honesty requirement):
+All tests in this module construct and execute a tiny deterministic **synthetic / toy 2-layer
+Seed-OSS GGUF v3** fixture with planted output strings ("The calculated answer is 42.",
+"Analyzing the query step by step.", and a get_weather tool call for Paris). These are unit and
+API/plumbing tests only; they do NOT constitute real 36B model execution or Section 2 "tested"
+evidence. Real-weight Hermes-4.3-36B tests live in `tests/test_real_hermes_36b_optin.py`
+(opt-in via `QERLIO_RUN_REAL_HERMES=1`) and `scripts/verify_hermes_36b_real.py`.
+- Synthetic T4: Forward-pass parity on the tiny 2-layer fixture
+- Synthetic T5: 64-token greedy parity on the tiny 2-layer fixture and sampler math
+- Synthetic T6: KV cache equivalence on the tiny 2-layer fixture
+- Synthetic T7: Multi-turn chat and thinking-tag plumbing on the toy GGUF
+- Synthetic T8: Toy GGUF tool-call plumbing (<tool_call>...</tool_call>) and schema mapping
+- Synthetic T9: Error handling, context bounds, stop sequences, and cancellation cleanup
+- Static Guard Audit: C++20 source-string bounds audit and C ASan/UBSan CI coverage check
+  (actual sanitizer execution runs in the CI `cpp-sanitizers` job)
 """
 
 from __future__ import annotations
@@ -609,12 +618,10 @@ class TestStrictDependencyPolicy:
 # ---------------------------------------------------------------------------
 
 
-class TestT4SingleForwardPassParity:
+class TestSyntheticT4ForwardPassParity:
     """
-    T4: Single forward pass on 5 fixed prompts against the reference fixture:
-    - Top-1 token identical on all 5 prompts (5/5)
-    - Top-5 overlap >= 4/5 on all 5 prompts
-    - Logits close within documented quantization tolerance
+    Synthetic T4: Single forward pass on 5 fixed prompts using the toy 2-layer GGUF fixture.
+    (Unit parity check; real-weight parity is verified in tests/test_real_hermes_36b_optin.py.)
     """
 
     def test_dynamic_hyperparameter_loading_from_gguf(
@@ -712,10 +719,9 @@ class TestT4SingleForwardPassParity:
 # ---------------------------------------------------------------------------
 
 
-class TestT5GreedyGeneration64Tokens:
+class TestSyntheticT5GreedyGenerationAndSampler:
     """
-    T5: Greedy generation of 64 tokens on all 5 fixed prompts is 100% token-for-token
-    identical (64/64 tokens on all 5 prompts) to the reference fixture.
+    Synthetic T5: 64-token greedy parity on the toy 2-layer GGUF fixture and unit sampler checks.
     """
 
     def test_greedy_64_tokens_on_all_5_prompts(
@@ -782,11 +788,9 @@ class TestT5GreedyGeneration64Tokens:
 # ---------------------------------------------------------------------------
 
 
-class TestT6KVCacheEquivalence:
+class TestSyntheticT6KVCacheEquivalence:
     """
-    T6: Generating tokens step-by-step with KVCache produces the exact same logits
-    (max diff < 1e-5) and exact same token IDs as full-sequence recomputation
-    without cache at every step.
+    Synthetic T6: Step-by-step decoding with KVCache matches uncached recomputation on the toy GGUF.
     """
 
     def test_step_by_step_kv_cache_matches_full_recomputation(
@@ -858,10 +862,11 @@ class TestT6KVCacheEquivalence:
 # ---------------------------------------------------------------------------
 
 
-class TestT7MultiTurnChatAndThinkingMode:
+class TestSyntheticT7ToyChatAndThinkingPlumbing:
     """
-    T7: Multi-turn chat using Hermes36BAdapter with both thinking=False and thinking=True,
-    verifying <think>...</think> separation and multi-turn state.
+    Synthetic T7: Unit/plumbing check on the toy 2-layer GGUF with planted strings
+    ("The calculated answer is 42.", "Analyzing the query step by step.") exercising
+    Hermes36BAdapter thinking=False/True and keep_cots history stripping. Not a real 36B run.
     """
 
     def test_multi_turn_chat_standard_mode_no_thinking(
@@ -925,17 +930,18 @@ class TestT7MultiTurnChatAndThinkingMode:
 
 
 # ---------------------------------------------------------------------------
-# T8: Real Model Forward-Pass Tool-Call Generation & OpenAI / Anthropic Mapping
+# Synthetic T8: Toy GGUF Tool-Call Plumbing & OpenAI / Anthropic Schema Mapping
 # ---------------------------------------------------------------------------
 
 
-class TestT8ToolCallGenerationAndMapping:
+class TestSyntheticT8ToyToolCallPlumbingAndMapping:
     """
-    T8: Real model forward-pass generation producing <tool_call>...</tool_call>
-    parsed by Hermes36BAdapter into valid OpenAI tool_calls and Anthropic tool_use.
+    Synthetic T8: Unit/plumbing test on the toy 2-layer GGUF with planted weights that emit a
+    fixed <tool_call> JSON payload for Paris weather, verifying Hermes36BAdapter parsing and
+    OpenAI tool_calls / Anthropic tool_use mapping. Not a real 36B model forward pass.
     """
 
-    def test_real_forward_pass_tool_call_generation(
+    def test_synthetic_toy_gguf_tool_call_plumbing(
         self, reference_gguf_path: Path
     ) -> None:
         tools = [
@@ -1005,9 +1011,9 @@ class TestT8ToolCallGenerationAndMapping:
 # ---------------------------------------------------------------------------
 
 
-class TestT9RobustnessAndErrorHandling:
+class TestSyntheticT9RobustnessAndErrorHandling:
     """
-    T9: Robustness tests:
+    Synthetic T9: Robustness and negative-path unit tests:
     1) Corrupt GGUF file -> clean ValueError
     2) Wrong architecture in GGUF (general.architecture = "gpt2") -> clean UnsupportedArchitectureError
     3) Empty prompt ([] or "") -> clean ValueError
@@ -1152,16 +1158,38 @@ class TestT9RobustnessAndErrorHandling:
 
 
 # ---------------------------------------------------------------------------
-# T10: C++20 Memory Safety, Bounds Audit, and 64-Bit Overflow Verification
+# Static Guard & CI Sanitizer Coverage Audit (NOT an ASan/UBSan execution itself;
+# live ASan+UBSan execution of C/C++ code happens in GitHub Actions `cpp-sanitizers`)
 # ---------------------------------------------------------------------------
 
 
-class TestT10Cpp20MemorySafetyAndBoundsAudit:
+class TestCpp20SourceStringGuardsAudit:
     """
-    T10: Verify C++20 implementation files enforce bounds checks, 64-bit KV cache byte
-    arithmetic without uint32 overflow, thread-safe atomic session cancellation, and
-    null-pointer checks across all C ABI functions.
+    Static source-string and CI-configuration audit verifying C/C++ bounds guards,
+    64-bit KV byte arithmetic, atomic session cancellation, and that every C file under
+    `core/inference/` is built and exercised in the CI ASan+UBSan job. Actual runtime
+    T10 sanitizer verification is performed by the CI `cpp-sanitizers` job.
     """
+
+    def test_every_c_file_in_core_inference_is_compiled_and_sanitized_in_ci(self) -> None:
+        c_files = sorted((REPO_ROOT / "core" / "inference").glob("*.c"))
+        assert len(c_files) >= 1
+        cmake_text = (REPO_ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
+        cpp_test_text = (REPO_ROOT / "tests" / "cpp_safety_test.cpp").read_text(encoding="utf-8")
+        ci_text = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+
+        for c_file in c_files:
+            rel_posix = c_file.relative_to(REPO_ROOT).as_posix()
+            assert rel_posix in cmake_text, f"{rel_posix} missing from CMakeLists.txt"
+
+        assert "qerlio_gemm_q4_k_f32" in cpp_test_text
+        assert "qerlio_gemm_q6_k_f32" in cpp_test_text
+        assert "qerlio_gemm_q8_0_f32" in cpp_test_text
+        assert "qerlio_gemm_f32" in cpp_test_text
+        assert "cpp-sanitizers:" in ci_text
+        assert "-fsanitize=address,undefined" in ci_text
+        assert "detect_leaks=1" in ci_text
+        assert "halt_on_error=1" in ci_text
 
     def test_gguf_parser_cpp_bounds_and_corruption_guards(self) -> None:
         cpp_path = REPO_ROOT / "core" / "model_registry" / "gguf_parser.cpp"
@@ -1216,20 +1244,19 @@ class TestT10Cpp20MemorySafetyAndBoundsAudit:
 
 
 # ---------------------------------------------------------------------------
-# Section 2.2(i): Local API (/v1/chat/completions & /v1/messages) Real Engine Integration
+# Section 2.2(i): Local API (/v1/chat/completions & /v1/messages) Synthetic Engine Plumbing
 # ---------------------------------------------------------------------------
 
 
-class TestLiveLocalAPIEndpointsWithSeedOssEngine:
+class TestLocalAPIEndpointsWithSyntheticSeedOssGGUF:
     """
-    Verify Section 2.2(i):
-    - When no native model is loaded, /v1/chat/completions returns "simulated": True.
-    - When a real GGUF model is loaded via /v1/models/load, /v1/chat/completions (both
-      non-streaming and streaming, plus tool calling) and /v1/messages execute the real
-      SeedOssEngine and return "simulated": False with real token counts.
+    Verify Section 2.2(i) API wiring using the synthetic 2-layer GGUF fixture:
+    - When no model is loaded, /v1/chat/completions returns "simulated": True.
+    - When the synthetic GGUF fixture is loaded via /v1/models/load, /v1/chat/completions
+      and /v1/messages execute SeedOssEngine and return "simulated": False.
     """
 
-    def test_local_api_uses_real_seed_oss_engine_when_loaded(
+    def test_local_api_executes_loaded_synthetic_seed_oss_gguf(
         self, reference_gguf_path: Path
     ) -> None:
         from fastapi.testclient import TestClient
@@ -1265,7 +1292,7 @@ class TestLiveLocalAPIEndpointsWithSeedOssEngine:
             assert load_data["simulated"] is False
             assert load_data["architecture"] == "seed_oss"
 
-            # 3) Check /health reflects real native engine loaded
+            # 3) Check /health reflects loaded engine (simulated_inference is False)
             health_res = client.get("/health")
             assert health_res.status_code == 200
             assert health_res.json()["simulated_inference"] is False

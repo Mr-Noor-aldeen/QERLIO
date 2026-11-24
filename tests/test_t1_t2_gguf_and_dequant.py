@@ -350,31 +350,26 @@ def test_t1_hermes_4_3_36b_metadata_fixture_structure() -> None:
     assert tensors_by_name["blk.63.ffn_down.weight"]["dims"] == [27648, 5120]
 
 
-def test_t1_gguf_loader_matches_hermes_prefix_bin_100_percent(tmp_path: Path) -> None:
-    """Verify GGUFLoader parses the Hermes 4.3 36B GGUF prefix (and reconstructed CI fixture) identically to the metadata dump."""
-    reconstructed = _build_hermes_header_prefix_from_fixture(tmp_path)
-    targets = [reconstructed]
-    real_prefix = _find_hermes_prefix_bin()
-    if real_prefix is not None:
-        targets.append(real_prefix)
-
+def test_t1_gguf_loader_matches_reconstructed_hermes_header_fixture(tmp_path: Path) -> None:
+    """Verify GGUFLoader parses the reconstructed Hermes 4.3 36B header+row fixture identically
+    to `hermes_4_3_36b_q4_k_m_metadata.json`. (Full 21.76 GB official-file T1 check runs via
+    opt-in `tests/test_real_hermes_36b_optin.py`.)
+    """
+    prefix_bin = _build_hermes_header_prefix_from_fixture(tmp_path)
     fixture = json.loads(HERMES_FIXTURE_PATH.read_text(encoding="utf-8"))
-    for prefix_bin in targets:
-        # Open full official checkpoint with header_only=False to validate 21.76 GB mmap & all tensor bounds
-        is_full_checkpoint = prefix_bin.name == "hermes-4_3_36b-Q4_K_M.gguf"
-        with GGUFLoader(prefix_bin, header_only=not is_full_checkpoint) as loader:
-            summary = loader.extract_architecture_summary()
-            for key, expected_val in summary.items():
-                assert fixture[key] == expected_val, f"Mismatch on summary field {key} ({prefix_bin})"
+    with GGUFLoader(prefix_bin, header_only=True) as loader:
+        summary = loader.extract_architecture_summary()
+        for key, expected_val in summary.items():
+            assert fixture[key] == expected_val, f"Mismatch on summary field {key} ({prefix_bin})"
 
-            assert len(loader.metadata) == 27
-            assert set(loader.metadata.keys()) == set(fixture["metadata_kvs"].keys())
-            assert len(loader.tensor_list) == 771
+        assert len(loader.metadata) == 27
+        assert set(loader.metadata.keys()) == set(fixture["metadata_kvs"].keys())
+        assert len(loader.tensor_list) == 771
 
-            for idx, (parsed_tensor, expected_tensor) in enumerate(
-                zip(loader.tensor_list, fixture["tensors"])
-            ):
-                assert parsed_tensor.to_dict() == expected_tensor, f"Tensor mismatch at index {idx}"
+        for idx, (parsed_tensor, expected_tensor) in enumerate(
+            zip(loader.tensor_list, fixture["tensors"])
+        ):
+            assert parsed_tensor.to_dict() == expected_tensor, f"Tensor mismatch at index {idx}"
 
 
 def test_t1_gguf_loader_full_synthetic_file_and_row_lookup(tmp_path: Path) -> None:
@@ -524,8 +519,8 @@ def test_t2_vectorized_dequant_matches_scalar_reference(ggml_type: int, n_blocks
 
 
 def test_t2_real_hermes_output_weight_q6_k_blocks(tmp_path: Path) -> None:
-    """Dequantize real Q6_K super-blocks from `output.weight` at offset 6290368."""
-    prefix_bin = _get_hermes_prefix_bin(tmp_path)
+    """Dequantize committed real Q6_K super-blocks from `output.weight` at offset 6290368."""
+    prefix_bin = _build_hermes_header_prefix_from_fixture(tmp_path)
 
     with GGUFLoader(prefix_bin, header_only=True) as loader:
         assert loader.data_offset == 6290368
