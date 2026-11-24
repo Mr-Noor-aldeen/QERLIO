@@ -1,3 +1,5 @@
+> **Historical Archive Note (v0.3.1):** This initial specification draft (`2026-11-18`) pre-dates the v0.3.0 native engine rewrite. References to linking `llama.cpp` as the primary backend are superseded: as of v0.3.0+, QERLIO's runtime inference engine under `core/inference/` is implemented from scratch without `llama.cpp`, and current support counts (`1 tested, 183 experimental`) are authoritative in [`README.md`](../README.md) and [`registry/model_architectures.json`](../registry/model_architectures.json).
+
 # QERLIO Runtime
 ## المواصفات البحثية والهندسية والتنفيذية لمحرك ذكاء اصطناعي محلي متعدد الأجهزة
 

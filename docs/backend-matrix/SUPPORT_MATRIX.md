@@ -1,45 +1,36 @@
 # QERLIO Runtime — Platform, Backend, and Architecture Support Matrix
 
-**Version:** 1.0 (Phase 0 Baseline)  
-**Rule:** Any platform, device, or backend that has not been empirically verified on actual physical hardware must be classified as `UNKNOWN` or `EXPERIMENTAL`. Never mark a feature as `SUPPORTED` without reproducible test logs.
+**Version:** 0.3.1  
+**Rule:** Any platform, architecture, or backend that has not been verified under the Section 2 `tested` definition (`T-A` through `T-F`) is classified as `EXPERIMENTAL`, `PLANNED`, or `NOT IMPLEMENTED`.
 
 ---
 
-## 1. Operating System & Platform Matrix
+## 1. Execution Backend Matrix (v0.3.1)
 
-| Platform / OS | Target ABI / Architecture | Backend Pathway | Current Status | Notes / Limitations |
-| :--- | :--- | :--- | :--- | :--- |
-| **Windows 11** | `x86_64` (AVX2, FMA) | CPU (Reference) | `PLANNED` | Reference CPU path; native build toolchain required. |
-| **Windows 11** | `x86_64` (CUDA) | NVIDIA CUDA | `PLANNED` | Native build toolchain required. |
-| **Android 10+ (API 29+)** | `arm64-v8a` / `arm64-v9a` | CPU (NEON / DotProd) | `PLANNED` | Primary mobile target baseline. |
-| **Android 10+ (API 29+)** | `arm64-v8a` (Vulkan 1.1+) | GPU (Vulkan) | `EXPERIMENTAL` | Requires physical device testing across Adreno/Mali GPUs. |
-| **Android (Qualcomm QNN)**| `arm64-v8a` (Hexagon NPU) | QNN Backend | `UNKNOWN` | Requires Snapdragon Hardware + Qualcomm AI Engine Direct SDK. |
-| **Android (MediaTek)** | `arm64-v8a` (APU) | NeuroPilot Backend | `UNKNOWN` | Pending MediaTek hardware verification and SDK access. |
-| **Android (NNAPI)** | `arm64-v8a` | NNAPI | `DEPRECATED` | Deprecated in Android 15. Not supported as primary target. |
-| **macOS / iOS** | `arm64` (Apple Silicon) | Metal / Core ML | `UNKNOWN` | Host is Windows; macOS CI runner required. |
-| **Linux (Ubuntu 22.04+)**| `x86_64` / `aarch64` | CPU / CUDA | `PLANNED` | Standard CI environment target. |
-
----
-
-## 2. Model Architecture Support Matrix (GGUF Backend)
-
-| Architecture Family | Typical Models | GGUF Compatibility | Test Status | Verified Quantizations |
-| :--- | :--- | :--- | :--- | :--- |
-| **Llama / Llama 3** | Llama-3-8B, Llama-3.2-1B/3B | Supported by GGUF specification | `PLANNED` | Q4_K_M, Q8_0 (Pending smoke test) |
-| **Qwen / Qwen 2.5** | Qwen2.5-0.5B, 1.5B, 7B | Supported by GGUF specification | `PLANNED` | Q4_K_M, Q8_0 (Pending smoke test) |
-| **Mistral** | Mistral-7B, Nemo-12B | Supported by GGUF specification | `PLANNED` | Q4_K_M, Q8_0 (Pending smoke test) |
-| **Gemma / Gemma 2** | Gemma-2-2B, Gemma-2-9B | Supported by GGUF specification | `PLANNED` | Q4_K_M (Pending sliding window verification) |
-| **ZAQERIS ZQN / AXIOM** | ZQN-12B, AXIOM-1.1 | Custom Research / Hybrid | `EXPERIMENTAL` | Gated research adapter required (see ADR-004) |
-
----
-
-## 3. Quantization Support Classification
-
-| Quantization Format | Target Backend | Performance Profile | Status |
+| Backend Pathway | Scope | Current Status | Notes / Limitations |
 | :--- | :--- | :--- | :--- |
-| **Q4_K_M** | CPU / GPU | Balanced speed, memory, and perplexity (recommended default) | `PLANNED` |
-| **Q4_0** | CPU (NEON / AVX2) | High throughput on older architectures, slight perplexity penalty | `PLANNED` |
-| **Q5_K_M** | CPU / GPU | High quality for reasoning workloads with moderate memory footprint | `PLANNED` |
-| **Q8_0** | CPU / GPU | Reference precision baseline for fidelity comparison | `PLANNED` |
-| **F16 / BF16** | GPU / CPU | Uncompressed baseline; high memory bandwidth required | `PLANNED` |
-| **ZAQERIS M3-GPTQ** | ZAQERIS Custom Adapter | Specialized research quantization | `RESEARCH` (Isolated in `formats/zaqeris_compression`) |
+| **Native CPU Engine (`core/inference/`)** | Python stdlib + NumPy + C11 SIMD GEMM (`native_gemm.c`) | `IMPLEMENTED` | `seed_oss` uses C11 GEMM (`Q4_K`, `Q6_K`, `Q8_0`, `F32`) when built/loaded, otherwise NumPy; `qwen35` uses NumPy |
+| **C++20 Core + Flat C ABI** | Header parsing, SHA-256, KV planner, session cancellation | `IMPLEMENTED` | Verified in CI on Linux/Windows/macOS + ASan/UBSan |
+| **CUDA / Vulkan / Metal GPU** | GPU kernel offloading | `NOT IMPLEMENTED` | No GPU execution backend exists in v0.3.1 |
+| **Android / NPU (QNN / NeuroPilot)** | Mobile JNI & NPU backends | `PLANNED` | Not implemented or hardware-verified |
+
+---
+
+## 2. Model Architecture Support Matrix (v0.3.1 Section 2 Standard)
+
+| Architecture ID | Representative Checkpoint | Execution Code in Repo | Support Tier | Evidence / Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **`seed_36b`** | `NousResearch/Hermes-4.3-36B-GGUF` (`hermes-4_3_36b-Q4_K_M.gguf`) | `core/inference/seed_oss_model.py` | **`TESTED`** | Meets Section 2 `T-A`–`T-F`: SHA-256 `17823599...`, 320/320 greedy tokens vs `transformers 5.20.1` (`tests/fixtures/hermes_4_3_36b_qerlio_verification_record.json`) |
+| **`qwen35`** | `Qwen/Qwen3.8-27B` | `core/inference/qwen35_model.py` | `EXPERIMENTAL` | Synthetic CI tests only + earlier 4-token run on an unofficial UD quant (`< 64` tokens, invalid for `tested`) |
+| **`zaqeris_axiom`**, **`zqn_12b`**, **`zaqeris_7b`** | `ZAQERIS/ZAQERIS_AXIOM`, `ZQN-12B`, `ZAQERIS-7B` | Prompt/tool parser & M3 adapter only | `EXPERIMENTAL` | No end-to-end `>= 64`-token official-weight run recorded |
+| **All other 179 architectures** | Llama, Mistral, Gemma, Phi, MoE, VLM, etc. | Catalog metadata only | `EXPERIMENTAL` | No local weight execution |
+
+---
+
+## 3. Quantization Kernels Implemented (`core/inference/dequant.py` & `native_gemm.c`)
+
+| Quantization Format | Dequant Decoder (`dequant.py`) | C11 SIMD GEMM (`native_gemm.c`) | Status |
+| :--- | :---: | :---: | :--- |
+| **`Q4_K`, `Q6_K`, `Q8_0`, `F32`** | Yes (`< 1e-6` vs `gguf-py`) | Yes (AVX2+FMA+F16C + scalar fallback) | Used in verified `seed_36b` run & ASan C tests |
+| **`F16`, `BF16`, `Q4_0`, `Q4_1`, `Q5_0`, `Q5_1`, `Q2_K`, `Q3_K`, `Q5_K`, `IQ4_NL`, `IQ3_S`, `IQ4_XS`** | Yes (`< 1e-6` vs `gguf-py`) | Fallback to dequant + NumPy | Verified against offline `gguf-py 0.19.0` slices |
+| **ZAQERIS M3-GPTQ** | Research adapter only (`formats/zaqeris_compression`) | No | `EXPERIMENTAL` |

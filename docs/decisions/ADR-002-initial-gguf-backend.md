@@ -1,10 +1,10 @@
 # ADR-002: Selection of llama.cpp as Initial GGUF Execution Backend
 
 ## Status
-Accepted
+Superseded in v0.3.0 (native GGUF v2/v3 inference engine implemented from scratch under `core/inference/` using Python stdlib, NumPy, and `core/inference/native_gemm.c`, with zero dependency on `llama.cpp` or `ggml`).
 
 ## Context
-Writing an optimized inference engine from scratch (including matrix multiplication kernels, attention mechanisms, tensor operations for dozens of quantization formats, and architecture variants for Llama, Qwen, Mistral, Gemma) would require months or years of effort and introduce severe correctness risks. The project requires a production-grade, highly tested baseline for GGUF model execution.
+At Phase 0 (2026-11-19), writing an optimized inference engine from scratch was deferred in favor of defining an isolated backend contract. Before v0.3.0, this ADR documented a planned reference backend. Any baseline engine requires a well-tested execution path for GGUF models.
 
 ## Decision
 1. **Reference Backend:** We adopt `llama.cpp` as the first execution backend for GGUF models.

@@ -1,3 +1,5 @@
+> **Historical Archive Note (v0.3.1):** Phase 1 pre-upload audit snapshot (`2026-11-19`) from the initial scaffolding commit. Superseded by v0.3.0 and the v0.3.1 corrections in [`CHANGELOG.md`](../../CHANGELOG.md) and [`README.md`](../../README.md).
+
 # QERLIO Runtime — Pre-Release Verification & Audit Report
 
 **Date:** 2026-11-19  
