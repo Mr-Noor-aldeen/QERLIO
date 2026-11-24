@@ -14,7 +14,7 @@ client = TestClient(app)
 
 REGISTRY_PATH = Path(__file__).resolve().parent.parent / "registry" / "model_architectures.json"
 ZAQERIS_NATIVE_IDS = {"zaqeris_axiom", "zqn_12b", "zaqeris_7b"}
-TESTED_ARCHITECTURES = ZAQERIS_NATIVE_IDS | {"seed_36b", "qwen35"}
+TESTED_ARCHITECTURES = {"seed_36b"}
 VALID_STATUSES = {"tested", "experimental"}
 
 
@@ -42,8 +42,10 @@ def test_support_status_tiers():
     assert raw["tested_count"] == len(tested)
     assert raw["experimental_count"] == len(experimental)
     assert raw["tested_count"] + raw["experimental_count"] == raw["total_count"]
-    # Only architectures with a native engine / code path exercised in this repo may be marked tested.
+    # Only architectures meeting Section 2 (T-A through T-F on official weights) are marked tested.
     assert tested == TESTED_ARCHITECTURES
+    assert len(tested) == 1
+    assert len(experimental) == 183
     seed = next(a for a in archs if a["id"] == "seed_36b")
     assert seed["support_status"] == "tested"
     assert "Seed-OSS" in seed["name"]
@@ -51,8 +53,12 @@ def test_support_status_tiers():
     assert seed["gguf_repo"] == "NousResearch/Hermes-4.3-36B-GGUF"
 
     qwen35 = next(a for a in archs if a["id"] == "qwen35")
-    assert qwen35["support_status"] == "tested"
+    assert qwen35["support_status"] == "experimental"
     assert qwen35["huggingface_repo"] == "Qwen/Qwen3.8-27B"
+
+    for z_id in ZAQERIS_NATIVE_IDS:
+        z_entry = next(a for a in archs if a["id"] == z_id)
+        assert z_entry["support_status"] == "experimental"
 
 
 def test_architectures_schema_completeness():
@@ -113,7 +119,11 @@ def test_architectures_api_endpoints():
     single_data = res_single.json()
     assert single_data["id"] == "zqn_12b"
     assert single_data["native_tools_supported"] is True
-    assert single_data["support_status"] == "tested"
+    assert single_data["support_status"] == "experimental"
+
+    res_seed = client.get("/v1/architectures/seed_36b")
+    assert res_seed.status_code == 200
+    assert res_seed.json()["support_status"] == "tested"
 
     res_tested = client.get("/v1/architectures", params={"status": "tested"})
     assert res_tested.status_code == 200
