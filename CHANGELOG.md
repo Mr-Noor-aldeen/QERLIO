@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Honest `tested` Registry Criteria (`registry/model_architectures.json`, `scripts/build_architectures_registry.py`, `tests/test_architectures_registry.py`):** Recategorized `qwen35` (prior `610.40s` 4-token run used an unofficial UD quant `Qwen3.8-27B-UD-Q4_K_M.gguf`) and ZAQERIS catalog entries (`zaqeris_axiom`, `zqn_12b`, `zaqeris_7b`, which lack >=64-token official-weight execution logs) to `experimental`. Only `seed_36b` (`NousResearch/Hermes-4.3-36B-GGUF`, SHA-256 `17823599694fa3503ef54bf748d5078c6ce881f4d01616cafa255dc05d215a08`) remains `tested` (`1` tested, `183` experimental, `184` total).
 - **Relabeled Synthetic Tests & Added Opt-In Real-Weight Test:** Explicitly labeled [`tests/test_t4_to_t10_engine.py`](tests/test_t4_to_t10_engine.py) and [`tests/test_qwen35_engine.py`](tests/test_qwen35_engine.py) as synthetic toy-GGUF unit tests, removed the silent toy fallback from `test_qwen35_engine.py`, and added opt-in [`tests/test_real_hermes_36b_optin.py`](tests/test_real_hermes_36b_optin.py) (`QERLIO_RUN_REAL_HERMES=1`).
-- **Sanitizer Coverage & Stale Doc Fixes:** Expanded multi-row C GEMM kernel exercise (`m=5`) in `tests/cpp_safety_test.cpp` under CI ASan+UBSan (`detect_leaks=1:halt_on_error=1`), added a static CI-coverage test for all `core/inference/*.c` files, updated stale architecture/ADR/matrix docs, and marked historical archive reports clearly.
+- **Sanitizer Coverage & Stale Doc Fixes:** Expanded multi-row C GEMM kernel exercise (`m=5`) in `tests/cpp_safety_test.cpp` under CI ASan+UBSan (`detect_leaks=1:halt_on_error=1`), added a static CI-coverage test for all `core/inference/*.c` files, updated stale architecture/ADR/matrix docs, marked historical archive reports clearly, corrected the `[0.3.0]` heading date to `2026-11-22`, and removed the nonexistent `develop` branch trigger from `.github/workflows/ci.yml`.
 - **Version Bump:** Updated runtime version strings to `0.3.1`.
 
 ### Added
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.3.0] - 2026-11-21
+## [0.3.0] - 2026-11-22
 
 > *(Historical v0.3.0 entry — published prior to management review; see `[0.3.1]` above for audit corrections to the `tested` count, synthetic test labels, and missing `LICENSE`.)*
 
