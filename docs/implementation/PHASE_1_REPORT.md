@@ -1,3 +1,5 @@
+> **Historical Archive Note (v0.3.1):** Phase 1 baseline snapshot (`2026-11-19`) documenting initial scaffolding prior to the v0.3.0 native engine and v0.3.1 registry corrections. See [`README.md`](../../README.md) for current v0.3.1 state.
+
 # QERLIO Runtime — Phase 1 Implementation & Conformance Report
 
 **Date:** 2026-11-19  

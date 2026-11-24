@@ -2,7 +2,7 @@ name: QERLIO Runtime CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -60,6 +60,6 @@ jobs:
 
       - name: Run T10 Memory Safety Suite under ASan + UBSan
         env:
-          ASAN_OPTIONS: detect_leaks=1
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
         run: ctest --test-dir build-asan --output-on-failure

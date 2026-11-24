@@ -1,3 +1,5 @@
+> **Historical Archive Note (v0.3.1):** Phase 0 environment/discovery snapshot (`2026-11-19`). Note that `gguf`, `transformers`, `tokenizers`, and `torch` are permitted strictly offline under `tests/reference/` and are not runtime dependencies of `core/inference/`, and `ADR-002` (`llama.cpp`) was superseded in v0.3.0 by the from-scratch native engine.
+
 # QERLIO Runtime — Initial Repository & Environment Audit
 
 **Date:** 2026-11-19  

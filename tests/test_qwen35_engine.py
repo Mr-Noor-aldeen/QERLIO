@@ -1,4 +1,9 @@
-"""Comprehensive verification tests for the `qwen35` (Qwen3.5 / Qwen3.8) Hybrid Architecture Engine.
+"""Synthetic unit & plumbing verification tests for the `qwen35` Hybrid Architecture Engine.
+
+NOTE (v0.3.1 honesty requirement):
+All tests in this file run exclusively on a tiny deterministic 4-layer **synthetic** GGUF v3
+fixture. `qwen35` remains `experimental` in `registry/model_architectures.json` because no
+>=64-token official-weight verification run under Directive Section 2 has been completed.
 
 Covers:
 - Dynamic hyperparameter loading from `qwen35.*` GGUF v3 metadata
@@ -9,8 +14,7 @@ Covers:
 - Hybrid cache (`Qwen35HybridCache`) step-by-step decoding equivalence with full-sequence
   recomputation (both recurrent conv/SSM states and full-attention KV cache)
 - ChatML (`<|im_start|>...<|im_end|>`) formatting, thinking mode, and `<tool_call>` parsing
-- Unified `load_gguf_engine` and Local API (`/v1/models/load`, `/v1/chat/completions`) integration
-- Real `models/Qwen3.8-27B-UD-Q4_K_M.gguf` checkpoint verification when present on disk.
+- Unified `load_gguf_engine` and Local API (`/v1/models/load`, `/v1/chat/completions`) wiring
 """
 
 from __future__ import annotations
@@ -36,7 +40,6 @@ from core.inference import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-REAL_QWEN35_GGUF = REPO_ROOT / "models" / "Qwen3.8-27B-UD-Q4_K_M.gguf"
 
 
 def _pack_str(s: str) -> bytes:
@@ -294,7 +297,7 @@ def qwen35_gguf_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return p
 
 
-def test_qwen35_config_and_hybrid_layer_schedule(qwen35_gguf_path: Path) -> None:
+def test_synthetic_qwen35_config_and_hybrid_layer_schedule(qwen35_gguf_path: Path) -> None:
     """Verify Qwen35Config reads all hybrid Gated DeltaNet + Full-Attention hyperparameters."""
     with Qwen35Engine(qwen35_gguf_path) as eng:
         cfg = eng.config
@@ -308,7 +311,7 @@ def test_qwen35_config_and_hybrid_layer_schedule(qwen35_gguf_path: Path) -> None
         assert cfg.ssm_value_dim == 16
 
 
-def test_qwen35_preload_vs_lazy_mmap_exact_parity(qwen35_gguf_path: Path) -> None:
+def test_synthetic_qwen35_preload_vs_lazy_mmap_exact_parity(qwen35_gguf_path: Path) -> None:
     """Verify preloaded weights and lazy mmap streaming produce identical logits."""
     tokens = [1, 9, 7, 11, 2]
     with Qwen35Engine(qwen35_gguf_path, preload_weights=True) as eng_pre:
@@ -322,7 +325,7 @@ def test_qwen35_preload_vs_lazy_mmap_exact_parity(qwen35_gguf_path: Path) -> Non
     np.testing.assert_allclose(logits_pre, logits_lazy, atol=1e-6, rtol=1e-6)
 
 
-def test_qwen35_hybrid_cache_step_by_step_matches_full_recomputation(
+def test_synthetic_qwen35_hybrid_cache_step_by_step_matches_full_recomputation(
     qwen35_gguf_path: Path,
 ) -> None:
     """Verify step-by-step decoding with Qwen35HybridCache (both DeltaNet conv/SSM states
@@ -347,8 +350,8 @@ def test_qwen35_hybrid_cache_step_by_step_matches_full_recomputation(
         assert max_diff < 1e-5, f"Hybrid cache mismatch: max_diff={max_diff}"
 
 
-def test_qwen35_generation_chat_and_api_integration(qwen35_gguf_path: Path) -> None:
-    """Verify Qwen35Engine generation, ChatML formatting, `load_gguf_engine`, and local API."""
+def test_synthetic_qwen35_generation_chat_and_api_integration(qwen35_gguf_path: Path) -> None:
+    """Verify Qwen35Engine generation, ChatML formatting, `load_gguf_engine`, and local API on synthetic GGUF."""
     from fastapi.testclient import TestClient
     from server.local_api.server import app, unload_native_models
 
@@ -394,32 +397,16 @@ def test_qwen35_generation_chat_and_api_integration(qwen35_gguf_path: Path) -> N
         unload_native_models()
 
 
-def test_real_qwen3_8_27b_gguf_checkpoint_if_present(qwen35_gguf_path: Path) -> None:
-    """Verify `Qwen35Engine` config, tokenizer, and forward pass on `models/Qwen3.8-27B-UD-Q4_K_M.gguf`
-    if present locally, or fall back seamlessly to the synthetic 4-layer `qwen35` GGUF fixture in CI.
-    """
-    target_path = REAL_QWEN35_GGUF if REAL_QWEN35_GGUF.exists() else qwen35_gguf_path
-
-    with Qwen35Engine(target_path, max_context_length=256, preload_weights=False) as eng:
+def test_synthetic_qwen35_single_step_last_token_forward(qwen35_gguf_path: Path) -> None:
+    """Verify synthetic 4-layer `qwen35` single-step last-token-only forward pass output shape and finiteness."""
+    with Qwen35Engine(qwen35_gguf_path, max_context_length=256, preload_weights=False) as eng:
         assert eng.config.architecture == "qwen35"
-        if target_path == REAL_QWEN35_GGUF:
-            assert eng.config.block_count == 64
-            assert eng.config.nextn_predict_layers == 1
-            assert eng.config.vocab_size == 248320
-            assert len(eng.config.recurrent_layer_indices) == 48
-            assert len(eng.config.full_attention_layer_indices) == 16
-            ids = eng.tokenizer.encode("Hello QERLIO")
-            assert eng.tokenizer.decode(ids) == "Hello QERLIO"
-            logits = eng.forward(ids, max_layers=1, return_all_logits=False)
-            assert logits.shape == (1, 248320)
-        else:
-            assert eng.config.block_count == 4
-            assert eng.config.vocab_size == 32
-            assert eng.config.recurrent_layer_indices == (0, 1, 2)
-            assert eng.config.full_attention_layer_indices == (3,)
-            ids = [1, 9, 7, 11]
-            logits = eng.forward(ids, max_layers=4, return_all_logits=False)
-            assert logits.shape == (1, 32)
-
+        assert eng.config.block_count == 4
+        assert eng.config.vocab_size == 32
+        assert eng.config.recurrent_layer_indices == (0, 1, 2)
+        assert eng.config.full_attention_layer_indices == (3,)
+        ids = [1, 9, 7, 11]
+        logits = eng.forward(ids, max_layers=4, return_all_logits=False)
+        assert logits.shape == (1, 32)
         assert logits.dtype == np.float32
         assert bool(np.all(np.isfinite(logits)))

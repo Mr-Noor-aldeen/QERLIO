@@ -5,6 +5,7 @@
 #include "core/model_registry/gguf_parser.hpp"
 #include "core/scheduler/adaptive_scheduler.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <cstdint>
@@ -95,7 +96,7 @@ bool stream_collect_all(const char* token_chunk, void* user_data) {
 }
 
 void test_abi_and_null_guards(const std::filesystem::path& tmp_dir) {
-    QERLIO_CHECK(std::string(qerlio_get_version()) == "0.3.0");
+    QERLIO_CHECK(std::string(qerlio_get_version()) == "0.3.1");
 
     QERLIO_CHECK(qerlio_engine_create(nullptr, nullptr) == QERLIO_ERR_INVALID_ARGUMENT);
     qerlio_engine_destroy(nullptr);
@@ -347,6 +348,36 @@ void test_native_gemm_kernels_and_bounds() {
     QERLIO_CHECK(qerlio_gemm_f32(x.data(), w_f32.data(), y_f32.data(), 1, 2, 16, 0, 2) == 0);
     QERLIO_CHECK(std::fabs(y_f32[0] - 8.0f) < 1e-4f);
     QERLIO_CHECK(std::fabs(y_f32[1] - 8.0f) < 1e-4f);
+
+    // Multi-row (m = 5): exercises both the 4-row tile path and the remainder path in native_gemm.c under ASan/UBSan
+    std::vector<float> x5(5 * 256, 1.0f);
+    std::vector<float> y5(5 * 2, 0.0f);
+    QERLIO_CHECK(qerlio_gemm_q4_k_f32(x5.data(), w_q4k.data(), y5.data(), 5, 2, 256, 0, 2) == 0);
+    for (int t = 0; t < 5; ++t) {
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 0] - 256.0f) < 1e-3f);
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 1] - 512.0f) < 1e-3f);
+    }
+
+    std::fill(y5.begin(), y5.end(), 0.0f);
+    QERLIO_CHECK(qerlio_gemm_q6_k_f32(x5.data(), w_q6k.data(), y5.data(), 5, 2, 256, 0, 2) == 0);
+    for (int t = 0; t < 5; ++t) {
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 0] - (-16384.0f)) < 1e-2f);
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 1] - (-8192.0f)) < 1e-2f);
+    }
+
+    std::fill(y5.begin(), y5.end(), 0.0f);
+    QERLIO_CHECK(qerlio_gemm_q8_0_f32(x5.data(), w_q8_0.data(), y5.data(), 5, 2, 32, 0, 2) == 0);
+    for (int t = 0; t < 5; ++t) {
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 0] - 96.0f) < 1e-3f);
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 1] - 160.0f) < 1e-3f);
+    }
+
+    std::fill(y5.begin(), y5.end(), 0.0f);
+    QERLIO_CHECK(qerlio_gemm_f32(x5.data(), w_f32.data(), y5.data(), 5, 2, 16, 0, 2) == 0);
+    for (int t = 0; t < 5; ++t) {
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 0] - 8.0f) < 1e-4f);
+        QERLIO_CHECK(std::fabs(y5[t * 2 + 1] - 8.0f) < 1e-4f);
+    }
 }
 
 }  // namespace

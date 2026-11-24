@@ -1,3 +1,5 @@
+> **Historical Archive Note (v0.3.1):** Phase 1 initial planning snapshot (`2026-11-19`) prior to the v0.3.0 from-scratch native engine (`core/inference/`) which replaced the deferred `llama.cpp` plan in Slice 2.
+
 # QERLIO Runtime — Phase 1 Vertical Slice Execution Plan
 
 **Objective:** Implement the first verifiable, end-to-end vertical slice of QERLIO:

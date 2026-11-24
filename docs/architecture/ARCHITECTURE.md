@@ -34,10 +34,10 @@ flowchart TD
 
     subgraph BackendLayer ["Hardware Abstraction & Backend Adapters"]
         ROUTER["Backend Router & Fallback Handler"]
-        GGUF_BACKEND["GGUF / llama.cpp Adapter"]
-        VULKAN_BACKEND["Vulkan GPU Adapter"]
-        CUDA_BACKEND["NVIDIA CUDA Adapter"]
-        NPU_BACKEND["Vendor NPU Adapter (QNN / NeuroPilot)"]
+        GGUF_BACKEND["From-Scratch Native GGUF Engine (Python/NumPy + C11 SIMD)"]
+        VULKAN_BACKEND["Vulkan GPU Adapter (Planned)"]
+        CUDA_BACKEND["CUDA GPU Adapter (Planned)"]
+        NPU_BACKEND["Vendor NPU Adapter (Planned)"]
         CPU_REF["Portable CPU Reference Baseline"]
     end
 
@@ -59,7 +59,7 @@ flowchart TD
     SESS_MGR --> SCHED
     ENG_MGR --> MOD_REG
 
-    MOD_REG --> STORAGE_LAYER
+    MOD_REG --> StorageLayer
     SCHED --> ROUTER
 
     ROUTER --> GGUF_BACKEND

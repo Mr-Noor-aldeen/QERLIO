@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.3.0] - 2026-11-21
+## [0.3.1] - 2026-11-24
+
+### Changed
+- **Honest `tested` Registry Criteria (`registry/model_architectures.json`, `scripts/build_architectures_registry.py`, `tests/test_architectures_registry.py`):** Recategorized `qwen35` (prior `610.40s` 4-token run used an unofficial UD quant `Qwen3.8-27B-UD-Q4_K_M.gguf`) and ZAQERIS catalog entries (`zaqeris_axiom`, `zqn_12b`, `zaqeris_7b`, which lack >=64-token official-weight execution logs) to `experimental`. Only `seed_36b` (`NousResearch/Hermes-4.3-36B-GGUF`, SHA-256 `17823599694fa3503ef54bf748d5078c6ce881f4d01616cafa255dc05d215a08`) remains `tested` (`1` tested, `183` experimental, `184` total).
+- **Relabeled Synthetic Tests & Added Opt-In Real-Weight Test:** Explicitly labeled [`tests/test_t4_to_t10_engine.py`](tests/test_t4_to_t10_engine.py) and [`tests/test_qwen35_engine.py`](tests/test_qwen35_engine.py) as synthetic toy-GGUF unit tests, removed the silent toy fallback from `test_qwen35_engine.py`, and added opt-in [`tests/test_real_hermes_36b_optin.py`](tests/test_real_hermes_36b_optin.py) (`QERLIO_RUN_REAL_HERMES=1`).
+- **Sanitizer Coverage & Stale Doc Fixes:** Expanded multi-row C GEMM kernel exercise (`m=5`) in `tests/cpp_safety_test.cpp` under CI ASan+UBSan (`detect_leaks=1:halt_on_error=1`), added a static CI-coverage test for all `core/inference/*.c` files, updated stale architecture/ADR/matrix docs, marked historical archive reports clearly, corrected the `[0.3.0]` heading date to `2026-11-22`, and removed the nonexistent `develop` branch trigger from `.github/workflows/ci.yml`.
+- **Version Bump:** Updated runtime version strings to `0.3.1`.
+
+### Added
+- **Root `LICENSE` File:** Added the full official Apache License, Version 2.0 text at [`LICENSE`](LICENSE).
+- **Committed Real-Weight Record:** Added [`tests/fixtures/hermes_4_3_36b_qerlio_verification_record.json`](tests/fixtures/hermes_4_3_36b_qerlio_verification_record.json) storing exact T1–T9 prompts, token IDs, and outputs for `NousResearch/Hermes-4.3-36B-GGUF`.
+
+### Known Limitations
+- CPU execution only; CUDA/Metal/Vulkan GPU acceleration is not implemented.
+- `qwen35` runs on the NumPy path and remains `experimental`; vision encoders, MoE weight execution, and all other 182 catalogued architectures remain unexecuted locally.
+- 36B CPU latency is non-interactive (`2362.87s` for 320 batched tokens; `10682.64s` for the `thinking=True` run completed in two segments from a saved 160-token greedy prefix). Peak memory is `not measured`.
+
+---
+
+## [0.3.0] - 2026-11-22
+
+> *(Historical v0.3.0 entry — published prior to management review; see `[0.3.1]` above for audit corrections to the `tested` count, synthetic test labels, and missing `LICENSE`.)*
 
 ### Added
 - **From-Scratch GGUF v2/v3 Loader (`core/inference/gguf_loader.py`):** Pure Python stdlib + NumPy GGUF binary parser, metadata KV reader, alignment calculator, zero-copy memory-mapped tensor access (`mmap`), row-slicing (`get_tensor_rows_f32`), and corrupt/truncated file rejection.
@@ -20,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **C11 SIMD Quantized GEMM & Streaming (`core/inference/native_gemm.c`, `core/inference/native_gemm.py`, `include/qerlio/native_gemm.h`):** AVX2+FMA+F16C kernels with scalar fallback for `Q4_K`, `Q6_K`, `Q8_0`, `F32`; `SequentialTensorStreamer` with double-buffered prefetch; batched `SeedOssEngine.forward_batch()`; kernel bounds tests in `tests/cpp_safety_test.cpp` (ASan/UBSan job also builds the C source).
 - **Offline Reference Suite (`tests/reference/`, `tests/fixtures/`):** generators and committed fixtures for T2 (`gguf-py 0.19.0`), T3 (`tokenizers 0.23.3`), and T4/T5 on the real 36B weights (`transformers 5.20.1`); none are runtime dependencies.
 - **Real-Weight Verification (`scripts/verify_hermes_36b_real.py`, `docs/models/HERMES_4_3_36B.md`):** T1–T9 run on `hermes-4_3_36b-Q4_K_M.gguf` with recorded results (T4 5/5, T5 320/320, T6 `7.58e-05`).
-- **Registry & CI Updates:** Marked `seed_36b` and `qwen35` as `support_status: "tested"` in `registry/model_architectures.json` (184 total: 5 tested, 179 experimental), and added C++20 AddressSanitizer/UndefinedBehaviorSanitizer testing in CMake/CI (`tests/cpp_safety_test.cpp`).
+- **Registry & CI Updates (Historical v0.3.0 — superseded in v0.3.1):** Tagged `seed_36b` and `qwen35` as `"tested"` (184 total: 5 tested, 179 experimental — corrected to `1 tested / 183 experimental` in v0.3.1), and added C++20 AddressSanitizer/UndefinedBehaviorSanitizer testing in CMake/CI (`tests/cpp_safety_test.cpp`).
 
 ---
 
@@ -38,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `qerlio hermes chat`: Format prompts locally (`--thinking`, `--keep-cots`) or query an external OpenAI-compatible endpoint.
   - `qerlio hermes test`: Offline template-formatting and tag-parsing self-test (no model inference).
   - `qerlio hermes download`: Download official GGUF files from `NousResearch/Hermes-4.3-36B-GGUF`.
-- **Architecture Catalog Entry (`seed_36b`):** Added `seed_36b` (`ByteDance Seed-OSS-36B (Hermes 4.3 36B)`) to `registry/model_architectures.json` under `Reasoning & Dialectic` with `support_status: "experimental"` (183 total: 3 tested, 180 experimental). QERLIO does not yet execute `SeedOssForCausalLM` tensor weights locally.
+- **Architecture Catalog Entry (`seed_36b`):** Added `seed_36b` (`ByteDance Seed-OSS-36B (Hermes 4.3 36B)`) to `registry/model_architectures.json` under `Reasoning & Dialectic` with `support_status: "experimental"` (183 historical entries: 3 tested, 180 experimental). *(Historical v0.2.2 status: QERLIO did not execute `SeedOssForCausalLM` tensor weights locally until v0.3.0.)*
 - **Documentation (`docs/models/HERMES_4_3_36B.md`):** Reference guide covering official `Seed-OSS` metadata, template formatting, tag parsing, and GGUF downloading.
 - **Remote Gateway Template Stub (`server/hf_space_gateway/`):** FastAPI/Gradio HTTP gateway scaffold with optional secret-token verification and a 7-day trial expiration check.
 

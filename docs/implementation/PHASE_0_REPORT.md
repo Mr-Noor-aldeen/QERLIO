@@ -1,3 +1,5 @@
+> **Historical Archive Note (v0.3.1):** Phase 0 baseline snapshot (`2026-11-19`). References to host toolchains or linking `llama.cpp` pre-date v0.3.0+; QERLIO's inference runtime (`core/inference/`) is implemented from scratch without `llama.cpp`, and current v0.3.1 status is documented in [`README.md`](../../README.md).
+
 # QERLIO Runtime — Phase 0 Implementation & Audit Report
 
 **Date:** 2026-11-19  

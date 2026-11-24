@@ -99,9 +99,10 @@ def main() -> None:
         raise FileNotFoundError(f"Missing real Hermes GGUF model at {model_path}")
 
     report: Dict[str, Any] = {
+        "official_repo": "NousResearch/Hermes-4.3-36B-GGUF",
         "model_file": model_path.name,
         "model_size_bytes": int(model_path.stat().st_size),
-        "native_gemm_status": NativeGemmBackend.probe_status(),
+        "native_gemm_enabled": NativeGemmBackend.get_default() is not None,
         "command": f"python scripts/verify_hermes_36b_real.py --model-path models/{model_path.name}",
     }
 

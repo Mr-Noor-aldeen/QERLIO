@@ -39,7 +39,7 @@ SUPPORTED_MODELS = [
 app = FastAPI(
     title="QERLIO Remote API Gateway",
     description="OpenAI-compatible HTTP gateway template (no model backend attached by default)",
-    version="0.2.2"
+    version="0.3.1"
 )
 
 app.add_middleware(

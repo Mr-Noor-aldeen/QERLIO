@@ -68,5 +68,5 @@
 ## 4. Supply Chain & Dependency Security
 
 - **No Dynamic Remote Code:** `trust_remote_code=True` behavior from some Python libraries is categorically forbidden in QERLIO.
-- **Dependency Pinning:** All third-party C++ libraries (e.g., `llama.cpp`) are pinned to verified commits.
+- **Dependency Policy:** All third-party C++ dependencies (such as header-only `nlohmann/json`) are pinned to verified releases in `third_party/DEPENDENCY_INVENTORY.md`; the inference engine in `core/inference/` is implemented from scratch without `llama.cpp`, `ggml`, or external ML frameworks.
 - **SBOM Generation:** Every release pipeline produces an automated Software Bill of Materials in CycloneDX JSON format.

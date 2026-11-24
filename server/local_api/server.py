@@ -23,7 +23,7 @@ from core.inference.sampler import SamplerConfig
 
 app = FastAPI(
     title="QERLIO Universal Multi-API Gateway",
-    version="0.3.0"
+    version="0.3.1"
 )
 
 app.add_middleware(
@@ -164,7 +164,7 @@ def get_health():
     loaded_ids = [k for k in ACTIVE_MODELS.keys() if k != "default"]
     return {
         "status": "healthy",
-        "runtime": "QERLIO Universal Gateway 0.3.0",
+        "runtime": "QERLIO Universal Gateway 0.3.1",
         "cpu_usage_pct": psutil.cpu_percent(),
         "ram_available_gb": round(ram.available / (1024**3), 2),
         "gateways": ["openai", "anthropic", "ollama"],
